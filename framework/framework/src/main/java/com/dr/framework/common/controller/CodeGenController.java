@@ -1,14 +1,12 @@
 package com.dr.framework.common.controller;
 
 import com.dr.framework.common.entity.ResultEntity;
+import com.dr.framework.common.entity.ResultListEntity;
 import com.dr.framework.common.entity.TreeNode;
 import com.dr.framework.common.query.GenSourceQuery;
-import com.dr.framework.core.orm.annotations.ColumnType;
+import com.dr.framework.core.orm.jdbc.Column;
+import com.dr.framework.core.orm.jdbc.Relation;
 import com.dr.framework.core.orm.support.mybatis.spring.MybatisConfigurationBean;
-import liquibase.structure.core.Column;
-import liquibase.structure.core.DataType;
-import liquibase.structure.core.PrimaryKey;
-import liquibase.structure.core.Table;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -16,6 +14,8 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,8 +24,11 @@ import java.io.FileWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @author dr
+ */
 @RestController
-@RequestMapping("/api/codeGen")
+@RequestMapping("${common.api-path:/api}/codeGen")
 public class CodeGenController {
     @Autowired
     List<MybatisConfigurationBean> mybatisConfigurationBeans;
@@ -37,12 +40,12 @@ public class CodeGenController {
      * @param withDabatase
      * @return
      */
-    @RequestMapping("/tableTree")
-    public ResultEntity tableTree(boolean withDabatase) {
+    @PostMapping("/tableTree")
+    public ResultListEntity<TreeNode> tableTree(boolean withDabatase) {
         List<TreeNode> treeNodes = mybatisConfigurationBeans.stream()
                 .map(mybatisConfigurationBean -> mybatisConfigurationBean.tableTree(withDabatase))
                 .collect(Collectors.toList());
-        return ResultEntity.success(treeNodes);
+        return ResultListEntity.success(treeNodes);
     }
 
     /**
@@ -52,27 +55,27 @@ public class CodeGenController {
      * @param tableName
      * @return
      */
-    @RequestMapping("/columns")
-    public ResultEntity columns(String dataSource, String tableName) {
+    @GetMapping("/columns")
+    public ResultListEntity<Column> columns(String dataSource, String tableName) {
         Optional<MybatisConfigurationBean> optional = mybatisConfigurationBeans.stream().
                 filter(mybatisConfigurationBean1 -> mybatisConfigurationBean1.getDatabaseId().equalsIgnoreCase(dataSource))
                 .findFirst();
         if (optional.isPresent()) {
-            Table table = optional.get().getTableMap(tableName).get(tableName);
-            return ResultEntity.success(
+            Relation<Column> table = optional.get().getTableMap().get(tableName.toUpperCase());
+            return ResultListEntity.success(
                     table.getColumns()
                             .stream()
                             .map(column -> {
                                 Map<String, Object> attrs = new HashMap<>();
                                 attrs.put("defaultValue", column.getDefaultValue());
                                 attrs.put("name", column.getName());
-                                attrs.put("remarks", column.getRemarks());
-                                attrs.put("nullable", column.isNullable());
+                                attrs.put("remarks", column.getRemark());
+                                attrs.put("nullable", column.getNullAble());
                                 attrs.put("type", column.getType());
                                 return attrs;
                             }).collect(Collectors.toList()));
         } else {
-            return ResultEntity.error("未找到指定的数据源:" + dataSource);
+            return ResultListEntity.error("未找到指定的数据源:" + dataSource);
         }
     }
 
@@ -94,9 +97,9 @@ public class CodeGenController {
         }
         if (mybatisConfigurationBean != null) {
             if (query.getTables() != null) {
-                Map<String, Table> tableMap = mybatisConfigurationBean.getTableMap(null);
+                Map<String, Relation<Column>> tableMap = mybatisConfigurationBean.getTableMap();
                 List<String> generateMessages = query.getTables().stream()
-                        .map(table -> doGen(query, tableMap.get(table.get("tableName")), table))
+                        .map(table -> doGen(query, tableMap.get(table.get("tableName").toString().toUpperCase()), table))
                         .collect(Collectors.toList());
                 resultEntity = ResultEntity.success("生成成功!", generateMessages);
             } else {
@@ -108,7 +111,7 @@ public class CodeGenController {
         return resultEntity;
     }
 
-    protected String doGen(GenSourceQuery query, Table table, Map<String, Object> tableConfig) {
+    protected String doGen(GenSourceQuery query, Relation<Column> table, Map<String, Object> tableConfig) {
         //返回消息
         String message;
         String tableName = (String) tableConfig.get("tableName");
@@ -124,7 +127,7 @@ public class CodeGenController {
                 vc.put("query", query);
                 vc.put("tableConfig", tableConfig);
                 vc.put("hasDate", false);
-                vc.put("columns", table.getColumns().stream().sorted(Comparator.comparingInt(Column::getOrder)).map(column -> mapColumnAttr(vc, table, column)).collect(Collectors.toList()));
+                vc.put("columns", table.getColumns().stream().sorted(Comparator.comparingInt(Column::getPosition)).map(column -> mapColumnAttr(vc, table, column)).collect(Collectors.toList()));
                 File entityFile = new File(packageDir, tableConfig.get("entityName") + ".java");
                 FileWriter fileWriter = new FileWriter(entityFile);
                 getTemplate().merge(vc, fileWriter);
@@ -152,72 +155,16 @@ public class CodeGenController {
         return velocityEngine.getTemplate("/template/codegen/entity.vm");
     }
 
-
-    protected Map<String, Object> mapColumnAttr(VelocityContext vc, Table table, Column column) {
-
-        Map<String, Object> colConfig = new HashMap<>();
-        DataType dataType = column.getType();
-        String type;
-        ColumnType columnType = null;
-        switch (dataType.getTypeName().toLowerCase()) {
-            case "varchar":
-            case "nvarchar":
-            case "text":
-                type = "String";
-                columnType = ColumnType.VARCHAR;
-                break;
-            case "ntext":
-            case "nchar":
-                type = "String";
-                columnType = ColumnType.CLOB;
-                break;
-            case "bit":
-                type = "boolean";
-                columnType = ColumnType.BOOLEAN;
-                break;
-            case "smallint":
-            case "bigint":
-                type = "long";
-                columnType = ColumnType.FLOAT;
-                break;
-            case "decimal":
-            case "numeric":
-                type = "double";
-                columnType = ColumnType.FLOAT;
-                break;
-            case "datetime":
-            case "datetime2":
-            case "smalldatetime":
-                vc.put("hasDate", true);
-                type = "Date";
-                columnType = ColumnType.DATE;
-                break;
-            case "image":
-                type = "byte[]";
-                columnType = ColumnType.BLOB;
-                break;
-            default:
-                type = dataType.getTypeName();
-                break;
-        }
-        colConfig.put("name", column.getName());
-        colConfig.put("type", type);
-        colConfig.put("columnType", columnType);
-        colConfig.put("jdbctype", dataType.getDataTypeId());
-        colConfig.put("order", column.getOrder());
-        colConfig.put("getter", getter((String) colConfig.get("type"), column.getName()));
-        colConfig.put("setter", setter((String) colConfig.get("type"), column.getName()));
-        colConfig.put("comment", column.getRemarks());
-        colConfig.put("length", dataType.getColumnSize());
-        colConfig.put("scale", dataType.getRadix());
-        colConfig.put("primary", "false");
-        PrimaryKey primaryKey = table.getPrimaryKey();
-        if (primaryKey != null) {
-            if (primaryKey.getColumns().stream().anyMatch(column1 -> column1.getName().equalsIgnoreCase(column.getName()))) {
-                colConfig.put("primary", "true");
-            }
-        }
-        return colConfig;
+    /**
+     * TODO 代码生成用别的方式实现
+     *
+     * @param vc
+     * @param table
+     * @param column
+     * @return
+     */
+    protected Map<String, Object> mapColumnAttr(VelocityContext vc, Relation table, Column column) {
+        return null;
     }
 
     private String getter(String type, String name) {

@@ -1,10 +1,15 @@
 package com.dr.framework.core.orm.sql.support;
 
+import com.dr.framework.core.orm.jdbc.Relation;
+import com.dr.framework.core.orm.module.EntityRelation;
 import com.dr.framework.core.orm.sql.Column;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 class FromQuery extends AbstractSqlQuery {
     JoinColumns join = new JoinColumns();
@@ -42,18 +47,38 @@ class FromQuery extends AbstractSqlQuery {
 
 
     void doJoin(JoinColumns joinColumns, Column left, Column right) {
-        Assert.isTrue(left.getTable().equalsIgnoreCase(table) || right.getTable().equalsIgnoreCase(table), "join 操作需有一列是【" + table + "】的列");
-        String tableName;
-        if (left.getTable().equalsIgnoreCase(table)) {
-            joinColumns.add(left, right);
-            tableName = right.getTable().toUpperCase();
+        boolean joined = false;
+        if (left.getTable().equalsIgnoreCase(table) || right.getTable().equalsIgnoreCase(table)) {
+            joined = true;
+            String tableName;
+            if (left.getTable().equalsIgnoreCase(table)) {
+                joinColumns.add(left, right);
+                tableName = right.getTable().toUpperCase();
+            } else {
+                joinColumns.add(right, left);
+                tableName = left.getTable().toUpperCase();
+            }
+            if (!tableAlias.alias.containsKey(tableName)) {
+                alias(tableName, null);
+            }
         } else {
-            joinColumns.add(right, left);
-            tableName = left.getTable().toUpperCase();
+            String leftTableName = left.getTable().toUpperCase();
+            String rightTableName = right.getTable().toUpperCase();
+            if (joinColumns.columnMap.containsKey(leftTableName)) {
+                joined = true;
+                joinColumns.add(left, right, 1);
+                if (!tableAlias.alias.containsKey(rightTableName)) {
+                    alias(rightTableName, null);
+                }
+            } else if (joinColumns.columnMap.containsKey(rightTableName)) {
+                joined = true;
+                joinColumns.add(right, left, 1);
+                if (!tableAlias.alias.containsKey(leftTableName)) {
+                    alias(leftTableName, null);
+                }
+            }
         }
-        if (!tableAlias.alias.containsKey(tableName)) {
-            alias(right.getTable(), null);
-        }
+        Assert.isTrue(joined, "请使用相关的表执行join操作");
     }
 
     void alias(String table, String alias) {
@@ -65,6 +90,23 @@ class FromQuery extends AbstractSqlQuery {
         }
     }
 
+    private Map<Class, String> classStringMap = new HashMap<>(4);
+
+
+    public void aliasClass(Class ec, String alias) {
+        if (!StringUtils.isEmpty(alias)) {
+            classStringMap.put(ec, alias);
+        }
+    }
+
+    public void bindRelation(Relation<? extends Column> relation) {
+        if (relation instanceof EntityRelation) {
+            String alias = classStringMap.get(((EntityRelation) relation).getEntityClass());
+            alias(relation.getName(), alias);
+        }
+        table = relation.getName();
+    }
+
     @Override
     String sql(TableAlias tableAlias, SqlQuery sqlQuery) {
         StringBuilder builder = new StringBuilder();
@@ -73,6 +115,14 @@ class FromQuery extends AbstractSqlQuery {
         return builder.toString();
     }
 
+    String table(TableAlias tableAlias, SqlQuery sqlQuery) {
+        StringBuilder builder = new StringBuilder();
+        sqlClause(builder, "", Arrays.asList(table + " " + tableAlias.alias(table)), "", "", ", ");
+        joins(tableAlias, builder);
+        return builder.toString();
+    }
+
+
     private void joins(TableAlias tableAlias, StringBuilder builder) {
         sqlClause(builder, " JOIN ", join.parts(tableAlias), "", "", " JOIN ");
         sqlClause(builder, " INNER JOIN ", innerJoin.parts(tableAlias), "", "", " INNER JOIN ");
@@ -80,4 +130,5 @@ class FromQuery extends AbstractSqlQuery {
         sqlClause(builder, " LEFT OUTER JOIN ", leftOuterJoin.parts(tableAlias), "", "", " LEFT OUTER JOIN ");
         sqlClause(builder, " RIGHT OUTER JOIN ", rightOuterJoin.parts(tableAlias), "", "", " RIGHT OUTER JOIN ");
     }
+
 }

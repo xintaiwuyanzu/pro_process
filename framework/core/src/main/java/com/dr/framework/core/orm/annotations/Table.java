@@ -1,5 +1,7 @@
 package com.dr.framework.core.orm.annotations;
 
+import com.dr.framework.core.orm.module.Module;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -7,6 +9,8 @@ import java.lang.annotation.Target;
 
 /**
  * 标识一张表
+ *
+ * @author dr
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -17,5 +21,25 @@ public @interface Table {
 
     String simple() default "";
 
-    String module() default "default";
+    String module() default Module.DEFAULT_MODULE;
+
+    /**
+     * @return true 表示表，false表示视图
+     */
+    boolean isTable() default true;
+
+    /**
+     * 当对应的表是视图的时候，需要手动声明创建语句
+     *
+     * @return
+     */
+    String createSql() default "";
+
+    /**
+     * 是否生成info工具类，代码生成使用
+     *
+     * @return
+     */
+    boolean genInfo() default true;
+
 }

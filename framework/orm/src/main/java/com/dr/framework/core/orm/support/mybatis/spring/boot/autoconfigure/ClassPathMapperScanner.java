@@ -3,17 +3,23 @@ package com.dr.framework.core.orm.support.mybatis.spring.boot.autoconfigure;
 import com.dr.framework.core.orm.support.mybatis.spring.mapper.MapperFactoryBean;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.util.Assert;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
-    public ClassPathMapperScanner(BeanDefinitionRegistry registry) {
+/**
+ * 扫描所有包下面的mapper接口并注解
+ */
+class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
+    private List<String> interfaces = new ArrayList<>();
+
+    ClassPathMapperScanner(BeanDefinitionRegistry registry) {
         super(registry, false);
         addIncludeFilter(new AnnotationTypeFilter(Mapper.class));
         addIncludeFilter(new AnnotationTypeFilter(com.dr.framework.core.orm.annotations.Mapper.class));
@@ -23,9 +29,8 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
         });
     }
 
-    @Override
-    public Set<BeanDefinitionHolder> doScan(String... basePackages) {
-        return super.doScan(basePackages);
+    public List<String> getInterfaces() {
+        return interfaces;
     }
 
     @Override
@@ -33,7 +38,9 @@ public class ClassPathMapperScanner extends ClassPathBeanDefinitionScanner {
         super.postProcessBeanDefinition(beanDefinition, beanName);
         String mapperInterface = beanDefinition.getBeanClassName();
         beanDefinition.setBeanClass(MapperFactoryBean.class);
-        beanDefinition.getPropertyValues().add("mapperInterface", mapperInterface);
+        beanDefinition.getConstructorArgumentValues().addGenericArgumentValue(mapperInterface);
+        Assert.isTrue(!interfaces.contains(mapperInterface), "重复扫描包：" + mapperInterface + "，请检查包扫描范围！");
+        interfaces.add(mapperInterface);
     }
 
     @Override

@@ -19,7 +19,7 @@ abstract class AbstractSqlQuery {
 
     static final List<String> concats = Arrays.asList(AND, AND_NEW, OR, OR_NEW);
 
-    protected void sqlClause(StringBuilder builder, String keyword, List<String> parts, String open, String close, String conjunction) {
+    void sqlClause(StringBuilder builder, String keyword, List<String> parts, String open, String close, String conjunction) {
         if (parts != null && !parts.isEmpty()) {
             builder.append(keyword);
             builder.append(" ");
@@ -39,20 +39,41 @@ abstract class AbstractSqlQuery {
         }
     }
 
+    /**
+     * 将对象转换成sql语句
+     *
+     * @param tableAlias 表别名对象
+     * @param sqlQuery
+     * @return
+     */
     abstract String sql(TableAlias tableAlias, SqlQuery sqlQuery);
 
+    static String formatSql(Column column, TableAlias tableAlias) {
+        return formatSql(column, tableAlias, true);
+    }
 
-    String formatSql(Column column, TableAlias tableAlias) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (!StringUtils.isEmpty(column.getTable())) {
-            stringBuilder.append(tableAlias.alias(column.getTable()));
-            stringBuilder.append(".");
+    static String formatSql(Column column, TableAlias tableAlias, boolean withAlias) {
+        StringBuilder sb = new StringBuilder();
+        boolean hasFunction = !StringUtils.isEmpty(column.getFunction());
+        if (hasFunction) {
+            String columnStr = "";
+            if (!StringUtils.isEmpty(column.getTable())) {
+                columnStr += tableAlias.alias(column.getTable()) + ".";
+            }
+            columnStr += column.getName();
+            String template = column.getFunction().indexOf('(') > -1 ? column.getFunction() : column.getFunction() + "(%s)";
+            sb.append(String.format(template, columnStr));
+        } else {
+            if (!StringUtils.isEmpty(column.getTable())) {
+                sb.append(tableAlias.alias(column.getTable()));
+                sb.append(".");
+            }
+            sb.append(column.getName());
         }
-        stringBuilder.append(column.getName());
-        if (!StringUtils.isEmpty(column.getAlias())) {
-            stringBuilder.append(" as ");
-            stringBuilder.append(column.getAlias());
+        if (withAlias && !StringUtils.isEmpty(column.getAlias())) {
+            sb.append(" as ");
+            sb.append(column.getAlias());
         }
-        return stringBuilder.toString();
+        return sb.toString();
     }
 }

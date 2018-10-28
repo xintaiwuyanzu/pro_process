@@ -2,6 +2,9 @@ package com.dr.framework.core.orm.sql;
 
 import java.util.List;
 
+/**
+ * @author dr
+ */
 public interface TableInfo {
 
     /**
@@ -9,13 +12,16 @@ public interface TableInfo {
      *
      * @return
      */
+    @Deprecated
     public String moudle();
 
     /**
      * 获取一张表的表名
      *
      * @return
+     * @deprecated
      */
+    @Deprecated
     public String table();
 
     /**
@@ -23,6 +29,7 @@ public interface TableInfo {
      *
      * @return
      */
+    @Deprecated
     public Column pk();
 
     /**

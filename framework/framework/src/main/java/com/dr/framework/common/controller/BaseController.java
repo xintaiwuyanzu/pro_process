@@ -5,18 +5,22 @@ import com.dr.framework.common.entity.IdEntity;
 import com.dr.framework.common.entity.ResultEntity;
 import com.dr.framework.common.page.Page;
 import com.dr.framework.common.service.CommonService;
-import com.dr.framework.core.orm.sql.TableInfo;
+import com.dr.framework.common.service.DefaultDataBaseService;
+import com.dr.framework.core.organise.entity.Person;
+import com.dr.framework.core.orm.module.EntityRelation;
 import com.dr.framework.core.orm.sql.support.SqlQuery;
-import com.dr.framework.sys.entity.UserLogin;
+import com.dr.framework.sys.controller.LoginController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 基础controller父类
@@ -25,13 +29,16 @@ import javax.servlet.http.HttpSession;
  * @author dr
  */
 public class BaseController<T extends IdEntity> {
-    @Autowired
-    CommonService commonService;
     Logger logger = LoggerFactory.getLogger(BaseController.class);
-
+    @Autowired
+    LoginController loginController;
+    @Autowired
+    protected CommonService commonService;
+    @Autowired
+    protected DefaultDataBaseService dataBaseService;
 
     @RequestMapping("/insert")
-    public ResultEntity insert(HttpServletRequest request, T entity) {
+    public ResultEntity<T> insert(HttpServletRequest request, T entity) {
         onBeforeInsert(request, entity);
         commonService.insert(entity);
         return ResultEntity.success(entity);
@@ -48,11 +55,10 @@ public class BaseController<T extends IdEntity> {
             if (StringUtils.isEmpty(((CreateInfoEntity) entity).getCreatePerson())) {
                 ((CreateInfoEntity) entity).setCreateDate(System.currentTimeMillis());
                 ((CreateInfoEntity) entity).setUpdateDate(System.currentTimeMillis());
-
-                UserLogin userLogin = getUserlogin(request);
-                if (userLogin != null) {
-                    ((CreateInfoEntity) entity).setCreatePerson(userLogin.getPersonId());
-                    ((CreateInfoEntity) entity).setUpdatePerson(userLogin.getPersonId());
+                Person person = getUserlogin(request);
+                if (person != null) {
+                    ((CreateInfoEntity) entity).setCreatePerson(person.getId());
+                    ((CreateInfoEntity) entity).setUpdatePerson(person.getId());
                 } else {
                     logger.warn("实体类{}实现了CreateInfoEntity接口，未获取到当前登录用户", entity.getClass().getSimpleName());
                 }
@@ -61,7 +67,7 @@ public class BaseController<T extends IdEntity> {
     }
 
     @RequestMapping("/update")
-    public ResultEntity update(HttpServletRequest request, T entity) {
+    public ResultEntity<T> update(HttpServletRequest request, T entity) {
         onBeforeUpdate(request, entity);
         commonService.update(entity);
         return ResultEntity.success(entity);
@@ -69,10 +75,10 @@ public class BaseController<T extends IdEntity> {
 
     protected void onBeforeUpdate(HttpServletRequest request, T entity) {
         if (entity instanceof CreateInfoEntity) {
-            UserLogin userLogin = getUserlogin(request);
+            Person person = getUserlogin(request);
             ((CreateInfoEntity) entity).setUpdateDate(System.currentTimeMillis());
-            if (userLogin != null) {
-                ((CreateInfoEntity) entity).setUpdatePerson(userLogin.getPersonId());
+            if (person != null) {
+                ((CreateInfoEntity) entity).setUpdatePerson(person.getId());
             } else {
                 logger.warn("实体类{}实现了CreateInfoEntity接口，未获取到当前登录用户", entity.getClass().getSimpleName());
             }
@@ -81,7 +87,7 @@ public class BaseController<T extends IdEntity> {
 
     @RequestMapping("/page")
     public ResultEntity page(HttpServletRequest request, T entity, @RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = Page.DEFAULT_PAGE_SIZE + "") int pageSize, @RequestParam(defaultValue = "true") boolean page) {
-        SqlQuery<T> sqlQuery = SqlQuery.from(entity, true);
+        SqlQuery<T> sqlQuery = SqlQuery.from(dataBaseService.getTableInfo(entity.getClass()), true);
         onBeforePageQuery(request, sqlQuery, entity);
         Object result;
         if (page) {
@@ -110,11 +116,18 @@ public class BaseController<T extends IdEntity> {
      * @return
      */
     @RequestMapping("/delete")
-    public ResultEntity delete(HttpServletRequest request, T entity) {
-        SqlQuery<T> sqlQuery = SqlQuery.from(entity.getClass());
+    public ResultEntity<Boolean> delete(HttpServletRequest request, T entity) {
+        EntityRelation entityRelation = dataBaseService.getTableInfo(entity.getClass());
+        SqlQuery<T> sqlQuery = SqlQuery.from(entityRelation);
         if (!StringUtils.isEmpty(entity.getId())) {
-            TableInfo tableInfo = SqlQuery.getTableInfo(entity.getClass());
-            sqlQuery.in(tableInfo.pk(), entity.getId());
+            List<String> pks = entityRelation.primaryKeyColumns();
+            Assert.isTrue(pks.size() == 1, ()
+                    -> String.format("实体类【%s】的主键数量为：%s，【%s】，请手动处理删除逻辑！",
+                    entity.getClass(),
+                    pks.size(),
+                    pks.stream().collect(Collectors.joining(","))
+            ));
+            sqlQuery.in(entityRelation.getColumn(pks.get(0)), entity.getId());
         }
         onBeforeDelete(request, sqlQuery, entity);
         if (sqlQuery.hasWhere()) {
@@ -133,12 +146,20 @@ public class BaseController<T extends IdEntity> {
 
     }
 
-    protected UserLogin getUserlogin(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        UserLogin userLogin = null;
-        if (session != null) {
-            userLogin = (UserLogin) session.getAttribute("USERLOGIN");
+    @RequestMapping("/detail")
+    public ResultEntity<T> detail(String id, T entity) {
+        if (!StringUtils.isEmpty(id)) {
+            T t = (T) commonService.findById(entity.getClass(), id);
+            if (t != null) {
+                return ResultEntity.success(t);
+            }
         }
-        return userLogin;
+        return ResultEntity.error("找不到指定记录！");
+
+    }
+
+    protected Person getUserlogin(HttpServletRequest request) {
+        ResultEntity<Person> p = loginController.personInfo(request);
+        return p.isSuccess() ? p.getData() : null;
     }
 }

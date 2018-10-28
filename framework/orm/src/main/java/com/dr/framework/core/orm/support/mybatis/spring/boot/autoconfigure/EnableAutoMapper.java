@@ -6,6 +6,9 @@ import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 
+/**
+ * @author dr
+ */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
@@ -39,7 +42,7 @@ public @interface EnableAutoMapper {
          */
         boolean primary() default false;
 
-        String prefix() default MapperBeanDefinitionRegistrar.DEFAULT_PREFIX;
+        String prefix() default MapperBeanDefinitionProcessor.DEFAULT_PREFIX;
 
         @AliasFor("basePackages")
         String[] value() default {};
@@ -49,11 +52,7 @@ public @interface EnableAutoMapper {
 
         Class<?>[] basePackageClasses() default {};
 
-        String[] includeModules() default {};
-
         Filter[] includeFilters() default {};
-
-        String[] excludeModules() default {};
 
         Filter[] excludeFilters() default {};
     }

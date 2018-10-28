@@ -1,33 +1,31 @@
 package com.dr.framework.core.orm.support.mybatis.spring.mapper;
 
 import com.dr.framework.core.orm.support.mybatis.spring.MybatisConfigurationBean;
-import com.dr.framework.core.orm.support.mybatis.spring.mapper.method.MapperMethod;
+import org.apache.ibatis.binding.MapperMethod;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 单数据源的mapperproxy
+ *
+ * @author dr
  */
 public class SingleMapperProxy extends AbstractMapperProxy {
-    private MybatisConfigurationBean configurationBean;
-    private final Map<Method, MapperMethod> methodCache;
+    private transient MybatisConfigurationBean configurationBean;
+    private final transient Map<Method, MapperMethod> methodCache;
 
     public SingleMapperProxy(MybatisConfigurationBean configurationBean, Class<?> mapperInterface) {
         super(mapperInterface);
         this.configurationBean = configurationBean;
-        methodCache = new ConcurrentHashMap(mapperInterface.getDeclaredMethods().length);
+        methodCache = Collections.synchronizedMap(new HashMap<>(mapperInterface.getDeclaredMethods().length));
     }
 
     @Override
     protected MapperMethod cachedMapperMethod(Method method, Class entityClass, MybatisConfigurationBean mybatisConfigurationBean) {
-        MapperMethod mapperMethod = methodCache.get(method);
-        if (mapperMethod == null) {
-            mapperMethod = new MapperMethod(mapperInterface, method, mybatisConfigurationBean);
-            methodCache.put(method, mapperMethod);
-        }
-        return mapperMethod;
+        return methodCache.computeIfAbsent(method, k -> new MapperMethod(mapperInterface, k, mybatisConfigurationBean));
     }
 
     @Override
