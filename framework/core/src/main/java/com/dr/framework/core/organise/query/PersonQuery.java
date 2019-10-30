@@ -21,6 +21,7 @@ public class PersonQuery extends IdQuery {
     private String email;
     private String phone;
     private String qq;
+    private String idNo;
     private String weiChatId;
 
     private List<String> nation;
@@ -43,6 +44,11 @@ public class PersonQuery extends IdQuery {
     private String sysId;
     private String userCode;
     private String duty;
+
+    private String createPerson;
+
+    private Long createDayStart;
+    private Long createDayEnd;
 
 
     public static class Builder extends IdQuery.Builder<PersonQuery, Builder> {
@@ -156,6 +162,27 @@ public class PersonQuery extends IdQuery {
             query.birthDayEnd = end;
             return this;
         }
+
+        public Builder createDayBetween(long start, long end) {
+            query.createDayStart = start;
+            query.createDayEnd = end;
+            return this;
+        }
+
+        public Builder idNoLike(String idNo) {
+            if (!StringUtils.isEmpty(idNo)) {
+                query.setIdNo(idNo);
+            }
+            return this;
+        }
+
+        public Builder createPersonEqual(String createPerson) {
+            if (!StringUtils.isEmpty(createPerson)) {
+                query.setCreatePerson(createPerson);
+            }
+            return this;
+        }
+
 
         public Builder typeLike(String type) {
             query.typeLike = type;
@@ -302,6 +329,14 @@ public class PersonQuery extends IdQuery {
         this.phone = phone;
     }
 
+    public String getIdNo() {
+        return idNo;
+    }
+
+    public void setIdNo(String idNo) {
+        this.idNo = idNo;
+    }
+
     public String getQq() {
         return qq;
     }
@@ -436,5 +471,29 @@ public class PersonQuery extends IdQuery {
 
     public void setSysId(String sysId) {
         this.sysId = sysId;
+    }
+
+    public String getCreatePerson() {
+        return createPerson;
+    }
+
+    public void setCreatePerson(String createPerson) {
+        this.createPerson = createPerson;
+    }
+
+    public Long getCreateDayStart() {
+        return createDayStart;
+    }
+
+    public void setCreateDayStart(Long createDayStart) {
+        this.createDayStart = createDayStart;
+    }
+
+    public Long getCreateDayEnd() {
+        return createDayEnd;
+    }
+
+    public void setCreateDayEnd(Long createDayEnd) {
+        this.createDayEnd = createDayEnd;
     }
 }

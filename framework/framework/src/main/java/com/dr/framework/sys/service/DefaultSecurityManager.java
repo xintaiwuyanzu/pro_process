@@ -139,7 +139,7 @@ public class DefaultSecurityManager
                 .map(r -> r.getCode())
                 .collect(Collectors.toList());
         for (String p : permissionCodes) {
-            if (!pCodes.contains(p)) {
+            if (!StringUtils.isEmpty(p) && !pCodes.contains(p)) {
                 return false;
             }
         }
@@ -168,6 +168,17 @@ public class DefaultSecurityManager
             }
         }
         return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public long removeUserRole(String userId, String... roleIds) {
+        checkUser(userId);
+        //删除用户角色关联
+        return commonMapper.deleteByQuery(
+                SqlQuery.from(rolePersonRelation)
+                        .equal(rolePersonRelation.getColumn("personId"), userId)
+        );
     }
 
     /**
@@ -207,6 +218,13 @@ public class DefaultSecurityManager
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public long removeUserPermission(String userId, String... permissionIds) {
+        checkUser(userId);
+        return removeRolePermission(userId, permissionIds);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean addPermissionToRole(String roleId, String... permission) {
         List<Role> roles = selectRoleList(new RoleQuery.Builder().idEqual(roleId).build());
         Assert.isTrue(roles.size() == 1, "未查询到指定的角色");
@@ -235,14 +253,36 @@ public class DefaultSecurityManager
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public long removeRolePermission(String roleId, String... permissionIds) {
+        return commonMapper.deleteByQuery(
+                SqlQuery.from(rolePermissionRelation)
+                        .equal(rolePermissionRelation.getColumn("roleId"), roleId)
+                        .in(rolePermissionRelation.getColumn("permission_id"), permissionIds)
+        );
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean addMenuToUser(String userId, String... menuIds) {
         return addPermissionToUser(userId, menuIds);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public long removeUserMenu(String userId, String... menuIds) {
+        return removeUserPermission(userId, menuIds);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean addMenuToRole(String roleId, String... menuIds) {
         return addPermissionToRole(roleId, menuIds);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public long removeRoleMenu(String roleId, String... menuIds) {
+        return removeRolePermission(roleId, menuIds);
     }
 
     /**
@@ -272,12 +312,14 @@ public class DefaultSecurityManager
                 .set(roleRelation.getColumn("isSys"), role.isSys())
                 .set(roleRelation.getColumn("order_info"), role.getOrder())
                 .set(roleRelation.getColumn(StatusEntity.STATUS_COLUMN_KEY), role.getStatus())
+                .equal(roleRelation.getColumn(Role.ID_COLUMN_NAME), old.getId())
         );
         return 0;
     }
 
     @Override
     public long deleteRole(String... roleCode) {
+        Assert.isTrue(roleCode.length > 0, "角色编码不能为空！");
         List<String> roleIds = commonMapper.selectByQuery(
                 SqlQuery.from(roleRelation)
                         .in(roleRelation.getColumn("security_code"), roleCode)
@@ -337,6 +379,7 @@ public class DefaultSecurityManager
                 .set(permissionRelation.getColumn("isSys"), permission.isSys())
                 .set(permissionRelation.getColumn("order_info"), permission.getOrder())
                 .set(permissionRelation.getColumn(StatusEntity.STATUS_COLUMN_KEY), permission.getStatus())
+                .equal(permissionRelation.getColumn(Permission.ID_COLUMN_NAME), old.getId())
         );
         return 0;
     }
@@ -344,6 +387,7 @@ public class DefaultSecurityManager
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long deletePermission(String... permissionCode) {
+        Assert.isTrue(permissionCode.length > 0, "权限编码不能为空！");
         List<String> pids = commonMapper.selectByQuery(SqlQuery.from(permissionRelation)
                 .in(permissionRelation.getColumn("security_code"), permissionCode)
         ).stream()
@@ -425,6 +469,7 @@ public class DefaultSecurityManager
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long deleteMenu(String... ids) {
+        Assert.isTrue(ids.length > 0, "菜单id不能为空！");
         int count = 0;
         //删除菜单
         commonMapper.deleteByQuery(SqlQuery.from(sysMenuRelation).
@@ -464,7 +509,7 @@ public class DefaultSecurityManager
                     .filter(s -> hasPermission(personId, s.getUrl()))
                     .collect(Collectors.toList());
         }
-        return CommonService.listToTree(sysMenus, sysId, SysMenu::getName);
+        return CommonService.listToTree(sysMenus, sysId, SysMenu::getName, SysMenu::getLeaf, !all);
     }
 
     @Override
@@ -486,6 +531,7 @@ public class DefaultSecurityManager
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long deleteSubSys(String id) {
+        Assert.isTrue(!StringUtils.isEmpty(id), "子系统id不能为空！");
         int count = 0;
         //删除子系统
         count += commonMapper.deleteById(SubSystem.class, id);
@@ -513,24 +559,48 @@ public class DefaultSecurityManager
 
     protected SqlQuery<Role> roleQueryToSqlQuery(RoleQuery query) {
         SqlQuery<Role> sqlQuery = SqlQuery.from(roleRelation);
+        checkBuildInQuery(roleRelation, sqlQuery, IdEntity.ID_COLUMN_NAME, query.getIds());
         checkBuildLikeQuery(roleRelation, sqlQuery, "security_code", query.getCodeLike());
+        sqlQuery.orderBy(roleRelation.getColumn(Role.ORDER_COLUMN_NAME));
         return sqlQuery;
     }
 
     protected SqlQuery<Permission> permissionQueryToSqlQuery(PermissionQuery query) {
         SqlQuery<Permission> sqlQuery = SqlQuery.from(permissionRelation);
+        sqlQuery.orderBy(permissionRelation.getColumn(Permission.ORDER_COLUMN_NAME));
         return sqlQuery;
     }
 
     protected SqlQuery<SubSystem> subSysQueryToSqlQuery(SubSysQuery query) {
         SqlQuery<SubSystem> sqlQuery = SqlQuery.from(subSysRelation);
         checkBuildInQuery(subSysRelation, sqlQuery, SubSystem.ID_COLUMN_NAME, query.getIds());
+        sqlQuery.orderBy(subSysRelation.getColumn(SubSystem.ORDER_COLUMN_NAME));
         return sqlQuery;
     }
 
     protected SqlQuery<SysMenu> sysMenuQueryToSqlQuery(SysMenuQuery query) {
         SqlQuery<SysMenu> sysMenuSqlQuery = SqlQuery.from(sysMenuRelation);
         checkBuildInQuery(sysMenuRelation, sysMenuSqlQuery, SysMenu.ID_COLUMN_NAME, query.getIds());
+        if (!StringUtils.isEmpty(query.getPersonId())) {
+            sysMenuSqlQuery.in(sysMenuRelation.getColumn(SysMenu.ID_COLUMN_NAME),
+                    SqlQuery.from(rolePermissionRelation, false)
+                            .column(rolePermissionRelation.getColumn("permission_id"))
+                            .in(rolePermissionRelation.getColumn("roleId"),
+                                    SqlQuery.from(rolePersonRelation, false)
+                                            .column(rolePersonRelation.getColumn("roleId"))
+                                            .equal(rolePersonRelation.getColumn("personId"), query.getPersonId())
+                            )
+            );
+        }
+        if (query.getRoleIdIn() != null && !query.getRoleIdIn().isEmpty()) {
+            sysMenuSqlQuery.in(sysMenuRelation.getColumn(SysMenu.ID_COLUMN_NAME),
+                    SqlQuery.from(rolePermissionRelation, false)
+                            .column(rolePermissionRelation.getColumn("permission_id"))
+                            .in(rolePermissionRelation.getColumn("roleId"), query.getRoleIdIn()
+                            )
+            );
+        }
+        sysMenuSqlQuery.orderBy(sysMenuRelation.getColumn(SysMenu.ORDER_COLUMN_NAME));
         return sysMenuSqlQuery;
     }
 
@@ -589,5 +659,10 @@ public class DefaultSecurityManager
                 addMenuToUser("admin", parent.getId(), sysMenu.getId(), organise.getId(), person.getId());
             }
         }
+    }
+
+    @Override
+    public int order() {
+        return 1;
     }
 }
