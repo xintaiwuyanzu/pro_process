@@ -1,83 +1,96 @@
 package com.dr.framework.core.process.bo;
 
-import com.dr.framework.core.organise.entity.Person;
-
-import java.util.List;
+import java.util.Map;
 
 /**
  * 流程定义对象
+ *
+ * @author dr
  */
-public class ProcessObject {
+public class ProcessObject extends ProcessDefinition {
     /**
-     * 主键
+     * 流程创建时间
      */
-    private String id;
+    private long createDate;
     /**
-     * 编码
+     * 流程结束时间
      */
-    private String key;
+    private long endDate;
     /**
-     * 版本
+     * 流程创建人
      */
-    private Integer version;
+    private String createPerson;
+    /**
+     * 流程创建人名称
+     */
+    private String createPersonName;
+    /**
+     * 流程定义ID
+     */
+    private String processDefineId;
+    /**
+     * 流程是否暂停
+     */
+    private boolean suspend;
 
     /**
-     * 名称
+     * 流程运行时的环境变量
      */
-    private String name;
-    /**
-     * 描述
-     */
-    private String description;
+    private Map<String, Object> variables;
 
-    private List<Person> startUser;
-
-
-    public String getId() {
-        return id;
+    public Map<String, Object> getVariables() {
+        return variables;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setVariables(Map<String, Object> variables) {
+        this.variables = variables;
     }
 
-    public String getKey() {
-        return key;
+    public String getProcessDefineId() {
+        return processDefineId;
     }
 
-    public void setKey(String key) {
-        this.key = key;
+    public void setProcessDefineId(String processDefineId) {
+        this.processDefineId = processDefineId;
     }
 
-    public Integer getVersion() {
-        return version;
+    public long getCreateDate() {
+        return createDate;
     }
 
-    public void setVersion(Integer version) {
-        this.version = version;
+    public void setCreateDate(long createDate) {
+        this.createDate = createDate;
     }
 
-    public String getName() {
-        return name;
+    public String getCreatePerson() {
+        return createPerson;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCreatePerson(String createPerson) {
+        this.createPerson = createPerson;
     }
 
-    public String getDescription() {
-        return description;
+    public String getCreatePersonName() {
+        return createPersonName;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setCreatePersonName(String createPersonName) {
+        this.createPersonName = createPersonName;
     }
 
-    public List<Person> getStartUser() {
-        return startUser;
+    public long getEndDate() {
+        return endDate;
     }
 
-    public void setStartUser(List<Person> startUser) {
-        this.startUser = startUser;
+    public void setEndDate(long endDate) {
+        this.endDate = endDate;
+    }
+
+    public boolean isSuspend() {
+        return suspend;
+    }
+
+    public void setSuspend(boolean suspend) {
+        this.suspend = suspend;
     }
 }

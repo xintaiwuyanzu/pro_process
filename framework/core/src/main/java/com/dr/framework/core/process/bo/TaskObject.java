@@ -1,41 +1,62 @@
 package com.dr.framework.core.process.bo;
 
-public class TaskObject<T> {
+import java.util.List;
 
-    /*
-     =================================================
-    上面是流程相关的属性
-     =================================================
+/**
+ * @author dr
+ */
+public class TaskObject<T> extends ProcessObject {
+
+    /**
+     * =================================================
+     * 上面是流程相关的属性
+     * =================================================
      */
-    private String id;
+    /**
+     * 流程实例Id
+     */
     private String processInstanceId;
-    private String processDefineId;
+    /**
+     * 流程定义的扩展属性
+     */
+    private List<ProPerty> processProPerties;
+    /**
+     * 环节定义id
+     */
     private String taskDefineKey;
-    private long createDate;
-
+    /**
+     * 环节创建人Id
+     */
     private String owner;
+    /**
+     * 环节创建人名称
+     */
+    private String ownerName;
+    /**
+     * 环节受理人
+     */
     private String assignee;
+    /**
+     * 环节受理人名称
+     */
+    private String assigneeName;
 
-
-    /*
-    =================================================
-   下面是业务相关的属性
-    =================================================
-    */
-    private String name;
-    private String description;
+    /**
+     * =================================================
+     * 下面是业务相关的属性
+     * =================================================
+     */
+    /**
+     * 表单Id
+     */
     private String formKey;
-    private boolean suspend;
 
+    /**
+     * 表单数据
+     * TODO
+     */
     private T form;
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getProcessInstanceId() {
         return processInstanceId;
@@ -45,13 +66,6 @@ public class TaskObject<T> {
         this.processInstanceId = processInstanceId;
     }
 
-    public String getProcessDefineId() {
-        return processDefineId;
-    }
-
-    public void setProcessDefineId(String processDefineId) {
-        this.processDefineId = processDefineId;
-    }
 
     public String getTaskDefineKey() {
         return taskDefineKey;
@@ -59,14 +73,6 @@ public class TaskObject<T> {
 
     public void setTaskDefineKey(String taskDefineKey) {
         this.taskDefineKey = taskDefineKey;
-    }
-
-    public long getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(long createDate) {
-        this.createDate = createDate;
     }
 
     public String getOwner() {
@@ -85,21 +91,6 @@ public class TaskObject<T> {
         this.assignee = assignee;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public String getFormKey() {
         return formKey;
@@ -109,13 +100,6 @@ public class TaskObject<T> {
         this.formKey = formKey;
     }
 
-    public boolean isSuspend() {
-        return suspend;
-    }
-
-    public void setSuspend(boolean suspend) {
-        this.suspend = suspend;
-    }
 
     public T getForm() {
         return form;
@@ -123,5 +107,29 @@ public class TaskObject<T> {
 
     public void setForm(T form) {
         this.form = form;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
+
+    public String getAssigneeName() {
+        return assigneeName;
+    }
+
+    public void setAssigneeName(String assigneeName) {
+        this.assigneeName = assigneeName;
+    }
+
+    public List<ProPerty> getProcessProPerties() {
+        return processProPerties;
+    }
+
+    public void setProcessProPerties(List<ProPerty> processProPerties) {
+        this.processProPerties = processProPerties;
     }
 }

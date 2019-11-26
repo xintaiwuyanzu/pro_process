@@ -34,7 +34,7 @@
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
         <maven.javadoc.skip>true</maven.javadoc.skip>
         <java.version>8</java.version>
-        <mybatis.version>3.5.2</mybatis.version>
+        <mybatis.version>3.5.3</mybatis.version>
         <mysql.version>8.0.18</mysql.version>
         <ojdbc.version>11.2.0.3</ojdbc.version>
         <hikaricp.version>3.4.1</hikaricp.version>
@@ -44,6 +44,7 @@
         <spring.boot.version>2.2.0.RELEASE</spring.boot.version>
         <poi.version>4.1.0</poi.version>
         <pac4j.version>3.8.2</pac4j.version>
+        <juel.version>2.2.7</juel.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -215,6 +216,21 @@
                 <groupId>org.checkerframework</groupId>
                 <artifactId>checker-qual</artifactId>
                 <version>2.11.1</version>
+            </dependency>
+            <dependency>
+                <groupId>de.odysseus.juel</groupId>
+                <artifactId>juel-api</artifactId>
+                <version>${juel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.odysseus.juel</groupId>
+                <artifactId>juel-impl</artifactId>
+                <version>${juel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.odysseus.juel</groupId>
+                <artifactId>juel-spi</artifactId>
+                <version>${juel.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
