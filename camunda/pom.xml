@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dr.process</groupId>
@@ -25,7 +24,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
         <java.version>8</java.version>
-        <framework.version>0.0.5-SNAPSHOT</framework.version>
+        <framework.version>0.0.6-SNAPSHOT</framework.version>
         <camunda.version>7.13.0</camunda.version>
     </properties>
     <dependencyManagement>
@@ -41,8 +40,8 @@
                 <groupId>org.camunda.bpm</groupId>
                 <artifactId>camunda-bom</artifactId>
                 <version>${camunda.version}</version>
-                <scope>import</scope>
                 <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.camunda.bpm.springboot</groupId>
@@ -50,8 +49,8 @@
                 <version>${camunda.version}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>commons-dbcp</groupId>
                         <artifactId>commons-dbcp</artifactId>
+                        <groupId>commons-dbcp</groupId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -62,12 +61,10 @@
             <groupId>org.camunda.bpm.springboot</groupId>
             <artifactId>camunda-bpm-spring-boot-starter-rest</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.dr</groupId>
             <artifactId>framework</artifactId>
         </dependency>
-
         <!--以下是测试依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -88,9 +85,12 @@
     <build>
         <plugins>
             <plugin>
-                <artifactId>maven-surefire-plugin</artifactId>
+                <groupId>com.github.ekryd.sortpom</groupId>
+                <artifactId>sortpom-maven-plugin</artifactId>
+                <version>2.11.0</version>
                 <configuration>
-                    <skipTests>true</skipTests>
+                    <createBackupFile>false</createBackupFile>
+                    <nrOfIndentSpace>4</nrOfIndentSpace>
                 </configuration>
             </plugin>
         </plugins>

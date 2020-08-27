@@ -1,6 +1,7 @@
 *.iml
 .idea
 */*/transaction-logs
-*/*/*/transaction-logs
 */transaction-logs
+transaction-logs
 */target/
+*/yarn.lock
