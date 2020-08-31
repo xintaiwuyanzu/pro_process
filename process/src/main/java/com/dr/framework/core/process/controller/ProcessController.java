@@ -1,4 +1,4 @@
-package com.dr.framework.process.controller;
+package com.dr.framework.core.process.controller;
 
 import com.dr.framework.common.entity.ResultEntity;
 import com.dr.framework.common.entity.ResultListEntity;
