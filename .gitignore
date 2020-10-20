@@ -5,3 +5,5 @@
 transaction-logs
 */target/
 */yarn.lock
+*/node_modules/
+process/dist

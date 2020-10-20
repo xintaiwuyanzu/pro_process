@@ -5,12 +5,16 @@
   "dlib": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --report",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "@dr/core": "^0.0.1",
     "@dr/framework": "^0.0.1",
+    "bpmn-js": "^7.3.1",
+    "bpmn-js-properties-panel": "^0.37.2",
+    "camunda-bpmn-moddle": "^4.4.0",
+    "diagram-js-minimap": "^2.0.3",
     "vue": "^2.6.11"
   },
   "devDependencies": {

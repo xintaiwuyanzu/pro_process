@@ -1,0 +1,62 @@
+.bpmnContainer {
+  display: flex;
+  overflow: auto;
+
+  .bpmn-canvas {
+    flex: 1;
+    overflow: auto;
+    height: 100%;
+
+    .bjs-powered-by {
+      display: none !important;
+    }
+
+    .djs-minimap:not(.open) {
+      .toggle {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+      }
+
+      .toggle:before {
+        content: '打开';
+      }
+    }
+
+    .djs-minimap.open .toggle:before {
+      content: '关闭';
+    }
+
+  }
+
+  .bpmn-properties {
+    width: 25%;
+    height: 100%;
+    overflow: auto;
+
+    .bpp-properties-entry label {
+      font-size: 12px;
+    }
+
+    .bpp-properties-group .group-header .group-label {
+      color: black;
+    }
+
+    .bpp-error-message {
+      font-size: 10px;
+      padding: 0px 6px;
+    }
+
+    .bpp-field-description {
+      font-size: 10px;
+    }
+
+    .bpp-textfield {
+      .bpp-field-wrapper {
+        input {
+          padding: 3px 6px;
+        }
+      }
+    }
+  }
+}

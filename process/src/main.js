@@ -1,8 +1,4 @@
-import Vue from 'vue'
-import App from './App.vue'
+import vue from 'vue'
+import lib from '@dr/core'
 
-Vue.config.productionTip = false
-
-new Vue({
-  render: h => h(App),
-}).$mount('#app')
+lib.start({vue})
