@@ -13,7 +13,6 @@ import com.dr.framework.core.process.service.ProcessService;
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +40,7 @@ public class ProcessServiceTest {
     @Autowired
     RuntimeService runtimeService;
 
-    @Before
+    //@Before
     public void initDefine() {
         person = organisePersonService.getPersonById("admin");
         identityService.setAuthenticatedUserId(person.getId());
@@ -111,6 +110,9 @@ public class ProcessServiceTest {
     public void testProcess() {
         List<ProcessObject> pr = processService.processObjectList(new ProcessQuery());
         List<ProcessObject> processObjectHistoryList = processService.processObjectHistoryList(new ProcessQuery());
+
+        repositoryService.getBpmnModelInstance(pr.get(0).getId());
+
 
     }
 

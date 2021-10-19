@@ -25,14 +25,13 @@ import java.util.Map;
  */
 //@RestController
 //@RequestMapping("${common.api-path:/api}/process")
-public class ProcessController {
+public class AbstractProcessController {
     public static final String FORM_PREFIX = "form.";
     public static final String VALUE_PREFIX = "value.";
 
+    protected ProcessService processService;
 
-    ProcessService processService;
-
-    public ProcessController(@Autowired(required = false) ProcessService processService) {
+    public AbstractProcessController(@Autowired(required = false) ProcessService processService) {
         this.processService = processService;
     }
 

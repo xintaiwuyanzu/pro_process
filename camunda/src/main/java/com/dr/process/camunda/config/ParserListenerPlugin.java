@@ -1,8 +1,10 @@
 package com.dr.process.camunda.config;
 
 import com.dr.process.camunda.parselistener.CustomerEventListenerParser;
+import com.dr.process.camunda.parselistener.FixTransitionBpmnParseListener;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParseListener;
+import org.camunda.bpm.engine.impl.cfg.AbstractProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.event.EventHandler;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -15,15 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * 用来拦截xml定义文件的解析监听
+ * 然后修改内容
+ *
  * @author dr
  */
-public class CustomEventListener implements CamundaProcessEngineConfiguration {
-    Logger logger = LoggerFactory.getLogger(CustomEventListener.class);
+public class ParserListenerPlugin implements CamundaProcessEngineConfiguration {
+    Logger logger = LoggerFactory.getLogger(ParserListenerPlugin.class);
 
     @Override
     public void preInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
         parseEventListener(processEngineConfiguration);
-
 
         processEngineConfiguration.getCustomEventHandlers()
                 .add(new EventHandler() {
@@ -51,5 +55,6 @@ public class CustomEventListener implements CamundaProcessEngineConfiguration {
             processEngineConfiguration.setCustomPostBPMNParseListeners(bpmnParseListeners);
         }
         bpmnParseListeners.add(new CustomerEventListenerParser(processEngineConfiguration.getExpressionManager()));
+        bpmnParseListeners.add(new FixTransitionBpmnParseListener());
     }
 }

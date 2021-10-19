@@ -25,6 +25,9 @@ public class CamundaProcessEngineElConfiguration implements CamundaProcessEngine
     @Override
     public void preInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
         ExpressionManager manager = processEngineConfiguration.getExpressionManager();
+        processEngineConfiguration.setDmnEnabled(false);
+        processEngineConfiguration.setCmmnEnabled(false);
+        processEngineConfiguration.setHistoryCleanupEnabled(false);
         if (manager instanceof SpringExpressionManager) {
             processEngineConfiguration.setExpressionManager(
                     new CustomerExpressionManager(applicationContext, processEngineConfiguration.getBeans())

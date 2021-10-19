@@ -81,8 +81,8 @@ public class CamundaAutoConfig {
      * @return
      */
     @Bean
-    CustomEventListener customEventListener() {
-        return new CustomEventListener();
+    ParserListenerPlugin customEventListener() {
+        return new ParserListenerPlugin();
     }
 
     /**
@@ -98,25 +98,21 @@ public class CamundaAutoConfig {
     CamundaDatasourceConfiguration camundaDatasourceConfiguration(PlatformTransactionManager transactionManager,
                                                                   Map<String, DataSource> dataSourceMap,
                                                                   @Value("${" + CamundaBpmProperties.PREFIX + ".database.name:}") String name,
-                                                                  CamundaBpmProperties properties,
-                                                                  DataBaseService dataBaseService
+                                                                  CamundaBpmProperties properties
     ) {
         Assert.notNull(transactionManager, "未启动事务管理器");
         Assert.isTrue(!dataSourceMap.isEmpty(), "未设置数据源");
         DataSource dataSource;
-        DataBaseMetaData dataBaseMetaData;
         if (dataSourceMap.size() == 1) {
             dataSource = dataSourceMap.values().iterator().next();
-            dataBaseMetaData = dataBaseService.getAllDatabases().get(0);
         } else {
             Assert.isTrue(!StringUtils.isEmpty(name), "检测到多个数据源，请使用：" + CamundaBpmProperties.PREFIX + ".database.name 声明流程引擎所属数据源！");
             dataSource = dataSourceMap.get(name);
-            dataBaseMetaData = dataBaseService.getDataBaseMetaData(name);
             Assert.notNull(dataSource, "未检测到名称为：" + name + "的数据源！");
         }
 
 
-        return new CamundaDbFixConfig(transactionManager, dataSource, properties, dataBaseMetaData);
+        return new CamundaDbFixConfig(transactionManager, dataSource, properties);
     }
 
     /**

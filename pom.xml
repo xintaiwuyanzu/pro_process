@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.dr.process</groupId>
     <artifactId>parent</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
@@ -14,22 +14,10 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
         <java.version>8</java.version>
-        <framework.version>0.0.6-SNAPSHOT</framework.version>
+        <framework.version>0.0.7-SNAPSHOT</framework.version>
         <activiti.version>7.1.0.M6</activiti.version>
-        <camunda.version>7.14.0</camunda.version>
+        <camunda.version>7.16.0</camunda.version>
     </properties>
-    <distributionManagement>
-        <repository>
-            <id>release</id>
-            <name>release</name>
-            <url>${repository.baseUrl}maven-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>snapshots</name>
-            <url>${repository.baseUrl}maven-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
     <!--流程相关父组件，同意声明相关依赖-->
     <modules>
         <module>./core</module>
@@ -47,7 +35,7 @@
             </dependency>
             <dependency>
                 <groupId>com.dr.process</groupId>
-                <artifactId>process</artifactId>
+                <artifactId>core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
