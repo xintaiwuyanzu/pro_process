@@ -3,10 +3,12 @@ package com.dr.process.camunda.command.process;
 import com.dr.framework.core.process.bo.ProcessObject;
 import com.dr.framework.core.process.query.ProcessQuery;
 import com.dr.framework.core.process.service.ProcessService;
-import com.dr.process.camunda.query.CustomHistoricProcessInstanceQuery;
+import com.dr.process.camunda.annotations.SqlProxy;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
+import org.camunda.bpm.engine.impl.HistoricProcessInstanceQueryImpl;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
 import org.springframework.util.StringUtils;
 
 /**
@@ -24,7 +26,7 @@ public class AbstractGetProcessObjectCmd {
     }
 
     protected HistoricProcessInstanceQuery convert(CommandContext commandContext) {
-        CustomHistoricProcessInstanceQuery pq = new CustomHistoricProcessInstanceQuery(commandContext.getProcessEngineConfiguration().getCommandExecutorTxRequired());
+        HistoricProcessInstanceQueryImplWithExtend pq = new HistoricProcessInstanceQueryImplWithExtend(commandContext.getProcessEngineConfiguration().getCommandExecutorTxRequired());
         if (query != null) {
             if (!StringUtils.isEmpty(query.getDescription())) {
                 pq.variableValueLike(ProcessService.TITLE_KEY, query.getDescription());
@@ -46,6 +48,25 @@ public class AbstractGetProcessObjectCmd {
         return commandContext.getProcessEngineConfiguration()
                 .getCommandExecutorTxRequired()
                 .execute(new ConvertProcessInstanceCmd(instance.getId()));
+    }
+
+    @SqlProxy(methodName = "selectList", originalSql = "selectHistoricProcessInstancesByQueryCriteria", proxySql = "selectHistoricProcessInstancesByQueryCriteriaCustom")
+    @SqlProxy(methodName = "selectOne", originalSql = "selectHistoricProcessInstanceCountByQueryCriteria", proxySql = "selectHistoricProcessInstanceCountByQueryCriteriaCustom")
+    public static class HistoricProcessInstanceQueryImplWithExtend extends HistoricProcessInstanceQueryImpl {
+        //根据流程定义key模糊查询
+        private String processDefKeyLike;
+
+        public HistoricProcessInstanceQueryImplWithExtend(CommandExecutor commandExecutor) {
+            super(commandExecutor);
+        }
+
+        public String getProcessDefKeyLike() {
+            return processDefKeyLike;
+        }
+
+        public void setProcessDefKeyLike(String processDefKeyLike) {
+            this.processDefKeyLike = processDefKeyLike;
+        }
     }
 
 }

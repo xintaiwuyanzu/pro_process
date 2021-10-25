@@ -2,7 +2,6 @@ package com.dr.process.camunda.command.process;
 
 import com.dr.framework.core.process.bo.ProcessObject;
 import com.dr.framework.core.process.query.ProcessQuery;
-import com.dr.process.camunda.query.CustomHistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -19,7 +18,7 @@ public class AbstractGetProcessObjectHistoryCmd {
     }
 
     protected HistoricProcessInstanceQuery convert(CommandContext commandContext) {
-        CustomHistoricProcessInstanceQuery hq = new CustomHistoricProcessInstanceQuery(commandContext.getProcessEngineConfiguration().getCommandExecutorTxRequired());
+        AbstractGetProcessObjectCmd.HistoricProcessInstanceQueryImplWithExtend hq = new AbstractGetProcessObjectCmd.HistoricProcessInstanceQueryImplWithExtend(commandContext.getProcessEngineConfiguration().getCommandExecutorTxRequired());
         if (query != null) {
             if (!StringUtils.isEmpty(query.getName())) {
                 hq.processDefinitionNameLike(query.getName());

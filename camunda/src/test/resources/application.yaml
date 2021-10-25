@@ -7,7 +7,7 @@ server:
 spring:
   datasource:
     autoDDl: update
-    includeModules: sys,common
+    includeModules: sys,common,process
     password: 1234
     url: jdbc:mysql://192.168.200.245:3306/test?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: root

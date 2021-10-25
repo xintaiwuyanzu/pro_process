@@ -1,22 +1,28 @@
 package com.dr.process.camunda.config;
 
 import com.dr.framework.core.orm.database.DataBaseMetaData;
-import com.dr.process.camunda.manager.CustomHistoricProcessInstanceManager;
-import com.dr.process.camunda.manager.CustomTaskManager;
+import com.dr.process.camunda.manager.DbEntityManagerWithSqlProxy;
+import com.dr.process.camunda.service.impl.ProcessDefinitionQueryImplWithExtend;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.session.Configuration;
+import org.camunda.bpm.engine.impl.RepositoryServiceImpl;
+import org.camunda.bpm.engine.impl.cfg.IdGenerator;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.camunda.bpm.engine.impl.context.Context;
+import org.camunda.bpm.engine.impl.db.PersistenceSession;
+import org.camunda.bpm.engine.impl.db.entitymanager.DbEntityManager;
 import org.camunda.bpm.engine.impl.db.sql.DbSqlSessionFactory;
 import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
-import org.camunda.bpm.engine.impl.persistence.entity.HistoricProcessInstanceManager;
-import org.camunda.bpm.engine.impl.persistence.entity.TaskManager;
+import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaDatasourceConfiguration;
 import org.camunda.bpm.spring.boot.starter.property.CamundaBpmProperties;
 import org.camunda.bpm.spring.boot.starter.property.DatabaseProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.context.support.ApplicationObjectSupport;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
 
@@ -31,8 +37,9 @@ import java.util.Optional;
  *
  * @author dr
  */
-public class CamundaDbFixConfig implements CamundaDatasourceConfiguration {
+public class CamundaDbFixConfig extends ApplicationObjectSupport implements CamundaDatasourceConfiguration {
     protected static final Logger logger = LoggerFactory.getLogger(CamundaDbFixConfig.class);
+    protected static final String CUSTOM_MAPPER_PATH_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "camunda/mapping/*.mapper.xml";
 
     private PlatformTransactionManager transactionManager;
     private DataSource dataSource;
@@ -48,6 +55,24 @@ public class CamundaDbFixConfig implements CamundaDatasourceConfiguration {
 
     @Override
     public void preInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
+        fixDataSource(processEngineConfiguration);
+        fixCustomerSessionFactory(processEngineConfiguration);
+
+        //这里扩展了sql ，查询语句使用自定义实现
+        processEngineConfiguration.setRepositoryService(new RepositoryServiceImpl() {
+            @Override
+            public ProcessDefinitionQuery createProcessDefinitionQuery() {
+                return new ProcessDefinitionQueryImplWithExtend(commandExecutor);
+            }
+        });
+    }
+
+    /**
+     * 处理多数据源的情况
+     *
+     * @param processEngineConfiguration
+     */
+    private void fixDataSource(ProcessEngineConfigurationImpl processEngineConfiguration) {
         if (processEngineConfiguration instanceof SpringProcessEngineConfiguration) {
             SpringProcessEngineConfiguration configuration = (SpringProcessEngineConfiguration) processEngineConfiguration;
             configuration.setTransactionManager(transactionManager);
@@ -67,16 +92,25 @@ public class CamundaDbFixConfig implements CamundaDatasourceConfiguration {
             processEngineConfiguration.setDatabaseSchema(schema);
             processEngineConfiguration.setDatabaseTablePrefix(schema + ".");
         }
+    }
 
-        //这里的taskManager 改成自己的
+    /**
+     * 添加自定义sessionFactory
+     *
+     * @param processEngineConfiguration
+     */
+    private void fixCustomerSessionFactory(ProcessEngineConfigurationImpl processEngineConfiguration) {
         List<SessionFactory> sessionFactories = processEngineConfiguration.getCustomSessionFactories();
         if (sessionFactories == null) {
             sessionFactories = new ArrayList<>();
             processEngineConfiguration.setCustomSessionFactories(sessionFactories);
         }
-
-        sessionFactories.add(new GenericAndCustomerImplManagerFactory(TaskManager.class, new CustomTaskManager()));
-        sessionFactories.add(new GenericAndCustomerImplManagerFactory(HistoricProcessInstanceManager.class, new CustomHistoricProcessInstanceManager()));
+        //这里修改成自己的DbEntityManager，结合自定义sql语句使用自定义sql查询数据
+        sessionFactories.add(new GenericAndCustomerImplManagerFactory(DbEntityManager.class, () -> {
+            IdGenerator idGenerator = processEngineConfiguration.getIdGenerator();
+            PersistenceSession persistenceSession = Context.getCommandContext().getSession(PersistenceSession.class);
+            return new DbEntityManagerWithSqlProxy(idGenerator, persistenceSession);
+        }));
     }
 
 
@@ -100,30 +134,27 @@ public class CamundaDbFixConfig implements CamundaDatasourceConfiguration {
 
     /**
      * 添加自定义的sql语句
+     * TODO 这里的扩展方法有问题，xml文件里面的sql是从jar包复制出来的，一旦依赖代码版本升级，xml里面代码就得重新检查
+     * <p>
+     * TODO 比较好的方法是拦截xml文件解析，动态织入扩展sql代码
      *
      * @param configuration
      */
     private void fixFixMybatis(ProcessEngineConfigurationImpl configuration) {
         DbSqlSessionFactory dbSqlSessionFactory = configuration.getDbSqlSessionFactory();
-        // dbSqlSessionFactory.setDatabaseSchema(dataBaseMetaData.getSchema());
         Configuration mybatisConfig = dbSqlSessionFactory.getSqlSessionFactory()
                 .getConfiguration();
-        loadXmlMapper(mybatisConfig, "Task");
-        loadXmlMapper(mybatisConfig, "HistoricProcessInstance");
-    }
-
-
-    private void loadXmlMapper(Configuration configuration, String xml) {
-        xml = "com/dr/process/camunda/mapping/entity/" + xml + ".xml";
         try {
-            new XMLMapperBuilder(
-                    new ClassPathResource(xml).getInputStream()
-                    , configuration
-                    , xml
-                    , configuration.getSqlFragments()
-            ).parse();
+            for (Resource resource : getApplicationContext().getResources(CUSTOM_MAPPER_PATH_PATTERN)) {
+                new XMLMapperBuilder(
+                        resource.getInputStream()
+                        , mybatisConfig
+                        , resource.getFilename()
+                        , mybatisConfig.getSqlFragments()
+                ).parse();
+            }
         } catch (IOException e) {
-            logger.warn("加载自定义Camunda流程 sql xml失败{}:{}", xml, e.getMessage());
+            logger.warn("加载自定义Camunda流程 mapper.xml失败:{}", e.getMessage());
         }
     }
 

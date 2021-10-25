@@ -1,9 +1,9 @@
 package com.dr.process.camunda.config;
 
 import com.dr.framework.autoconfig.ApplicationAutoConfiguration;
-import com.dr.framework.common.service.DataBaseService;
 import com.dr.framework.core.organise.entity.Person;
-import com.dr.framework.core.orm.database.DataBaseMetaData;
+import com.dr.framework.core.process.service.DefaultProcessTypeProvider;
+import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.security.SecurityHolder;
 import com.dr.framework.core.web.interceptor.PersonInterceptor;
 import com.dr.process.camunda.resolver.CurrentElResolver;
@@ -138,6 +138,16 @@ public class CamundaAutoConfig {
                 }).order(PersonInterceptor.ORDER + 1);
             }
         };
+    }
+
+    /**
+     * 注入默认流程类型提供器，供前端选择使用
+     *
+     * @return
+     */
+    @Bean
+    ProcessTypeProvider defaultProcessTypeProvider() {
+        return new DefaultProcessTypeProvider();
     }
 
 }

@@ -2,8 +2,10 @@ package com.dr.process.camunda.command.task;
 
 import com.dr.framework.core.process.query.TaskQuery;
 import com.dr.framework.core.process.service.ProcessService;
-import com.dr.process.camunda.query.CustomTaskQuery;
+import com.dr.process.camunda.annotations.SqlProxy;
+import org.camunda.bpm.engine.impl.TaskQueryImpl;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
 import org.springframework.util.StringUtils;
 
 /**
@@ -18,7 +20,7 @@ public class AbstractGetTaskQueryCmd extends AbstractGetTaskCmd {
     }
 
     protected org.camunda.bpm.engine.task.TaskQuery convert(CommandContext commandContext) {
-        CustomTaskQuery taskQuery = new CustomTaskQuery(commandContext.getProcessEngineConfiguration().getCommandExecutorTxRequired());
+        TaskQueryImplWithExtend taskQuery = new TaskQueryImplWithExtend(commandContext.getProcessEngineConfiguration().getCommandExecutorTxRequired());
         taskQuery.initializeFormKeys();
         if (query != null) {
             if (!StringUtils.isEmpty(query.getCreatePerson())) {
@@ -52,6 +54,38 @@ public class AbstractGetTaskQueryCmd extends AbstractGetTaskCmd {
             }
         }
         return taskQuery;
+    }
+
+
+    @SqlProxy(methodName = "selectList", originalSql = "selectTaskByQueryCriteria", proxySql = "selectTaskByQueryCriteriaCustom")
+    @SqlProxy(methodName = "selectOne", originalSql = "selectTaskCountByQueryCriteria", proxySql = "selectTaskCountByQueryCriteriaCustom")
+    public static class TaskQueryImplWithExtend extends TaskQueryImpl {
+        //环节定义key模糊查询
+        private String taskDefinitionKeyNotLike;
+        //流程定义key模糊查询
+        private String processDefinitionKeyLike;
+
+        public TaskQueryImplWithExtend(CommandExecutor commandExecutor) {
+            super(commandExecutor);
+        }
+
+        public TaskQueryImplWithExtend taskDefinitionKeyNotLike(String taskDefinitionKeyNotLike) {
+            this.taskDefinitionKeyNotLike = taskDefinitionKeyNotLike;
+            return this;
+        }
+
+        public TaskQueryImplWithExtend processDefinitionKeyLike(String processDefinitionKeyLike) {
+            this.processDefinitionKeyLike = processDefinitionKeyLike;
+            return this;
+        }
+
+        public String getProcessDefinitionKeyLike() {
+            return processDefinitionKeyLike;
+        }
+
+        public String getTaskDefinitionKeyNotLike() {
+            return taskDefinitionKeyNotLike;
+        }
     }
 
 }

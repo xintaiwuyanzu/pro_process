@@ -5,18 +5,28 @@ import com.dr.framework.common.entity.ResultListEntity;
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.process.bo.ProcessObject;
+import com.dr.framework.core.process.bo.ProcessTypeProviderWrapper;
 import com.dr.framework.core.process.bo.TaskObject;
 import com.dr.framework.core.process.query.ProcessDefinitionQuery;
 import com.dr.framework.core.process.query.TaskQuery;
 import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.web.annotations.Current;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.util.Assert;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.WebUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 暂时的流程管理统一入口
@@ -25,11 +35,12 @@ import java.util.Map;
  */
 //@RestController
 //@RequestMapping("${common.api-path:/api}/process")
-public class AbstractProcessController {
+public class AbstractProcessController extends ApplicationObjectSupport implements InitializingBean {
     public static final String FORM_PREFIX = "form.";
     public static final String VALUE_PREFIX = "value.";
 
     protected ProcessService processService;
+    private List<ProcessTypeProvider> processTypeProviders = Collections.emptyList();
 
     public AbstractProcessController(@Autowired(required = false) ProcessService processService) {
         this.processService = processService;
@@ -123,14 +134,33 @@ public class AbstractProcessController {
     }
 
     //获取详细的任务信息
-    @RequestMapping("/detail")
+    @GetMapping("/detail")
     public ResultEntity<TaskObject> detail(String id) {
         return ResultEntity.success(processService.taskInfo(id));
     }
 
-    @RequestMapping("/process")
+    @GetMapping("/process")
     public ResultListEntity<ProcessObject> detail() {
         return null;
     }
 
+    /**
+     * 系统内置支持的流程类型
+     * 供前端下拉选择使用
+     *
+     * @return
+     */
+    @GetMapping("/processType")
+    public ResultListEntity<ProcessTypeProvider> processTypes() {
+        return ResultListEntity.success(processTypeProviders);
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        processTypeProviders = getApplicationContext().getBeansOfType(ProcessTypeProvider.class)
+                .values()
+                .stream()
+                .map(ProcessTypeProviderWrapper::new)
+                .collect(Collectors.toList());
+    }
 }
