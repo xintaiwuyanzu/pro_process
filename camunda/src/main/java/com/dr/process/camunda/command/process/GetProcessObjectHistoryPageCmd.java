@@ -1,7 +1,7 @@
 package com.dr.process.camunda.command.process;
 
 import com.dr.framework.common.page.Page;
-import com.dr.framework.core.process.bo.ProcessObject;
+import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.query.ProcessQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.Command;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * @author dr
  */
-public class GetProcessObjectHistoryPageCmd extends AbstractGetProcessObjectHistoryCmd implements Command<Page<ProcessObject>> {
+public class GetProcessObjectHistoryPageCmd extends AbstractGetProcessObjectHistoryCmd implements Command<Page<ProcessInstance>> {
     private int start;
     private int end;
 
@@ -23,7 +23,7 @@ public class GetProcessObjectHistoryPageCmd extends AbstractGetProcessObjectHist
     }
 
     @Override
-    public Page<ProcessObject> execute(CommandContext commandContext) {
+    public Page<ProcessInstance> execute(CommandContext commandContext) {
         HistoricProcessInstanceQuery query = convert(commandContext);
         return new Page<>(
                 start,

@@ -1,11 +1,16 @@
 package com.dr.process.camunda.command.process;
 
+import com.dr.framework.common.dao.CommonMapper;
 import com.dr.framework.core.process.bo.ProPerty;
+import com.dr.framework.core.util.Constants;
+import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionExtendEntity;
+import com.dr.process.camunda.utils.BeanMapper;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.model.bpmn.BpmnModelInstance;
 import org.camunda.bpm.model.bpmn.instance.BaseElement;
 import org.camunda.bpm.model.bpmn.instance.ExtensionElements;
 import org.camunda.bpm.model.bpmn.instance.camunda.CamundaProperties;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +22,7 @@ import static com.dr.framework.core.process.service.ProcessService.*;
 /**
  * @author dr
  */
-public abstract class AbstractGetProcessDefinitionCmd {
+public abstract class AbstractProcessDefinitionCmd {
     private boolean withProperty;
     private boolean withStartUser;
     static final List<String> CUSTOM_KEYS = Arrays.asList(CREATE_KEY, CREATE_NAME_KEY, CREATE_DATE_KEY,
@@ -32,32 +37,39 @@ public abstract class AbstractGetProcessDefinitionCmd {
     );
 
 
-    public AbstractGetProcessDefinitionCmd(boolean withProperty) {
+    public AbstractProcessDefinitionCmd(boolean withProperty) {
         this.withProperty = withProperty;
     }
 
-    public AbstractGetProcessDefinitionCmd(boolean withProperty, boolean withStartUser) {
+    public AbstractProcessDefinitionCmd(boolean withProperty, boolean withStartUser) {
         this.withProperty = withProperty;
         this.withStartUser = withStartUser;
     }
 
-    protected com.dr.framework.core.process.bo.ProcessDefinition convert(org.camunda.bpm.engine.repository.ProcessDefinition processDefinition
+    protected com.dr.framework.core.process.bo.ProcessDefinition convertDefinition(org.camunda.bpm.engine.repository.ProcessDefinition processDefinition
             , CommandContext commandContext
     ) {
         if (processDefinition == null) {
             return null;
         }
-        com.dr.framework.core.process.bo.ProcessDefinition po = new com.dr.framework.core.process.bo.ProcessDefinition();
-        po.setName(processDefinition.getName());
-        po.setDescription(processDefinition.getDescription());
-        po.setType(processDefinition.getKey());
-        po.setId(processDefinition.getId());
-        po.setVersion(processDefinition.getVersion());
+        com.dr.framework.core.process.bo.ProcessDefinition po = BeanMapper.newProcessDefinition(processDefinition, def -> {
+            if (StringUtils.isEmpty(def.getType()) && !StringUtils.isEmpty(def.getId())) {
+                CommonMapper commonMapper = getBean(commandContext, CommonMapper.class);
+                ProcessDefinitionExtendEntity extendEntity = commonMapper.selectById(ProcessDefinitionExtendEntity.class, def.getId());
+                if (extendEntity != null) {
+                    def.setType(extendEntity.getType());
+                } else {
+                    def.setType(Constants.DEFAULT);
+                }
+            }
+
+        });
         if (withProperty) {
             po.setProPerties(getProperty(processDefinition.getId(),
                     processDefinition.getKey(),
                     commandContext));
         }
+        //TODO
         if (withStartUser) {
            /* BpmnModelInstance bpmnModelInstance = commandContext.getProcessEngineConfiguration().getRepositoryService().getBpmnModelInstance(processDefinition.getId());
             String candidateUsersString = bpmnModelInstance.getModelElementById(processDefinition.getKey()).getAttributeValueNs(CAMUNDA_BPMN_EXTENSIONS_NS.getNamespaceUri(), "candidateStarterUsers");
@@ -107,5 +119,17 @@ public abstract class AbstractGetProcessDefinitionCmd {
                 .stream()
                 .filter(e -> !CUSTOM_KEYS.contains(e.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    /**
+     * 从spring上下文获取对象
+     *
+     * @param commandContext
+     * @param beanClass
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(CommandContext commandContext, Class<T> beanClass) {
+        return commandContext.getProcessEngineConfiguration().getArtifactFactory().getArtifact(beanClass);
     }
 }

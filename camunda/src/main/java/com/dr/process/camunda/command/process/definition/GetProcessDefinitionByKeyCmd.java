@@ -1,6 +1,7 @@
-package com.dr.process.camunda.command.process;
+package com.dr.process.camunda.command.process.definition;
 
 import com.dr.framework.core.process.bo.ProcessDefinition;
+import com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.springframework.util.Assert;
@@ -11,15 +12,15 @@ import org.springframework.util.StringUtils;
  *
  * @author dr
  */
-public class GetProcessDefinitionByKeyCommand extends AbstractGetProcessDefinitionCmd implements Command<ProcessDefinition> {
+public class GetProcessDefinitionByKeyCmd extends AbstractProcessDefinitionCmd implements Command<ProcessDefinition> {
     private String processDefinitionKey;
 
-    public GetProcessDefinitionByKeyCommand(String processDefinitionKey) {
+    public GetProcessDefinitionByKeyCmd(String processDefinitionKey) {
         super(true, true);
         this.processDefinitionKey = processDefinitionKey;
     }
 
-    public GetProcessDefinitionByKeyCommand(String processDefinitionId, boolean withProperty) {
+    public GetProcessDefinitionByKeyCmd(String processDefinitionId, boolean withProperty) {
         super(withProperty);
         this.processDefinitionKey = processDefinitionId;
     }
@@ -33,6 +34,6 @@ public class GetProcessDefinitionByKeyCommand extends AbstractGetProcessDefiniti
                 .latestVersion()
                 .processDefinitionKey(processDefinitionKey)
                 .singleResult();
-        return convert(processDefinition, commandContext);
+        return convertDefinition(processDefinition, commandContext);
     }
 }

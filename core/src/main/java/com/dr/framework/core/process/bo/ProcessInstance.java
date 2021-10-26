@@ -7,7 +7,7 @@ import java.util.Map;
  *
  * @author dr
  */
-public class ProcessObject extends ProcessDefinition {
+public class ProcessInstance extends ProcessDefinition {
     /**
      * 流程创建时间
      */

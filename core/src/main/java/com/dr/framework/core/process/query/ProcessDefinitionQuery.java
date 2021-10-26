@@ -1,5 +1,7 @@
 package com.dr.framework.core.process.query;
 
+import com.dr.framework.core.process.service.ProcessService;
+
 /**
  * 流程定义查询
  *
@@ -24,6 +26,11 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
      * @see com.dr.framework.core.process.bo.ProcessDefinition#startUser
      */
     private boolean withStartUser = false;
+    /**
+     * 是否使用最新版本
+     */
+    private boolean useLatestVersion = ProcessService.DEFAULT_LATEST_VERSION;
+
 
     public ProcessDefinitionQuery withStartUser() {
         this.withStartUser = true;
@@ -45,6 +52,11 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
         return this;
     }
 
+    public ProcessDefinitionQuery useLatestVersion(boolean useLatestVersion) {
+        this.useLatestVersion = useLatestVersion;
+        return this;
+    }
+
     public boolean isWithStartUser() {
         return withStartUser;
     }
@@ -61,4 +73,7 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
         return description;
     }
 
+    public boolean isUseLatestVersion() {
+        return useLatestVersion;
+    }
 }

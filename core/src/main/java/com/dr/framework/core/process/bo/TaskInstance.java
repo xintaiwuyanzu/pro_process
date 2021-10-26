@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author dr
  */
-public class TaskObject<T> extends ProcessObject {
+public class TaskInstance<T> extends ProcessInstance {
 
     /**
      * =================================================

@@ -1,7 +1,8 @@
 package com.dr.process;
 
 import com.dr.framework.core.process.bo.ProcessDefinition;
-import com.dr.process.camunda.service.ProcessDefinitionService;
+import com.dr.framework.core.process.service.ProcessService;
+import com.dr.process.camunda.service.ProcessDeployService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,25 +22,26 @@ public class ProcessDefinitionTest {
     Logger logger = LoggerFactory.getLogger(ProcessDefinitionTest.class);
 
     @Autowired
-    ProcessDefinitionService processDefinitionService;
-
+    ProcessDeployService processDeployService;
+    @Autowired
+    ProcessService processService;
 
     @Test
     public void testDeploy() throws IOException {
         ClassPathResource resource = new ClassPathResource("/processes/deployTest.bpmn");
-        List<ProcessDefinition> definitionList = processDefinitionService.deploy(resource.getFilename(), resource.getInputStream());
+        List<ProcessDefinition> definitionList = processDeployService.deploy(resource.getFilename(), resource.getInputStream());
         Assert.assertTrue(definitionList.size() == 1);
     }
 
     @Test
     public void testSelect() {
-        processDefinitionService.selectList(null, false);
+        processService.processDefinitionList(null);
     }
 
     @Test
     public void testDelete() {
-        List<ProcessDefinition> processDefinitions = processDefinitionService.selectList(null);
-        processDefinitionService.deleteProcessByDefinitionId(processDefinitions.get(0).getId());
+        List<ProcessDefinition> processDefinitions = processService.processDefinitionList(null);
+        processDeployService.deleteProcessByDefinitionId(processDefinitions.get(0).getId());
     }
 
 }

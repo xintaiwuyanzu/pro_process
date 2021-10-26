@@ -1,7 +1,7 @@
 package com.dr.process.camunda.command.task;
 
 import com.dr.framework.core.process.bo.TaskDefinition;
-import com.dr.process.camunda.command.process.AbstractGetProcessDefinitionCmd;
+import com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd;
 import org.camunda.bpm.engine.impl.core.model.PropertyKey;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
@@ -32,13 +32,13 @@ public class AbstractGetTaskDefinitionCmd {
         taskDefinition.setName(activity.getName());
         taskDefinition.setDescription(activity.getProperties().get(documentation));
         if (withProperty) {
-            taskDefinition.setProPerties(AbstractGetProcessDefinitionCmd.getProperty(
+            taskDefinition.setProPerties(AbstractProcessDefinitionCmd.getProperty(
                     activity.getProcessDefinition().getId(),
                     activity.getId(),
                     commandContext));
         }
         if (withProcessProperty) {
-            taskDefinition.setProcessProPerties(AbstractGetProcessDefinitionCmd.getProperty(
+            taskDefinition.setProcessProPerties(AbstractProcessDefinitionCmd.getProperty(
                     activity.getProcessDefinition().getId(),
                     activity.getProcessDefinition().getId().split(":")[0],
                     commandContext));

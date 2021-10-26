@@ -4,8 +4,8 @@ import com.dr.framework.common.page.Page;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.organise.service.OrganisePersonService;
 import com.dr.framework.core.process.bo.ProcessDefinition;
-import com.dr.framework.core.process.bo.ProcessObject;
-import com.dr.framework.core.process.bo.TaskObject;
+import com.dr.framework.core.process.bo.ProcessInstance;
+import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.ProcessDefinitionQuery;
 import com.dr.framework.core.process.query.ProcessQuery;
 import com.dr.framework.core.process.query.TaskQuery;
@@ -61,14 +61,14 @@ public class ProcessServiceTest {
         map.put("assignee", "admin1");
         map.put("title", "hahha");
         map.put("formId", "aaaa");
-        ProcessObject processObject = processService.start(processDefinition.getId(), map, person);
+        ProcessInstance processInstance = processService.start(processDefinition.getId(), map, person);
 
         TaskQuery query = new TaskQuery()
                 .processDefinitionKeyLike("%aaa%")
                 .taskKeyNotLike("bbb")
                 .withProperty().withVariables();
 
-        List<TaskObject> taskObjects = processService.taskList(query);
+        List<TaskInstance> taskObjects = processService.taskList(query);
 
 
         map.put("title", "bbbbb");
@@ -87,7 +87,7 @@ public class ProcessServiceTest {
 
     @Test
     public void testJump() {
-        TaskObject taskObject = processService.taskList(new TaskQuery()).get(0);
+        TaskInstance taskObject = processService.taskList(new TaskQuery()).get(0);
         processService.jump(taskObject.getId(), "Task_0oihs3n", "admin");
     }
 
@@ -98,8 +98,8 @@ public class ProcessServiceTest {
         map.put("title", "aaa");
         map.put("assignee", "aaa");
         map.put("formId", "aaa");
-        ProcessObject object = processService.start(processObject.getId(), map, person);
-        List<TaskObject> objects = processService.taskList(new TaskQuery().processInstanceIdEqual(object.getId()));
+        ProcessInstance object = processService.start(processObject.getId(), map, person);
+        List<TaskInstance> objects = processService.taskList(new TaskQuery().processInstanceIdEqual(object.getId()));
 
         processService.endProcess(objects.get(0).getId(), null);
 
@@ -108,8 +108,8 @@ public class ProcessServiceTest {
 
     @Test
     public void testProcess() {
-        List<ProcessObject> pr = processService.processObjectList(new ProcessQuery());
-        List<ProcessObject> processObjectHistoryList = processService.processObjectHistoryList(new ProcessQuery());
+        List<ProcessInstance> pr = processService.processInstanceList(new ProcessQuery());
+        List<ProcessInstance> processInstanceHistoryList = processService.processInstanceHistoryList(new ProcessQuery());
 
         repositoryService.getBpmnModelInstance(pr.get(0).getId());
 

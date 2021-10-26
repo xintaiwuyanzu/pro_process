@@ -1,6 +1,7 @@
-package com.dr.process.camunda.command.process;
+package com.dr.process.camunda.command.process.definition;
 
 import com.dr.framework.core.process.bo.ProcessDefinition;
+import com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.springframework.util.Assert;
@@ -11,15 +12,15 @@ import org.springframework.util.StringUtils;
  *
  * @author dr
  */
-public class GetProcessDefinitionByIdCommand extends AbstractGetProcessDefinitionCmd implements Command<ProcessDefinition> {
+public class GetProcessDefinitionByIdCmd extends AbstractProcessDefinitionCmd implements Command<ProcessDefinition> {
     private String processDefinitionId;
 
-    public GetProcessDefinitionByIdCommand(String processDefinitionId) {
+    public GetProcessDefinitionByIdCmd(String processDefinitionId) {
         super(true, true);
         this.processDefinitionId = processDefinitionId;
     }
 
-    public GetProcessDefinitionByIdCommand(String processDefinitionId, boolean withProperty) {
+    public GetProcessDefinitionByIdCmd(String processDefinitionId, boolean withProperty) {
         super(withProperty);
         this.processDefinitionId = processDefinitionId;
     }
@@ -29,6 +30,6 @@ public class GetProcessDefinitionByIdCommand extends AbstractGetProcessDefinitio
         Assert.isTrue(!StringUtils.isEmpty(processDefinitionId), "流程定义id不能为空！");
         org.camunda.bpm.engine.repository.ProcessDefinition processDefinition = commandContext.getProcessEngineConfiguration().getRepositoryService()
                 .getProcessDefinition(processDefinitionId);
-        return convert(processDefinition, commandContext);
+        return convertDefinition(processDefinition, commandContext);
     }
 }

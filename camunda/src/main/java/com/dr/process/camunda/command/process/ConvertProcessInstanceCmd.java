@@ -1,6 +1,6 @@
 package com.dr.process.camunda.command.process;
 
-import com.dr.framework.core.process.bo.ProcessObject;
+import com.dr.framework.core.process.bo.ProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.impl.interceptor.Command;
@@ -16,7 +16,7 @@ import static com.dr.framework.core.process.service.ProcessService.TITLE_KEY;
 /**
  * @author dr
  */
-public class ConvertProcessInstanceCmd implements Command<ProcessObject> {
+public class ConvertProcessInstanceCmd implements Command<ProcessInstance> {
     private String processInstanceId;
     private Map<String, Object> valueMap;
 
@@ -30,7 +30,7 @@ public class ConvertProcessInstanceCmd implements Command<ProcessObject> {
     }
 
     @Override
-    public ProcessObject execute(CommandContext commandContext) {
+    public ProcessInstance execute(CommandContext commandContext) {
         if (processInstanceId == null) {
             return null;
         }
@@ -39,7 +39,7 @@ public class ConvertProcessInstanceCmd implements Command<ProcessObject> {
                 .createHistoricProcessInstanceQuery()
                 .processInstanceId(processInstanceId)
                 .singleResult();
-        ProcessObject po = new ProcessObject();
+        ProcessInstance po = new ProcessInstance();
         po.setId(his.getId());
         po.setType(his.getBusinessKey());
         po.setName(his.getProcessDefinitionName());
@@ -69,7 +69,7 @@ public class ConvertProcessInstanceCmd implements Command<ProcessObject> {
         if (variables != null) {
             po.setDescription((String) variables.get(TITLE_KEY));
             po.setCreatePersonName((String) variables.get(CREATE_NAME_KEY));
-            po.setVariables(AbstractGetProcessDefinitionCmd.filter(variables));
+            po.setVariables(AbstractProcessDefinitionCmd.filter(variables));
         }
         return po;
     }

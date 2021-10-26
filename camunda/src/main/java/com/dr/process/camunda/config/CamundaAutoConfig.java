@@ -2,11 +2,13 @@ package com.dr.process.camunda.config;
 
 import com.dr.framework.autoconfig.ApplicationAutoConfiguration;
 import com.dr.framework.core.organise.entity.Person;
-import com.dr.framework.core.process.service.DefaultProcessTypeProvider;
+import com.dr.framework.core.process.service.ProcessService;
 import com.dr.framework.core.process.service.ProcessTypeProvider;
+import com.dr.framework.core.process.service.impl.DefaultProcessTypeProvider;
 import com.dr.framework.core.security.SecurityHolder;
 import com.dr.framework.core.web.interceptor.PersonInterceptor;
 import com.dr.process.camunda.resolver.CurrentElResolver;
+import com.dr.process.camunda.service.impl.DefaultProcessServiceImpl;
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.auth.ResourceAuthorizationProvider;
@@ -148,6 +150,17 @@ public class CamundaAutoConfig {
     @Bean
     ProcessTypeProvider defaultProcessTypeProvider() {
         return new DefaultProcessTypeProvider();
+    }
+
+    /**
+     * 注入流程汇总实现
+     *
+     * @param processEngineConfiguration
+     * @return
+     */
+    @Bean
+    ProcessService processService(ProcessEngineConfigurationImpl processEngineConfiguration) {
+        return new DefaultProcessServiceImpl(processEngineConfiguration);
     }
 
 }

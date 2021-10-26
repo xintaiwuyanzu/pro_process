@@ -1,6 +1,6 @@
 package com.dr.process.camunda.command.task;
 
-import com.dr.framework.core.process.bo.TaskObject;
+import com.dr.framework.core.process.bo.TaskInstance;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.task.Task;
@@ -8,8 +8,8 @@ import org.camunda.bpm.engine.task.Task;
 import java.util.Map;
 
 import static com.dr.framework.core.process.service.ProcessService.*;
-import static com.dr.process.camunda.command.process.AbstractGetProcessDefinitionCmd.filter;
-import static com.dr.process.camunda.command.process.AbstractGetProcessDefinitionCmd.getProperty;
+import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.filter;
+import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.getProperty;
 
 /**
  * @author dr
@@ -29,11 +29,11 @@ public class AbstractGetTaskCmd {
         this.withProcessProperty = withProcessProperty;
     }
 
-    protected TaskObject convert(Task task, CommandContext commandContext) {
+    protected TaskInstance convert(Task task, CommandContext commandContext) {
         if (task == null) {
             return null;
         }
-        TaskObject to = new TaskObject();
+        TaskInstance to = new TaskInstance();
         Map<String, Object> variables = commandContext
                 .getProcessEngineConfiguration()
                 .getTaskService()

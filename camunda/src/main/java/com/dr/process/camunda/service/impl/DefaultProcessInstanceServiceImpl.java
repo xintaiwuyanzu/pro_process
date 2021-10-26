@@ -1,0 +1,63 @@
+package com.dr.process.camunda.service.impl;
+
+import com.dr.framework.common.page.Page;
+import com.dr.framework.core.process.bo.ProcessInstance;
+import com.dr.framework.core.process.query.ProcessQuery;
+import com.dr.framework.core.process.service.ProcessInstanceService;
+import com.dr.process.camunda.command.process.GetProcessInstanceListCmd;
+import com.dr.process.camunda.command.process.GetProcessInstancePageCmd;
+import com.dr.process.camunda.command.process.GetProcessObjectHistoryListCmd;
+import com.dr.process.camunda.command.process.GetProcessObjectHistoryPageCmd;
+import org.camunda.bpm.engine.RuntimeService;
+import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+
+import java.util.List;
+
+/**
+ * 默认流程实例实现类
+ *
+ * @author dr
+ */
+public class DefaultProcessInstanceServiceImpl extends BaseProcessServiceImpl implements ProcessInstanceService {
+    private RuntimeService runtimeService;
+
+    public DefaultProcessInstanceServiceImpl(ProcessEngineConfigurationImpl processEngineConfiguration) {
+        super(processEngineConfiguration);
+    }
+
+    @Override
+    public List<ProcessInstance> processInstanceList(ProcessQuery query) {
+        return getCommandExecutor().execute(new GetProcessInstanceListCmd(query));
+    }
+
+    @Override
+    public Page<ProcessInstance> processInstancePage(ProcessQuery query, int start, int end) {
+        return getCommandExecutor().execute(new GetProcessInstancePageCmd(query, start, end));
+    }
+
+    @Override
+    public List<ProcessInstance> processInstanceHistoryList(ProcessQuery query) {
+        return getCommandExecutor().execute(new GetProcessObjectHistoryListCmd(query));
+    }
+
+    @Override
+    public Page<ProcessInstance> processInstanceHistoryPage(ProcessQuery query, int start, int end) {
+        return getCommandExecutor().execute(new GetProcessObjectHistoryPageCmd(query, start, end));
+    }
+
+
+    @Override
+    public void deleteProcessInstance(String processInstance, String deleteReason) {
+        Assert.isTrue(!StringUtils.isEmpty(processInstance), "流程实例不能为空！");
+        runtimeService.deleteProcessInstance(processInstance, deleteReason);
+    }
+
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        runtimeService = getProcessEngineConfiguration().getRuntimeService();
+    }
+}

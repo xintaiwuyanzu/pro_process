@@ -1,4 +1,4 @@
-package com.dr.process.camunda.service.impl;
+package com.dr.process.camunda.command.process.definition.extend;
 
 import com.dr.framework.common.entity.BaseEntity;
 import com.dr.framework.core.orm.annotations.Column;
@@ -18,6 +18,7 @@ import org.camunda.bpm.engine.impl.persistence.entity.TableDataManager;
  * @see ProcessDefinitionEntity
  */
 @Table(name = "ACT_RE_PROCODEF" + Constants.EXTEND_TABLE_NAME_SUFFIX, module = Constants.MODULE_NAME, comment = "流程定义扩展表")
+public
 class ProcessDefinitionExtendEntity extends BaseEntity {
     //这个表的主键就是流程定义的主键
     @Column(name = "processType", comment = "流程类型")

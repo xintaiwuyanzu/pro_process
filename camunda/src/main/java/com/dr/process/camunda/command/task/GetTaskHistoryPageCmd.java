@@ -1,7 +1,7 @@
 package com.dr.process.camunda.command.task;
 
 import com.dr.framework.common.page.Page;
-import com.dr.framework.core.process.bo.TaskObject;
+import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.TaskQuery;
 import org.camunda.bpm.engine.history.HistoricTaskInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.Command;
@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 /**
  * @author dr
  */
-public class GetTaskHistoryPageCmd extends AbstractGetTaskHistoryCmd implements Command<Page<TaskObject>> {
+public class GetTaskHistoryPageCmd extends AbstractGetTaskHistoryCmd implements Command<Page<TaskInstance>> {
     private int start;
     private int end;
 
@@ -23,7 +23,7 @@ public class GetTaskHistoryPageCmd extends AbstractGetTaskHistoryCmd implements 
     }
 
     @Override
-    public Page<TaskObject> execute(CommandContext commandContext) {
+    public Page<TaskInstance> execute(CommandContext commandContext) {
         HistoricTaskInstanceQuery hq = convert(commandContext);
         return new Page<>(
                 start,

@@ -1,6 +1,6 @@
 package com.dr.process.camunda.command.task;
 
-import com.dr.framework.core.process.bo.TaskObject;
+import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.TaskQuery;
 import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.history.HistoricTaskInstanceQuery;
@@ -12,8 +12,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.dr.framework.core.process.service.ProcessService.*;
-import static com.dr.process.camunda.command.process.AbstractGetProcessDefinitionCmd.filter;
-import static com.dr.process.camunda.command.process.AbstractGetProcessDefinitionCmd.getProperty;
+import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.filter;
+import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.getProperty;
 
 /**
  * @author dr
@@ -55,11 +55,11 @@ public class AbstractGetTaskHistoryCmd {
         return hq;
     }
 
-    protected TaskObject convert(HistoricTaskInstance his, CommandContext commandContext) {
+    protected TaskInstance convert(HistoricTaskInstance his, CommandContext commandContext) {
         if (his == null) {
             return null;
         }
-        TaskObject to = new TaskObject();
+        TaskInstance to = new TaskInstance();
         Map<String, Object> variables = commandContext.getProcessEngineConfiguration().getHistoryService()
                 .createHistoricVariableInstanceQuery()
                 .taskIdIn(his.getId())

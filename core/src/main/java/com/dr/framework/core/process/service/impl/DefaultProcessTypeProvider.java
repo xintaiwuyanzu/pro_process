@@ -1,5 +1,6 @@
-package com.dr.framework.core.process.service;
+package com.dr.framework.core.process.service.impl;
 
+import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.util.Constants;
 
 /**

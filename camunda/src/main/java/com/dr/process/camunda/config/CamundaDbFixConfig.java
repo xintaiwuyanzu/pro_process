@@ -2,7 +2,7 @@ package com.dr.process.camunda.config;
 
 import com.dr.framework.core.orm.database.DataBaseMetaData;
 import com.dr.process.camunda.manager.DbEntityManagerWithSqlProxy;
-import com.dr.process.camunda.service.impl.ProcessDefinitionQueryImplWithExtend;
+import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionQueryImplWithExtend;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.session.Configuration;
 import org.camunda.bpm.engine.impl.RepositoryServiceImpl;

@@ -4,9 +4,9 @@ import com.dr.framework.common.entity.ResultEntity;
 import com.dr.framework.common.entity.ResultListEntity;
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.organise.entity.Person;
-import com.dr.framework.core.process.bo.ProcessObject;
+import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.bo.ProcessTypeProviderWrapper;
-import com.dr.framework.core.process.bo.TaskObject;
+import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.ProcessDefinitionQuery;
 import com.dr.framework.core.process.query.TaskQuery;
 import com.dr.framework.core.process.service.ProcessService;
@@ -87,7 +87,7 @@ public class AbstractProcessController extends ApplicationObjectSupport implemen
 
     //更新
     @RequestMapping("/update")
-    public ResultEntity update(TaskObject taskObject,
+    public ResultEntity update(TaskInstance taskObject,
                                HttpServletRequest request,
                                @Current Person person) {
         //表单参数
@@ -135,12 +135,12 @@ public class AbstractProcessController extends ApplicationObjectSupport implemen
 
     //获取详细的任务信息
     @GetMapping("/detail")
-    public ResultEntity<TaskObject> detail(String id) {
+    public ResultEntity<TaskInstance> detail(String id) {
         return ResultEntity.success(processService.taskInfo(id));
     }
 
     @GetMapping("/process")
-    public ResultListEntity<ProcessObject> detail() {
+    public ResultListEntity<ProcessInstance> detail() {
         return null;
     }
 

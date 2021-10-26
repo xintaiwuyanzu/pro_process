@@ -1,6 +1,6 @@
 package com.dr.process.camunda.command.process;
 
-import com.dr.framework.core.process.bo.ProcessObject;
+import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.query.ProcessQuery;
 import com.dr.framework.core.process.service.ProcessService;
 import com.dr.process.camunda.annotations.SqlProxy;
@@ -18,10 +18,10 @@ import org.springframework.util.StringUtils;
  *
  * @author dr
  */
-public class AbstractGetProcessObjectCmd {
+public class AbstractGetProcessInstanceCmd {
     private ProcessQuery query;
 
-    public AbstractGetProcessObjectCmd(ProcessQuery query) {
+    public AbstractGetProcessInstanceCmd(ProcessQuery query) {
         this.query = query;
     }
 
@@ -44,7 +44,7 @@ public class AbstractGetProcessObjectCmd {
                 .asc();
     }
 
-    protected ProcessObject convert(HistoricProcessInstance instance, CommandContext commandContext) {
+    protected ProcessInstance convert(HistoricProcessInstance instance, CommandContext commandContext) {
         return commandContext.getProcessEngineConfiguration()
                 .getCommandExecutorTxRequired()
                 .execute(new ConvertProcessInstanceCmd(instance.getId()));

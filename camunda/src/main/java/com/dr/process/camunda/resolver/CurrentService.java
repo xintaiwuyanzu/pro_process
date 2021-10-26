@@ -1,4 +1,4 @@
-package com.dr.process.camunda.service;
+package com.dr.process.camunda.resolver;
 
 import com.dr.framework.common.entity.BaseEntity;
 import com.dr.framework.core.organise.entity.Organise;
