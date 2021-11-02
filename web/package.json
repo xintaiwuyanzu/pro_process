@@ -1,0 +1,29 @@
+{
+  "name": "@dr/process",
+  "version": "0.1.0",
+  "description": "达融流程管理平台",
+  "dlib": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build --report",
+    "lint": "vue-cli-service lint"
+  },
+  "dependencies": {
+    "@dr/ant-menu": "~0.0.1",
+    "@dr/auto": "~0.0.2",
+    "@dr/framework": "^0.0.3",
+    "bpmn-js": "^8.8.2",
+    "bpmn-js-properties-panel": "^0.46.0",
+    "camunda-bpmn-moddle": "^6.1.1",
+    "diagram-js-minimap": "^2.0.4",
+    "vue": "^2.6.14"
+  },
+  "devDependencies": {
+    "@dr/vue-cli-plugin-dr": "~1.0.2",
+    "@vue/cli-plugin-eslint": "~4.5.15",
+    "@vue/cli-service": "~4.5.15",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.8.1",
+    "eslint-plugin-vue": "^6.2.2"
+  }
+}
