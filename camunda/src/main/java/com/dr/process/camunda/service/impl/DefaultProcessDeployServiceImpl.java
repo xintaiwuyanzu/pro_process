@@ -6,14 +6,19 @@ import com.dr.framework.core.util.Constants;
 import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionExtendEntity;
 import com.dr.process.camunda.service.ProcessDeployService;
 import com.dr.process.camunda.utils.BeanMapper;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.spring.SpringTransactionsProcessEngineConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -34,16 +39,35 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
 
     @Override
     @Transactional
-    public List<ProcessDefinition> deploy(String type, String deployName, InputStream stream) {
-        List<ProcessDefinition> processDefinitions = BeanMapper.newProcessDefinitionList(
-                buildDeployment()
-                        .addInputStream(deployName, stream)
-                        .deployWithResult()
-                        .getDeployedProcessDefinitions()
-        );
+    public List<ProcessDefinition> deploy(String type, String resourceName, InputStream stream) {
         if (!StringUtils.hasText(type)) {
             type = Constants.DEFAULT;
         }
+        if (!StringUtils.hasText(resourceName)) {
+            if (!stream.markSupported()) {
+                try {
+                    stream = new ByteArrayInputStream(StreamUtils.copyToByteArray(stream));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            //TODO 这里根据二进制hash判断文件是否部署过
+            try {
+                //流只能读一次，标记回滚点
+                stream.mark(0);
+                resourceName = "sha256:" + DigestUtils.sha256Hex(stream) + ".bpmn";
+                stream.reset();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        List<ProcessDefinition> processDefinitions = BeanMapper.newProcessDefinitionList(
+                buildDeployment()
+                        .source(ProcessDeployService.DEFAULT_DEPLOY_NAME)
+                        .addInputStream(resourceName, stream)
+                        .deployWithResult()
+                        .getDeployedProcessDefinitions()
+        );
         //添加类型
         for (ProcessDefinition processDefinition : processDefinitions) {
             ProcessDefinitionExtendEntity entity = new ProcessDefinitionExtendEntity();
@@ -58,6 +82,12 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
         return processDefinitions;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public InputStream getDeployResourceById(String processDefinitionId) {
+        Assert.isTrue(StringUtils.hasText(processDefinitionId), "流程定义Id不能为空");
+        return getRepositoryService().getProcessModel(processDefinitionId);
+    }
 
     @Override
     @Transactional
@@ -97,6 +127,7 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
             processApplicationReference = getApplicationContext().getBean(ProcessApplicationReference.class);
         } catch (Exception ignore) {
         }
+        commonMapper = getApplicationContext().getBean(CommonMapper.class);
     }
 
     public CommonMapper getCommonMapper() {

@@ -61,6 +61,7 @@ public final class BeanMapper {
         processDefinition.setName(source.getName());
         processDefinition.setDescription(source.getDescription());
         processDefinition.setId(source.getId());
+        processDefinition.setKey(source.getKey());
 
         if (consumer != null) {
             consumer.accept(processDefinition);

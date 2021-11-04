@@ -22,23 +22,38 @@ public interface ProcessDeployService {
      * @return
      */
     default List<ProcessDefinition> deploy(InputStream stream) {
-        return deploy(DEFAULT_DEPLOY_NAME, stream);
-    }
-
-    default List<ProcessDefinition> deploy(String deployName, InputStream stream) {
-        return deploy(Constants.DEFAULT, deployName, stream);
+        return deploy(Constants.DEFAULT, stream);
     }
 
     /**
      * 部署流程定义
      *
-     * @param type       流程类型
-     * @param deployName 流程名称
-     * @param stream     流程xml文件流
+     * @param type   流程类型
+     * @param stream 流程流
      * @return
      */
-    List<ProcessDefinition> deploy(String type, String deployName, InputStream stream);
+    default List<ProcessDefinition> deploy(String type, InputStream stream) {
+        return deploy(type, null, stream);
+    }
 
+    /**
+     * 部署流程定义
+     *
+     * @param type         流程类型
+     * @param resourceName 流资源名称
+     * @param stream       流程xml文件流
+     * @return
+     */
+    List<ProcessDefinition> deploy(String type, String resourceName, InputStream stream);
+
+
+    /**
+     * 根据流程定义Id查询xml文件流
+     *
+     * @param processDefinitionId
+     * @return
+     */
+    InputStream getDeployResourceById(String processDefinitionId);
 
     /**
      * 根据流程定义Id删除流程定义

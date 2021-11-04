@@ -1,5 +1,11 @@
 /**
  * 中文语言包，语言包还不够
+ *
+ * 可以参考
+ * https://github.com/bpmn-io/bpmn-js-i18n/blob/master/translations/zn.js
+ * https://gitee.com/polarloves/bpmn-js/blob/master/app/customTranslate/translationsGerman.js
+ *
+ * 复制的需要定期更新
  */
 export default {
     // Labels

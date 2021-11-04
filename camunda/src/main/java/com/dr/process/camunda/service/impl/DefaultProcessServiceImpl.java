@@ -82,8 +82,13 @@ public class DefaultProcessServiceImpl extends BaseProcessServiceImpl implements
     }
 
     @Override
-    public List<ProcessDefinition> deploy(String type, String deployName, InputStream stream) {
-        return getProcessDeployService().deploy(type, deployName, stream);
+    public List<ProcessDefinition> deploy(String type, String resourceName, InputStream stream) {
+        return getProcessDeployService().deploy(type, resourceName, stream);
+    }
+
+    @Override
+    public InputStream getDeployResourceById(String processDefinitionId) {
+        return getProcessDeployService().getDeployResourceById(processDefinitionId);
     }
 
     @Override

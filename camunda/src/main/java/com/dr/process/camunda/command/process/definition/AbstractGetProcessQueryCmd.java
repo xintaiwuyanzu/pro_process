@@ -35,7 +35,7 @@ public abstract class AbstractGetProcessQueryCmd extends AbstractProcessDefiniti
                 pq.latestVersion();
             }
             if (!StringUtils.isEmpty(query.getName())) {
-                pq.processDefinitionNameLike(query.getName());
+                pq.processDefinitionNameLike("%" + query.getName() + "%");
             }
             //TODO 根据类型查询
             if (!StringUtils.isEmpty(query.getType())) {

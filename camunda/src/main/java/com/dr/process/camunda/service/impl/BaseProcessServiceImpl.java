@@ -12,7 +12,6 @@ import org.springframework.context.support.ApplicationObjectSupport;
  */
 public abstract class BaseProcessServiceImpl extends ApplicationObjectSupport implements InitializingBean {
     private ProcessEngineConfigurationImpl processEngineConfiguration;
-    private CommandExecutor commandExecutor;
 
     public BaseProcessServiceImpl(ProcessEngineConfigurationImpl processEngineConfiguration) {
         this.processEngineConfiguration = processEngineConfiguration;
@@ -23,7 +22,7 @@ public abstract class BaseProcessServiceImpl extends ApplicationObjectSupport im
     }
 
     public CommandExecutor getCommandExecutor() {
-        return commandExecutor;
+        return getProcessEngineConfiguration().getCommandExecutorTxRequired();
     }
 
     protected <T> T getBean(Class<T> clazz) {
@@ -32,7 +31,5 @@ public abstract class BaseProcessServiceImpl extends ApplicationObjectSupport im
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        //commandExecutor = getApplicationContext().getBean(CommandExecutor.class);
-        commandExecutor = getProcessEngineConfiguration().getCommandExecutorTxRequired();
     }
 }

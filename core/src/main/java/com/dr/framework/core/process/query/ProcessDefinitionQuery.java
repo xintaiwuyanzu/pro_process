@@ -31,7 +31,6 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
      */
     private boolean useLatestVersion = ProcessService.DEFAULT_LATEST_VERSION;
 
-
     public ProcessDefinitionQuery withStartUser() {
         this.withStartUser = true;
         return this;
@@ -76,4 +75,21 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
     public boolean isUseLatestVersion() {
         return useLatestVersion;
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setUseLatestVersion(boolean useLatestVersion) {
+        this.useLatestVersion = useLatestVersion;
+    }
+
 }

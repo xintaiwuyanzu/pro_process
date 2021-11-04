@@ -17,7 +17,6 @@ export default class CustomerPropertiesProvider {
                 }
             }
         })
-        console.log(tabs)
         return tabs.filter(c => excludeArr.indexOf(c.id) < 0)
     }
 }

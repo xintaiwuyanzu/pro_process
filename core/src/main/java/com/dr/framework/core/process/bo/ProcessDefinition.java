@@ -15,6 +15,11 @@ public class ProcessDefinition extends AbstractProcessObject {
      */
     private String type;
     /**
+     * Process_1jgrpoh
+     * 流程定义key
+     */
+    private String key;
+    /**
      * 版本
      */
     private Integer version;
@@ -45,5 +50,13 @@ public class ProcessDefinition extends AbstractProcessObject {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

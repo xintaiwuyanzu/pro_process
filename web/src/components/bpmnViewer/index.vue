@@ -4,8 +4,7 @@
   </section>
 </template>
 <script>
-import BpmnModeler from "bpmn-js/lib/NavigatedViewer";
-import config from '../../../lib/viewConfig'
+import lib from "../../lib";
 
 
 /**
@@ -16,16 +15,16 @@ export default {
     return {
       bpmnModeler: null,
       // 这部分具体的代码我放到了下面
-      initTemplate: config.template
+      initTemplate: lib.viewConfig.template
     };
   },
   methods: {
     init() {
       // 创建Bpmn对象
-      this.bpmnModeler = new BpmnModeler({
+      this.bpmnModeler = new lib.Modeler({
         container: this.$refs.canvas,
-        additionalModules: config.additionalModules,
-        moddleExtensions: config.moddleExtensions
+        additionalModules: lib.viewConfig.additionalModules,
+        moddleExtensions: lib.viewConfig.moddleExtensions
       });
       // 初始化建模器内容
       this.initDiagram(this.initTemplate);
