@@ -3,7 +3,6 @@ package com.dr.process.camunda.controller;
 import com.dr.framework.common.entity.ResultEntity;
 import com.dr.framework.core.process.bo.ProcessDefinition;
 import com.dr.framework.core.process.controller.AbstractProcessDefinitionController;
-import com.dr.framework.core.process.service.ProcessService;
 import com.dr.process.camunda.service.ProcessDeployService;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -28,8 +27,7 @@ public class ProcessDefinitionController extends AbstractProcessDefinitionContro
 
     private ProcessDeployService processDeployService;
 
-    public ProcessDefinitionController(ProcessService processService, ProcessDeployService processDeployService) {
-        super(processService);
+    public ProcessDefinitionController(ProcessDeployService processDeployService) {
         this.processDeployService = processDeployService;
     }
 
@@ -50,7 +48,7 @@ public class ProcessDefinitionController extends AbstractProcessDefinitionContro
                 //重复发布的可能返回为空
                 if (StringUtils.hasText(id)) {
                     //尝试根据id查询发布信息
-                    result = getProcessService().getProcessDefinitionById(id);
+                    result = getProcessDefinitionService().getProcessDefinitionById(id);
                 } else {
                     return ResultEntity.error("添加流程失败，请检查流程定义重试");
                 }
@@ -76,7 +74,7 @@ public class ProcessDefinitionController extends AbstractProcessDefinitionContro
     @PostMapping("/delete")
     public ResultEntity<String> delete(String id, boolean allVersion) {
         if (allVersion) {
-            ProcessDefinition processDefinition = getProcessService().getProcessDefinitionById(id);
+            ProcessDefinition processDefinition = getProcessDefinitionService().getProcessDefinitionById(id);
             getProcessDeployService().deleteProcessByDefinitionKey(processDefinition.getKey());
         } else {
             getProcessDeployService().deleteProcessByDefinitionId(id);
@@ -104,7 +102,7 @@ public class ProcessDefinitionController extends AbstractProcessDefinitionContro
      */
     @PostMapping("/detail")
     public ResultEntity<ProcessDefinition> detail(String processDefinitionId) {
-        return ResultEntity.success(getProcessService().getProcessDefinitionById(processDefinitionId));
+        return ResultEntity.success(getProcessDefinitionService().getProcessDefinitionById(processDefinitionId));
     }
 
     public ProcessDeployService getProcessDeployService() {

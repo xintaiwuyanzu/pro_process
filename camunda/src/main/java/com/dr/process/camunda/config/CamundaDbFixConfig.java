@@ -12,6 +12,7 @@ import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.db.entitymanager.DbEntityManager;
 import org.camunda.bpm.engine.impl.db.sql.DbSqlSessionFactory;
+import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
 import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
@@ -45,9 +46,7 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
     private DataSource dataSource;
     private CamundaBpmProperties properties;
 
-    public CamundaDbFixConfig(PlatformTransactionManager transactionManager,
-                              DataSource dataSource,
-                              CamundaBpmProperties properties) {
+    public CamundaDbFixConfig(PlatformTransactionManager transactionManager, DataSource dataSource, CamundaBpmProperties properties) {
         this.transactionManager = transactionManager;
         this.dataSource = dataSource;
         this.properties = properties;
@@ -59,13 +58,9 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
         fixCustomerSessionFactory(processEngineConfiguration);
 
         //这里扩展了sql ，查询语句使用自定义实现
-        processEngineConfiguration.setRepositoryService(new RepositoryServiceImpl() {
-            @Override
-            public ProcessDefinitionQuery createProcessDefinitionQuery() {
-                return new ProcessDefinitionQueryImplWithExtend(commandExecutor);
-            }
-        });
+        processEngineConfiguration.setRepositoryService(new RepositoryServiceImplFix(processEngineConfiguration.getCommandExecutorTxRequired()));
     }
+
 
     /**
      * 处理多数据源的情况
@@ -142,20 +137,24 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
      */
     private void fixFixMybatis(ProcessEngineConfigurationImpl configuration) {
         DbSqlSessionFactory dbSqlSessionFactory = configuration.getDbSqlSessionFactory();
-        Configuration mybatisConfig = dbSqlSessionFactory.getSqlSessionFactory()
-                .getConfiguration();
+        Configuration mybatisConfig = dbSqlSessionFactory.getSqlSessionFactory().getConfiguration();
         try {
             for (Resource resource : getApplicationContext().getResources(CUSTOM_MAPPER_PATH_PATTERN)) {
-                new XMLMapperBuilder(
-                        resource.getInputStream()
-                        , mybatisConfig
-                        , resource.getFilename()
-                        , mybatisConfig.getSqlFragments()
-                ).parse();
+                new XMLMapperBuilder(resource.getInputStream(), mybatisConfig, resource.getFilename(), mybatisConfig.getSqlFragments()).parse();
             }
         } catch (IOException e) {
             logger.warn("加载自定义Camunda流程 mapper.xml失败:{}", e.getMessage());
         }
     }
 
+    static class RepositoryServiceImplFix extends RepositoryServiceImpl {
+        public RepositoryServiceImplFix(CommandExecutor commandExecutor) {
+            setCommandExecutor(commandExecutor);
+        }
+
+        @Override
+        public ProcessDefinitionQuery createProcessDefinitionQuery() {
+            return new ProcessDefinitionQueryImplWithExtend(getCommandExecutor());
+        }
+    }
 }

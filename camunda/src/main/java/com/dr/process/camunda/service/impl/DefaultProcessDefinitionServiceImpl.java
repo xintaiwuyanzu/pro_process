@@ -6,6 +6,7 @@ import com.dr.framework.core.process.query.ProcessDefinitionQuery;
 import com.dr.framework.core.process.service.ProcessDefinitionService;
 import com.dr.process.camunda.command.process.definition.*;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -15,11 +16,8 @@ import java.util.List;
  *
  * @author dr
  */
+@Service
 public class DefaultProcessDefinitionServiceImpl extends BaseProcessServiceImpl implements ProcessDefinitionService {
-
-    public DefaultProcessDefinitionServiceImpl(ProcessEngineConfigurationImpl processEngineConfiguration) {
-        super(processEngineConfiguration);
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -50,6 +48,4 @@ public class DefaultProcessDefinitionServiceImpl extends BaseProcessServiceImpl 
     public Page<ProcessDefinition> processDefinitionPage(ProcessDefinitionQuery processDefinitionQuery, int start, int end) {
         return getCommandExecutor().execute(new GetProcessDefinitionPageCmd(processDefinitionQuery, start, end));
     }
-
-
 }

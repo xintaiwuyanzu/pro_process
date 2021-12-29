@@ -5,7 +5,7 @@ package com.dr.framework.core.process.bo;
  *
  * @author dr
  */
-public class ProPerty {
+public class Property {
     private String id;
     private String name;
     /**

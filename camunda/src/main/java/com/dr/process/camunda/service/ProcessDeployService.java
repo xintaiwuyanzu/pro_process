@@ -1,7 +1,7 @@
 package com.dr.process.camunda.service;
 
 import com.dr.framework.core.process.bo.ProcessDefinition;
-import com.dr.framework.core.util.Constants;
+import com.dr.framework.core.process.service.ProcessConstants;
 
 import java.io.InputStream;
 import java.util.List;
@@ -22,7 +22,7 @@ public interface ProcessDeployService {
      * @return
      */
     default List<ProcessDefinition> deploy(InputStream stream) {
-        return deploy(Constants.DEFAULT, stream);
+        return deploy(ProcessConstants.DEFAULT_PROCESS_TYPE, stream);
     }
 
     /**

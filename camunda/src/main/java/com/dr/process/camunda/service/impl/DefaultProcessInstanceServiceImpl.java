@@ -9,7 +9,8 @@ import com.dr.process.camunda.command.process.GetProcessInstancePageCmd;
 import com.dr.process.camunda.command.process.GetProcessObjectHistoryListCmd;
 import com.dr.process.camunda.command.process.GetProcessObjectHistoryPageCmd;
 import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -20,12 +21,10 @@ import java.util.List;
  *
  * @author dr
  */
+@Service
 public class DefaultProcessInstanceServiceImpl extends BaseProcessServiceImpl implements ProcessInstanceService {
+    @Autowired
     private RuntimeService runtimeService;
-
-    public DefaultProcessInstanceServiceImpl(ProcessEngineConfigurationImpl processEngineConfiguration) {
-        super(processEngineConfiguration);
-    }
 
     @Override
     public List<ProcessInstance> processInstanceList(ProcessQuery query) {
@@ -51,13 +50,11 @@ public class DefaultProcessInstanceServiceImpl extends BaseProcessServiceImpl im
     @Override
     public void deleteProcessInstance(String processInstance, String deleteReason) {
         Assert.isTrue(!StringUtils.isEmpty(processInstance), "流程实例不能为空！");
-        runtimeService.deleteProcessInstance(processInstance, deleteReason);
+        getRuntimeService().deleteProcessInstance(processInstance, deleteReason);
     }
 
-
     @Override
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-        runtimeService = getProcessEngineConfiguration().getRuntimeService();
+    public RuntimeService getRuntimeService() {
+        return runtimeService;
     }
 }

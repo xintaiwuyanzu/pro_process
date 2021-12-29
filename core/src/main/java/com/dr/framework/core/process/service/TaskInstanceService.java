@@ -144,12 +144,12 @@ public interface TaskInstanceService {
     /**
      * 启动流程
      *
-     * @param processId
+     * @param processDefinitionId
      * @param variMap
      * @param person
      * @return
      */
-    ProcessInstance start(String processId, Map<String, Object> variMap, Person person);
+    ProcessInstance start(String processDefinitionId, Map<String, Object> variMap, Person person);
 
     /**
      * 发送到默认的下一环节，不带有环境变量信息

@@ -18,7 +18,7 @@ public class GetTaskCmd extends AbstractGetTaskCmd implements Command<TaskInstan
     }
 
     public GetTaskCmd(String taskId) {
-        super(true, false, false);
+        super(true, true, true);
         this.taskId = taskId;
     }
 

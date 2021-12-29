@@ -2,13 +2,11 @@ package com.dr.process.camunda.config;
 
 import com.dr.framework.autoconfig.ApplicationAutoConfiguration;
 import com.dr.framework.core.organise.entity.Person;
-import com.dr.framework.core.process.service.ProcessService;
 import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.process.service.impl.DefaultProcessTypeProvider;
 import com.dr.framework.core.security.SecurityHolder;
 import com.dr.framework.core.web.interceptor.PersonInterceptor;
 import com.dr.process.camunda.resolver.CurrentElResolver;
-import com.dr.process.camunda.service.impl.DefaultProcessServiceImpl;
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.cfg.auth.ResourceAuthorizationProvider;
@@ -50,8 +48,7 @@ import java.util.Map;
 public class CamundaAutoConfig {
 
     @Bean
-    CamundaProcessEngineConfiguration elEngineConfiguration(ApplicationContext applicationContext
-            , @Autowired(required = false) CurrentElResolver elResolver) {
+    CamundaProcessEngineConfiguration elEngineConfiguration(ApplicationContext applicationContext, @Autowired(required = false) CurrentElResolver elResolver) {
         return new CamundaProcessEngineElConfiguration(applicationContext, elResolver);
     }
 
@@ -97,11 +94,7 @@ public class CamundaAutoConfig {
      * @return
      */
     @Bean
-    CamundaDatasourceConfiguration camundaDatasourceConfiguration(PlatformTransactionManager transactionManager,
-                                                                  Map<String, DataSource> dataSourceMap,
-                                                                  @Value("${" + CamundaBpmProperties.PREFIX + ".database.name:}") String name,
-                                                                  CamundaBpmProperties properties
-    ) {
+    CamundaDatasourceConfiguration camundaDatasourceConfiguration(PlatformTransactionManager transactionManager, Map<String, DataSource> dataSourceMap, @Value("${" + CamundaBpmProperties.PREFIX + ".database.name:}") String name, CamundaBpmProperties properties) {
         Assert.notNull(transactionManager, "未启动事务管理器");
         Assert.isTrue(!dataSourceMap.isEmpty(), "未设置数据源");
         DataSource dataSource;
@@ -150,17 +143,6 @@ public class CamundaAutoConfig {
     @Bean
     ProcessTypeProvider defaultProcessTypeProvider() {
         return new DefaultProcessTypeProvider();
-    }
-
-    /**
-     * 注入流程汇总实现
-     *
-     * @param processEngineConfiguration
-     * @return
-     */
-    @Bean
-    ProcessService processService(ProcessEngineConfigurationImpl processEngineConfiguration) {
-        return new DefaultProcessServiceImpl(processEngineConfiguration);
     }
 
 }

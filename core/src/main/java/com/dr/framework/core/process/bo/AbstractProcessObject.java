@@ -26,12 +26,12 @@ public abstract class AbstractProcessObject {
     /**
      * 定义的初始变量信息
      */
-    private List<ProPerty> proPerties;
+    private List<Property> proPerties;
 
-    public ProPerty getProPerty(String key) {
+    public Property getProPerty(String key) {
         if (proPerties != null) {
             if (!StringUtils.isEmpty(key)) {
-                for (ProPerty proPerty : getProPerties()) {
+                for (Property proPerty : getProPerties()) {
                     if (proPerty.getName().equals(key)) {
                         return proPerty;
                     }
@@ -65,11 +65,11 @@ public abstract class AbstractProcessObject {
         this.description = description;
     }
 
-    public List<ProPerty> getProPerties() {
+    public List<Property> getProPerties() {
         return proPerties;
     }
 
-    public void setProPerties(List<ProPerty> proPerties) {
+    public void setProPerties(List<Property> proPerties) {
         this.proPerties = proPerties;
     }
 }

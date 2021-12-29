@@ -7,7 +7,7 @@ import org.camunda.bpm.engine.task.Task;
 
 import java.util.Map;
 
-import static com.dr.framework.core.process.service.ProcessService.*;
+import static com.dr.framework.core.process.service.ProcessConstants.*;
 import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.filter;
 import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.getProperty;
 

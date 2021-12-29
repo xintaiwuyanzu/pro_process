@@ -1,6 +1,6 @@
 package com.dr.process.camunda.command.task;
 
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessConstants;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.delegate.TaskListener;
 import org.camunda.bpm.engine.impl.interceptor.Command;
@@ -67,7 +67,7 @@ public class JumpTaskCmd implements Command<Void> {
 
         Map<String, Object> map = new HashMap<>();
         if (!StringUtils.isEmpty(nextPerson)) {
-            map.put(ProcessService.ASSIGNEE_KEY, nextPerson);
+            map.put(ProcessConstants.ASSIGNEE_KEY, nextPerson);
         }
         executionEntity.setEventSource(current);
         executionEntity.setActivity(current);

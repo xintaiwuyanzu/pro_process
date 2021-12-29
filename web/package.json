@@ -10,12 +10,13 @@
   },
   "dependencies": {
     "@bpmn-io/replace-ids": "^0.2.0",
-    "@dr/ant-menu": "~0.0.1",
-    "@dr/auto": "~0.0.2",
     "@dr/framework": "^0.0.3",
-    "camunda-bpmn-js": "^0.11.5",
-    "ids": "^1.0.0",
-    "vue": "^2.6.14"
+    "camunda-bpmn-js": "^0.12.2",
+    "ids": "^1.0.0"
+  },
+  "optionalDependencies": {
+    "@u3u/vue-hooks": "^2.0.1",
+    "vue-demi": "^0.12.1"
   },
   "devDependencies": {
     "@dr/vue-cli-plugin-dr": "~1.0.2",

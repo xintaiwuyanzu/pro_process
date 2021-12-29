@@ -19,7 +19,7 @@ public class TaskInstance<T> extends ProcessInstance {
     /**
      * 流程定义的扩展属性
      */
-    private List<ProPerty> processProPerties;
+    private List<Property> processProPerties;
     /**
      * 环节定义id
      */
@@ -125,11 +125,11 @@ public class TaskInstance<T> extends ProcessInstance {
         this.assigneeName = assigneeName;
     }
 
-    public List<ProPerty> getProcessProPerties() {
+    public List<Property> getProcessProPerties() {
         return processProPerties;
     }
 
-    public void setProcessProPerties(List<ProPerty> processProPerties) {
+    public void setProcessProPerties(List<Property> processProPerties) {
         this.processProPerties = processProPerties;
     }
 }

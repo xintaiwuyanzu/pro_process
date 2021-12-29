@@ -9,8 +9,8 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.dr.framework.core.process.service.ProcessService.CREATE_NAME_KEY;
-import static com.dr.framework.core.process.service.ProcessService.TITLE_KEY;
+import static com.dr.framework.core.process.service.ProcessConstants.CREATE_NAME_KEY;
+import static com.dr.framework.core.process.service.ProcessConstants.TITLE_KEY;
 
 
 /**

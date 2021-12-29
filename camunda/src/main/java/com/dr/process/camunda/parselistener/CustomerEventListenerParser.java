@@ -1,6 +1,6 @@
 package com.dr.process.camunda.parselistener;
 
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessConstants;
 import com.dr.process.camunda.listener.OwnerTaskListener;
 import org.camunda.bpm.engine.delegate.DelegateListener;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
@@ -24,20 +24,19 @@ import org.springframework.util.StringUtils;
  * @author dr
  */
 public class CustomerEventListenerParser extends AbstractBpmnParseListener {
-    Expression listenerExpression;
-    Expression assigneeExpression;
-    Expression descriptionExpression;
+    protected Expression listenerExpression;
+    protected Expression assigneeExpression;
+    protected Expression descriptionExpression;
 
     public CustomerEventListenerParser(ExpressionManager expressionManager) {
         listenerExpression = expressionManager.createExpression("${" + OwnerTaskListener.BEAN_NAME + "}");
         assigneeExpression = expressionManager.createExpression("${assignee}");
-        descriptionExpression = expressionManager.createExpression("${title}");
+        descriptionExpression = expressionManager.createExpression("${$description}");
     }
 
     @Override
     public void parseProcess(Element processElement, ProcessDefinitionEntity processDefinition) {
         super.parseProcess(processElement, processDefinition);
-
         DelegateListener delegateListener = new DelegateExpressionExecutionListener(listenerExpression, null);
         processDefinition.addListener(ExecutionListener.EVENTNAME_START, delegateListener);
     }
@@ -48,7 +47,7 @@ public class CustomerEventListenerParser extends AbstractBpmnParseListener {
         ProcessDefinitionImpl processDefinition = startEventActivity.getProcessDefinition();
         String init = (String) processDefinition.getProperty(BpmnParse.PROPERTYNAME_INITIATOR_VARIABLE_NAME);
         if (StringUtils.isEmpty(init)) {
-            processDefinition.setProperty(BpmnParse.PROPERTYNAME_INITIATOR_VARIABLE_NAME, ProcessService.CREATE_KEY);
+            processDefinition.setProperty(BpmnParse.PROPERTYNAME_INITIATOR_VARIABLE_NAME, ProcessConstants.CREATE_KEY);
         }
     }
 
@@ -57,15 +56,15 @@ public class CustomerEventListenerParser extends AbstractBpmnParseListener {
         super.parseUserTask(userTaskElement, scope, activity);
         UserTaskActivityBehavior activityBehavior = (UserTaskActivityBehavior) activity.getActivityBehavior();
         TaskDefinition taskDefinition = activityBehavior.getTaskDefinition();
+        //手动设置接收人表达式
         if (taskDefinition.getAssigneeExpression() == null) {
             taskDefinition.setAssigneeExpression(assigneeExpression);
         }
-        TaskListener delegateListener = new DelegateExpressionTaskListener(listenerExpression, null);
-        taskDefinition.addTaskListener(TaskListener.EVENTNAME_CREATE, delegateListener);
-
+        //手动设置任务描述表达式
         if (taskDefinition.getDescriptionExpression() == null) {
             taskDefinition.setDescriptionExpression(descriptionExpression);
         }
-
+        TaskListener delegateListener = new DelegateExpressionTaskListener(listenerExpression, null);
+        taskDefinition.addTaskListener(TaskListener.EVENTNAME_CREATE, delegateListener);
     }
 }

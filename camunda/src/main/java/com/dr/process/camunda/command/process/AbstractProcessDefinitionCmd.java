@@ -1,8 +1,7 @@
 package com.dr.process.camunda.command.process;
 
 import com.dr.framework.common.dao.CommonMapper;
-import com.dr.framework.core.process.bo.ProPerty;
-import com.dr.framework.core.util.Constants;
+import com.dr.framework.core.process.bo.Property;
 import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionExtendEntity;
 import com.dr.process.camunda.utils.BeanMapper;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.dr.framework.core.process.service.ProcessService.*;
+import static com.dr.framework.core.process.service.ProcessConstants.*;
 
 /**
  * @author dr
@@ -59,10 +58,9 @@ public abstract class AbstractProcessDefinitionCmd {
                 if (extendEntity != null) {
                     def.setType(extendEntity.getType());
                 } else {
-                    def.setType(Constants.DEFAULT);
+                    def.setType(DEFAULT_PROCESS_TYPE);
                 }
             }
-
         });
         if (withProperty) {
             po.setProPerties(getProperty(processDefinition.getId(),
@@ -83,7 +81,7 @@ public abstract class AbstractProcessDefinitionCmd {
         return po;
     }
 
-    public static List<ProPerty> getProperty(String processDefineId, String key, CommandContext commandContext) {
+    public static List<Property> getProperty(String processDefineId, String key, CommandContext commandContext) {
         BpmnModelInstance bpmnModelInstance = commandContext.getProcessEngineConfiguration().getRepositoryService().getBpmnModelInstance(processDefineId);
         BaseElement element = bpmnModelInstance.getModelElementById(key);
 
@@ -103,7 +101,7 @@ public abstract class AbstractProcessDefinitionCmd {
                     .get()
                     .stream()
                     .map(p -> {
-                        ProPerty proPerty = new ProPerty();
+                        Property proPerty = new Property();
                         proPerty.setId(p.getCamundaId());
                         proPerty.setName(p.getCamundaName());
                         proPerty.setValue(p.getCamundaValue());

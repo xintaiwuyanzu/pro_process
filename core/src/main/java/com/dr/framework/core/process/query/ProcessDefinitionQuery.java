@@ -1,6 +1,6 @@
 package com.dr.framework.core.process.query;
 
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessConstants;
 
 /**
  * 流程定义查询
@@ -29,7 +29,7 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
     /**
      * 是否使用最新版本
      */
-    private boolean useLatestVersion = ProcessService.DEFAULT_LATEST_VERSION;
+    private boolean useLatestVersion = ProcessConstants.DEFAULT_LATEST_VERSION;
 
     public ProcessDefinitionQuery withStartUser() {
         this.withStartUser = true;

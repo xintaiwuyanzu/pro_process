@@ -1,7 +1,7 @@
 package com.dr.framework.core.process.service.impl;
 
+import com.dr.framework.core.process.service.ProcessConstants;
 import com.dr.framework.core.process.service.ProcessTypeProvider;
-import com.dr.framework.core.util.Constants;
 
 /**
  * 默认流程类型提供器
@@ -12,7 +12,7 @@ public class DefaultProcessTypeProvider implements ProcessTypeProvider {
 
     @Override
     public String getType() {
-        return Constants.DEFAULT;
+        return ProcessConstants.DEFAULT_PROCESS_TYPE;
     }
 
     @Override

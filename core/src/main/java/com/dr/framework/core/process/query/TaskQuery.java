@@ -137,12 +137,24 @@ public class TaskQuery extends AbsProcessQuery<TaskQuery> {
         return withVariables;
     }
 
+    public void setWithVariables(boolean withVariables) {
+        this.withVariables = withVariables;
+    }
+
+    public void setProcessInstanceId(String processInstanceId) {
+        this.processInstanceId = processInstanceId;
+    }
+
     public String getProcessInstanceId() {
         return processInstanceId;
     }
 
     public boolean isWithProcessProperty() {
         return withProcessProperty;
+    }
+
+    public void setWithProcessProperty(boolean withProcessProperty) {
+        this.withProcessProperty = withProcessProperty;
     }
 
     public String getProcessDefinitionKey() {

@@ -26,20 +26,21 @@ public class ParserListenerPlugin implements CamundaProcessEngineConfiguration {
 
     @Override
     public void preInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
+        //流程相关统计
+        processEngineConfiguration.setMetricsEnabled(false);
         parseEventListener(processEngineConfiguration);
 
-        processEngineConfiguration.getCustomEventHandlers()
-                .add(new EventHandler() {
-                    @Override
-                    public String getEventHandlerType() {
-                        return ExecutionListener.EVENTNAME_START;
-                    }
+        processEngineConfiguration.getCustomEventHandlers().add(new EventHandler() {
+            @Override
+            public String getEventHandlerType() {
+                return ExecutionListener.EVENTNAME_START;
+            }
 
-                    @Override
-                    public void handleEvent(EventSubscriptionEntity eventSubscription, Object payload, Object localPayload, String businessKey, CommandContext commandContext) {
-                        logger.info(payload.toString());
-                    }
-                });
+            @Override
+            public void handleEvent(EventSubscriptionEntity eventSubscription, Object payload, Object localPayload, String businessKey, CommandContext commandContext) {
+                logger.info(payload.toString());
+            }
+        });
     }
 
     /**
@@ -54,6 +55,6 @@ public class ParserListenerPlugin implements CamundaProcessEngineConfiguration {
             processEngineConfiguration.setCustomPostBPMNParseListeners(bpmnParseListeners);
         }
         bpmnParseListeners.add(new CustomerEventListenerParser(processEngineConfiguration.getExpressionManager()));
-        bpmnParseListeners.add(new FixTransitionBpmnParseListener());
+        bpmnParseListeners.add(new FixTransitionBpmnParseListener(processEngineConfiguration.getExpressionManager()));
     }
 }

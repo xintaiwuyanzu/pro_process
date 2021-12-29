@@ -1,7 +1,7 @@
 package com.dr.process.camunda.command.task;
 
 import com.dr.framework.core.process.query.TaskQuery;
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessConstants;
 import com.dr.process.camunda.annotations.SqlProxy;
 import org.camunda.bpm.engine.impl.TaskQueryImpl;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -24,7 +24,7 @@ public class AbstractGetTaskQueryCmd extends AbstractGetTaskCmd {
         taskQuery.initializeFormKeys();
         if (query != null) {
             if (!StringUtils.isEmpty(query.getCreatePerson())) {
-                taskQuery.processVariableValueEquals(ProcessService.CREATE_KEY, query.getCreatePerson());
+                taskQuery.processVariableValueEquals(ProcessConstants.CREATE_KEY, query.getCreatePerson());
             }
             if (!StringUtils.isEmpty(query.getOwner())) {
                 taskQuery.taskOwner(query.getOwner());
@@ -53,6 +53,7 @@ public class AbstractGetTaskQueryCmd extends AbstractGetTaskCmd {
                 taskQuery.processDefinitionKeyLike(query.getProcessDefinitionKey());
             }
         }
+        taskQuery.orderByTaskCreateTime().desc();
         return taskQuery;
     }
 

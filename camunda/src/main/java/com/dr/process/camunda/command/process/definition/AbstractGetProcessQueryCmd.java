@@ -1,6 +1,6 @@
 package com.dr.process.camunda.command.process.definition;
 
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessConstants;
 import com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
@@ -13,7 +13,7 @@ public abstract class AbstractGetProcessQueryCmd extends AbstractProcessDefiniti
     private com.dr.framework.core.process.query.ProcessDefinitionQuery query;
 
     public AbstractGetProcessQueryCmd(com.dr.framework.core.process.query.ProcessDefinitionQuery query) {
-        super(query == null ? ProcessService.DEFAULT_WITH_PROPERTIES : query.isWithProperty());
+        super(query == null ? ProcessConstants.DEFAULT_WITH_PROPERTIES : query.isWithProperty());
         this.query = query;
     }
 

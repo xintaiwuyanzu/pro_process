@@ -8,6 +8,34 @@ import org.springframework.core.Ordered;
  * @author dr
  */
 public interface ProcessTypeProvider extends Ordered {
+
+    /**
+     * 获取指定类型的流程对应的角色
+     *
+     * @return
+     */
+    default String getRoleCode() {
+        return null;
+    }
+
+    /**
+     * 流程启动前回调业务方法
+     *
+     * @param context
+     */
+    default void onBeforeStartProcess(ProcessContext context) {
+
+    }
+
+    /**
+     * 流程启动后回调业务方法
+     *
+     * @param context
+     */
+    default void onAfterStartProcess(ProcessContext context) {
+
+    }
+
     /**
      * 流程类型
      *
@@ -35,4 +63,5 @@ public interface ProcessTypeProvider extends Ordered {
     default int getOrder() {
         return 0;
     }
+
 }

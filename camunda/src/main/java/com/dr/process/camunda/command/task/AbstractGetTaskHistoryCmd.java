@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.dr.framework.core.process.service.ProcessService.*;
+import static com.dr.framework.core.process.service.ProcessConstants.*;
 import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.filter;
 import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.getProperty;
 

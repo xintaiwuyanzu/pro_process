@@ -19,4 +19,8 @@ public class AbsProcessQuery<T extends AbsProcessQuery> {
     public boolean isWithProperty() {
         return withProperty;
     }
+
+    public void setWithProperty(boolean withProperty) {
+        this.withProperty = withProperty;
+    }
 }

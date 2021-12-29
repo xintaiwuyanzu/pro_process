@@ -1,6 +1,6 @@
 package com.dr.process.camunda.command.task;
 
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessConstants;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -31,19 +31,18 @@ public class SendTaskCmd implements Command<Void> {
     public Void execute(CommandContext commandContext) {
         Assert.isTrue(!StringUtils.isEmpty(taskId), "环节Id不能为空！");
 
-        TaskService taskService = commandContext.getProcessEngineConfiguration()
-                .getTaskService();
+        TaskService taskService = commandContext.getProcessEngineConfiguration().getTaskService();
 
         Task task = commandContext.getTaskManager().findTaskById(taskId);
         if (!StringUtils.isEmpty(comment)) {
             taskService.createComment(taskId, task.getProcessInstanceId(), comment);
         }
-        if (variables != null) {
-            taskService.setVariablesLocal(taskId, variables);
-        }
         Map<String, Object> map = new HashMap<>();
+        if (variables != null) {
+            map.putAll(variables);
+        }
         if (!StringUtils.isEmpty(nextPerson)) {
-            map.put(ProcessService.ASSIGNEE_KEY, nextPerson);
+            map.put(ProcessConstants.ASSIGNEE_KEY, nextPerson);
         }
         taskService.complete(taskId, map);
         return null;

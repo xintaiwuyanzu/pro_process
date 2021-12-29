@@ -2,16 +2,17 @@ package com.dr.process.camunda.service.impl;
 
 import com.dr.framework.common.dao.CommonMapper;
 import com.dr.framework.core.process.bo.ProcessDefinition;
-import com.dr.framework.core.util.Constants;
+import com.dr.framework.core.process.service.ProcessConstants;
 import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionExtendEntity;
 import com.dr.process.camunda.service.ProcessDeployService;
 import com.dr.process.camunda.utils.BeanMapper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.engine.RepositoryService;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.spring.SpringTransactionsProcessEngineConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
@@ -27,21 +28,19 @@ import java.util.List;
  *
  * @author dr
  */
+@Service
 public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl implements ProcessDeployService {
-
+    @Autowired
     private RepositoryService repositoryService;
     private ProcessApplicationReference processApplicationReference;
+    @Autowired
     private CommonMapper commonMapper;
-
-    public DefaultProcessDeployServiceImpl(ProcessEngineConfigurationImpl processEngineConfiguration) {
-        super(processEngineConfiguration);
-    }
 
     @Override
     @Transactional
     public List<ProcessDefinition> deploy(String type, String resourceName, InputStream stream) {
         if (!StringUtils.hasText(type)) {
-            type = Constants.DEFAULT;
+            type = ProcessConstants.DEFAULT_PROCESS_TYPE;
         }
         if (!StringUtils.hasText(resourceName)) {
             if (!stream.markSupported()) {
@@ -61,13 +60,7 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
                 e.printStackTrace();
             }
         }
-        List<ProcessDefinition> processDefinitions = BeanMapper.newProcessDefinitionList(
-                buildDeployment()
-                        .source(ProcessDeployService.DEFAULT_DEPLOY_NAME)
-                        .addInputStream(resourceName, stream)
-                        .deployWithResult()
-                        .getDeployedProcessDefinitions()
-        );
+        List<ProcessDefinition> processDefinitions = BeanMapper.newProcessDefinitionList(buildDeployment().source(ProcessDeployService.DEFAULT_DEPLOY_NAME).addInputStream(resourceName, stream).deployWithResult().getDeployedProcessDefinitions());
         //添加类型
         for (ProcessDefinition processDefinition : processDefinitions) {
             ProcessDefinitionExtendEntity entity = new ProcessDefinitionExtendEntity();
@@ -101,16 +94,12 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
     @Override
     @Transactional
     public void deleteProcessByDefinitionKey(String defKey) {
-        getRepositoryService().deleteProcessDefinitions()
-                .byKey(defKey)
-                .delete();
+        getRepositoryService().deleteProcessDefinitions().byKey(defKey).delete();
         //TODO 删除扩展表数据
     }
 
     protected DeploymentBuilder buildDeployment() {
-        DeploymentBuilder builder = getProcessApplicationReference() == null ?
-                getRepositoryService().createDeployment() :
-                getRepositoryService().createDeployment(getProcessApplicationReference());
+        DeploymentBuilder builder = getProcessApplicationReference() == null ? getRepositoryService().createDeployment() : getRepositoryService().createDeployment(getProcessApplicationReference());
         builder.name(DEFAULT_DEPLOY_NAME);
         if (getProcessEngineConfiguration() != null && getProcessEngineConfiguration() instanceof SpringTransactionsProcessEngineConfiguration) {
             boolean filter = ((SpringTransactionsProcessEngineConfiguration) getProcessEngineConfiguration()).isDeployChangedOnly();
@@ -122,12 +111,11 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
     @Override
     public void afterPropertiesSet() throws Exception {
         super.afterPropertiesSet();
-        repositoryService = getProcessEngineConfiguration().getRepositoryService();
         try {
             processApplicationReference = getApplicationContext().getBean(ProcessApplicationReference.class);
         } catch (Exception ignore) {
+
         }
-        commonMapper = getApplicationContext().getBean(CommonMapper.class);
     }
 
     public CommonMapper getCommonMapper() {

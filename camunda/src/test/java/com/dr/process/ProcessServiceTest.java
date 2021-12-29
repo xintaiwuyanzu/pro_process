@@ -9,7 +9,10 @@ import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.ProcessDefinitionQuery;
 import com.dr.framework.core.process.query.ProcessQuery;
 import com.dr.framework.core.process.query.TaskQuery;
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessDefinitionService;
+import com.dr.framework.core.process.service.ProcessInstanceService;
+import com.dr.framework.core.process.service.TaskDefinitionService;
+import com.dr.framework.core.process.service.TaskInstanceService;
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
@@ -27,7 +30,13 @@ import java.util.Map;
 @RunWith(SpringRunner.class)
 public class ProcessServiceTest {
     @Autowired
-    ProcessService processService;
+    ProcessDefinitionService processService;
+    @Autowired
+    ProcessInstanceService processInstanceService;
+    @Autowired
+    TaskInstanceService taskInstanceService;
+    @Autowired
+    TaskDefinitionService taskDefinitionService;
     @Autowired
     OrganisePersonService organisePersonService;
     @Autowired
@@ -61,14 +70,11 @@ public class ProcessServiceTest {
         map.put("assignee", "admin1");
         map.put("title", "hahha");
         map.put("formId", "aaaa");
-        ProcessInstance processInstance = processService.start(processDefinition.getId(), map, person);
+        ProcessInstance processInstance = taskInstanceService.start(processDefinition.getId(), map, person);
 
-        TaskQuery query = new TaskQuery()
-                .processDefinitionKeyLike("%aaa%")
-                .taskKeyNotLike("bbb")
-                .withProperty().withVariables();
+        TaskQuery query = new TaskQuery().processDefinitionKeyLike("%aaa%").taskKeyNotLike("bbb").withProperty().withVariables();
 
-        List<TaskInstance> taskObjects = processService.taskList(query);
+        List<TaskInstance> taskObjects = taskInstanceService.taskList(query);
 
 
         map.put("title", "bbbbb");
@@ -87,8 +93,8 @@ public class ProcessServiceTest {
 
     @Test
     public void testJump() {
-        TaskInstance taskObject = processService.taskList(new TaskQuery()).get(0);
-        processService.jump(taskObject.getId(), "Task_0oihs3n", "admin");
+        TaskInstance taskObject = taskInstanceService.taskList(new TaskQuery()).get(0);
+        taskInstanceService.jump(taskObject.getId(), "Task_0oihs3n", "admin");
     }
 
     @Test
@@ -98,22 +104,18 @@ public class ProcessServiceTest {
         map.put("title", "aaa");
         map.put("assignee", "aaa");
         map.put("formId", "aaa");
-        ProcessInstance object = processService.start(processObject.getId(), map, person);
-        List<TaskInstance> objects = processService.taskList(new TaskQuery().processInstanceIdEqual(object.getId()));
+        ProcessInstance object = taskInstanceService.start(processObject.getId(), map, person);
+        List<TaskInstance> objects = taskInstanceService.taskList(new TaskQuery().processInstanceIdEqual(object.getId()));
 
-        processService.endProcess(objects.get(0).getId(), null);
+        taskInstanceService.endProcess(objects.get(0).getId(), null);
 
     }
 
-
     @Test
     public void testProcess() {
-        List<ProcessInstance> pr = processService.processInstanceList(new ProcessQuery());
-        List<ProcessInstance> processInstanceHistoryList = processService.processInstanceHistoryList(new ProcessQuery());
-
+        List<ProcessInstance> pr = processInstanceService.processInstanceList(new ProcessQuery());
+        List<ProcessInstance> processInstanceHistoryList = processInstanceService.processInstanceHistoryList(new ProcessQuery());
         repositoryService.getBpmnModelInstance(pr.get(0).getId());
-
-
     }
 
 }

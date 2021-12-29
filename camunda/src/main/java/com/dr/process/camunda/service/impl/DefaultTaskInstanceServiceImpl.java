@@ -2,19 +2,19 @@ package com.dr.process.camunda.service.impl;
 
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.organise.entity.Person;
-import com.dr.framework.core.organise.service.OrganisePersonService;
 import com.dr.framework.core.process.bo.*;
 import com.dr.framework.core.process.query.TaskQuery;
+import com.dr.framework.core.process.service.ProcessContext;
 import com.dr.framework.core.process.service.ProcessDefinitionService;
+import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.process.service.TaskInstanceService;
 import com.dr.process.camunda.command.process.ConvertProcessInstanceCmd;
 import com.dr.process.camunda.command.process.EndProcessCmd;
 import com.dr.process.camunda.command.process.GetProcessCommentsCmd;
 import com.dr.process.camunda.command.task.*;
-import org.camunda.bpm.engine.RuntimeService;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -22,24 +22,21 @@ import org.springframework.util.StringUtils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static com.dr.framework.core.process.service.ProcessService.FORM_URL_KEY;
+import static com.dr.framework.core.process.service.ProcessConstants.*;
 
 /**
  * 默认环节实例实现
  *
  * @author dr
  */
+@Service
 public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl implements TaskInstanceService {
-    private TaskService taskService;
-    private OrganisePersonService organisePersonService;
-    private RuntimeService runtimeService;
+    @Autowired
     private ProcessDefinitionService processDefinitionService;
+    private Map<String, ProcessTypeProvider> processTypeProviderMap;
 
-    public DefaultTaskInstanceServiceImpl(ProcessEngineConfigurationImpl processEngineConfiguration, ProcessDefinitionService processDefinitionService) {
-        super(processEngineConfiguration);
-        this.processDefinitionService = processDefinitionService;
-    }
 
     @Override
     public TaskInstance taskInfo(String taskId) {
@@ -112,37 +109,75 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     public void addComment(String taskId, String... comments) {
         TaskInstance taskObject = taskInfo(taskId);
         for (String comment : comments) {
-            taskService.createComment(taskObject.getId(), taskObject.getProcessInstanceId(), comment);
+            getTaskService().createComment(taskObject.getId(), taskObject.getProcessInstanceId(), comment);
         }
     }
 
 
     @Override
     @Transactional
-    public ProcessInstance start(String processId, Map<String, Object> variMap, Person person) {
-        ProcessDefinition processDefinition = getProcessDefinitionService().getProcessDefinitionById(processId);
-        ProPerty proPerty = processDefinition.getProPerty(FORM_URL_KEY);
+    public ProcessInstance start(String processDefinitionId, Map<String, Object> variMap, Person person) {
+        ProcessDefinition processDefinition = getProcessDefinitionService().getProcessDefinitionById(processDefinitionId);
+        ProcessContext context = buildContext(processDefinition, person, variMap);
+        ProcessTypeProvider processTypeProvider = processTypeProviderMap.get(processDefinition.getType());
+
+        Assert.isTrue(processTypeProvider != null, "不支持指定的流程类型：" + processDefinition.getType());
+        //启动前拦截
+        processTypeProvider.onBeforeStartProcess(context);
+
+        Property proPerty = processDefinition.getProPerty(FORM_URL_KEY);
         if (proPerty != null) {
-            variMap.put(FORM_URL_KEY, proPerty.getValue());
+            context.addVar(FORM_URL_KEY, proPerty.getValue());
         }
-        ProcessInstanceWithVariables instance = (ProcessInstanceWithVariables) runtimeService.startProcessInstanceById(processDefinition.getId(), variMap);
-        return getCommandExecutor().execute(
-                new ConvertProcessInstanceCmd(
-                        instance.getId(),
-                        instance.getVariables()
-                )
-        );
+
+        if (StringUtils.hasText(context.getProcessInstanceTitle())) {
+            context.addVar(TITLE_KEY, context.getProcessInstanceTitle());
+        }
+        if (StringUtils.hasText(context.getProcessInstanceDescription())) {
+            context.addVar(DESCRIPTION_KEY, context.getProcessInstanceDescription());
+        } else {
+            context.addVar(DESCRIPTION_KEY, "默认标题！！！");
+        }
+        //设置启动环节任务人为传进来的登陆人信息
+        context.addVar(ASSIGNEE_KEY, person.getId());
+        //设置流程任务类型变量
+        context.addVar(PROCESS_TYPE_KEY, processTypeProvider.getType());
+        //调用流程引擎启动流程
+        ProcessInstanceWithVariables instance = (ProcessInstanceWithVariables) getRuntimeService().startProcessInstanceById(processDefinition.getId(), context.getBusinessId(), context.getProcessVarMap());
+        //转换流程实例对象
+        ProcessInstance instance1 = getCommandExecutor().execute(new ConvertProcessInstanceCmd(instance.getId(), instance.getVariables()));
+
+        context.setProcessInstance(instance1);
+        //启动后拦截
+        processTypeProvider.onAfterStartProcess(context);
+        //有可能启动后直接跳转到第二个环节
+        if (variMap.containsKey(NEXT_TASK_ID) && variMap.containsKey(NEXT_TASK_PERSON)) {
+            String taskId = (String) variMap.get(NEXT_TASK_ID);
+            String personId = (String) variMap.get(NEXT_TASK_PERSON);
+            if (StringUtils.hasText(taskId) && StringUtils.hasText(personId)) {
+                send(taskId, personId, (String) variMap.get(COMMENT_KEY), variMap);
+            }
+        }
+        return instance1;
     }
 
 
     @Override
     public void complete(String taskId, Map<String, Object> variables) {
         Assert.isTrue(!StringUtils.isEmpty(taskId), "环节Id不能为空！");
-        taskService.complete(taskId, variables);
+        getTaskService().complete(taskId, variables);
     }
 
-
+    /**
+     * 发送到下一环节
+     *
+     * @param taskId
+     * @param nextPerson
+     * @param comment
+     * @param variables
+     */
     @Override
+    @Transactional
     public void send(String taskId, String nextPerson, String comment, Map<String, Object> variables) {
         getCommandExecutor().execute(new SendTaskCmd(taskId, nextPerson, comment, variables));
     }
@@ -150,13 +185,13 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     @Override
     public void suspend(String processInstanceId) {
         Assert.isTrue(!StringUtils.isEmpty(processInstanceId), "流程实例不能为空");
-        runtimeService.suspendProcessInstanceById(processInstanceId);
+        getRuntimeService().suspendProcessInstanceById(processInstanceId);
     }
 
     @Override
     public void active(String processInstanceId) {
         Assert.isTrue(!StringUtils.isEmpty(processInstanceId), "流程实例不能为空");
-        runtimeService.activateProcessInstanceById(processInstanceId);
+        getRuntimeService().activateProcessInstanceById(processInstanceId);
     }
 
     @Override
@@ -175,27 +210,11 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-        taskService = getApplicationContext().getBean(TaskService.class);
-        organisePersonService = getApplicationContext().getBean(OrganisePersonService.class);
-        runtimeService = getApplicationContext().getBean(RuntimeService.class);
-    }
-
-    public TaskService getTaskService() {
-        return taskService;
-    }
-
-    public OrganisePersonService getOrganisePersonService() {
-        return organisePersonService;
-    }
-
-    public RuntimeService getRuntimeService() {
-        return runtimeService;
+    public void afterPropertiesSet() {
+        processTypeProviderMap = getApplicationContext().getBeansOfType(ProcessTypeProvider.class).values().stream().collect(Collectors.toMap(ProcessTypeProvider::getType, t -> t));
     }
 
     public ProcessDefinitionService getProcessDefinitionService() {
         return processDefinitionService;
     }
-
 }

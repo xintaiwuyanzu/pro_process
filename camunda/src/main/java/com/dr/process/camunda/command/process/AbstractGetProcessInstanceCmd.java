@@ -2,7 +2,7 @@ package com.dr.process.camunda.command.process;
 
 import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.query.ProcessQuery;
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.ProcessConstants;
 import com.dr.process.camunda.annotations.SqlProxy;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
@@ -29,7 +29,7 @@ public class AbstractGetProcessInstanceCmd {
         HistoricProcessInstanceQueryImplWithExtend pq = new HistoricProcessInstanceQueryImplWithExtend(commandContext.getProcessEngineConfiguration().getCommandExecutorTxRequired());
         if (query != null) {
             if (!StringUtils.isEmpty(query.getDescription())) {
-                pq.variableValueLike(ProcessService.TITLE_KEY, query.getDescription());
+                pq.variableValueLike(ProcessConstants.TITLE_KEY, query.getDescription());
             }
             pq.startedBy(query.getCreatePerson());
             if (!StringUtils.isEmpty(query.getName())) {

@@ -14,6 +14,7 @@
           <el-button icon="el-icon-search" @click="loadData(searchForm)" type="primary">搜 索</el-button>
           <el-button type="info" @click="$refs.searchForm.resetFields()">重 置</el-button>
           <el-button icon="el-icon-plus" @click="edit()" type="primary">添 加</el-button>
+          <el-button @click="start" type="primary">启动流程</el-button>
         </el-form-item>
       </el-form>
     </nac-info>
@@ -68,9 +69,11 @@
 <script>
 import indexMixin from '@dr/auto/lib/util/indexMixin'
 import processTypeMixin from "./processTypeMixin";
+import abstractProcess from "../../../lib/abstractProcess";
 
 export default {
   mixins: [indexMixin, processTypeMixin],
+  extends: abstractProcess,
   data() {
     return {
       //流程定义类型
@@ -108,9 +111,13 @@ export default {
       this.loading = false
       this.deleteShow = false
     },
-    $init() {
-      this.loadProcessType()
-          .then(this.loadData)
+    async start() {
+      const data = await this.startProcess('default_process', {})
+      console.log(data)
+    },
+    async $init() {
+      await this.loadProcessType()
+      await this.loadData()
     }
   }
 }

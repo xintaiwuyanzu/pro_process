@@ -15,7 +15,7 @@ public class TaskDefinition extends AbstractProcessObject {
     /**
      * 定义的流程属性
      */
-    private List<ProPerty> processProPerties;
+    private List<Property> processProPerties;
 
     public List<Person> getStartUser() {
         return startUser;
@@ -25,11 +25,11 @@ public class TaskDefinition extends AbstractProcessObject {
         this.startUser = startUser;
     }
 
-    public List<ProPerty> getProcessProPerties() {
+    public List<Property> getProcessProPerties() {
         return processProPerties;
     }
 
-    public void setProcessProPerties(List<ProPerty> processProPerties) {
+    public void setProcessProPerties(List<Property> processProPerties) {
         this.processProPerties = processProPerties;
     }
 }

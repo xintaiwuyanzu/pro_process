@@ -37,7 +37,7 @@ export default {
       loading: false,
       //流程定义Id
       id: '',
-      type: 'default',
+      type: 'default_process',
       //流程定义对象
       processDefinition: {}
     }

@@ -36,4 +36,9 @@ public class ProcessTypeProviderWrapper implements ProcessTypeProvider {
     public int getOrder() {
         return rawProvider.getOrder();
     }
+
+    @Override
+    public String getRoleCode() {
+        return rawProvider.getRoleCode();
+    }
 }

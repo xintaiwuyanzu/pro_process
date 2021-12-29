@@ -1,6 +1,7 @@
 package com.dr.framework.core.process.controller;
 
-import com.dr.framework.core.process.service.ProcessService;
+import com.dr.framework.core.process.service.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 
 /**
@@ -9,16 +10,28 @@ import org.springframework.context.support.ApplicationObjectSupport;
  * @author dr
  */
 public class BaseProcessController extends ApplicationObjectSupport {
-    /**
-     * 流程汇总service
-     */
-    private ProcessService processService;
+    @Autowired
+    private ProcessDefinitionService processDefinitionService;
+    @Autowired
+    private ProcessInstanceService processInstanceService;
+    @Autowired
+    private TaskDefinitionService taskDefinitionService;
+    @Autowired
+    private TaskInstanceService taskInstanceService;
 
-    public BaseProcessController(ProcessService processService) {
-        this.processService = processService;
+    public ProcessDefinitionService getProcessDefinitionService() {
+        return processDefinitionService;
     }
 
-    public ProcessService getProcessService() {
-        return processService;
+    public ProcessInstanceService getProcessInstanceService() {
+        return processInstanceService;
+    }
+
+    public TaskDefinitionService getTaskDefinitionService() {
+        return taskDefinitionService;
+    }
+
+    public TaskInstanceService getTaskInstanceService() {
+        return taskInstanceService;
     }
 }
