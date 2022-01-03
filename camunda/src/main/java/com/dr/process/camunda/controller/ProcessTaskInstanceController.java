@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author dr
  */
 @RestController
-@RequestMapping("${common.api-path:/api}/taskInstance")
+@RequestMapping("${common.api-path:/api}/processTaskInstance")
 public class ProcessTaskInstanceController extends AbstractTaskInstanceController {
 
 }

@@ -14,7 +14,7 @@ export default () => {
 
     const {route} = useRouter()
     const loadProperties = async (taskId) => {
-        const {data} = await http().get(`/taskInstance/detail?id=${taskId}`)
+        const {data} = await http().get(`/processTaskInstance/detail?id=${taskId}`)
         return data
     }
     watchEffect(async () => {

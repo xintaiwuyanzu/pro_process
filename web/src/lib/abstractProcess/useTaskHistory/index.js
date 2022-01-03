@@ -18,7 +18,7 @@ export default () => {
         instance.tasks = []
         instance.visible = true
         instance.loading = true
-        const {data} = await http().post('/taskInstance/history', {page: false, processInstanceId})
+        const {data} = await http().post('/processTaskInstance/history', {page: false, processInstanceId})
         if (data.success) {
             instance.tasks = data.data
             instance.loading = false

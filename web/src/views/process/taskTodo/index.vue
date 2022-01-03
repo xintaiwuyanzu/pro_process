@@ -1,5 +1,5 @@
 <template>
-  <table-index path="taskInstance" :fields="fields" :edit="false" :insert="false" :delete="false">
+  <table-index path="processTaskInstance" :fields="fields" :edit="false" :insert="false" :delete="false">
     <template slot="table-$btns" slot-scope="{row}">
       <el-button type="text" width="40" @click="showDetail(row)">查看</el-button>
       <el-button type="text" width="60" @click="()=>showHistory(row.processInstanceId)">流转历史</el-button>

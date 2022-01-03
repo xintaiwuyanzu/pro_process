@@ -23,7 +23,7 @@ export default () => {
         })
         dialog.$on('submit', async (form) => {
             dialog.loading = true
-            const startResult = await http().post('/taskInstance/start', {
+            const startResult = await http().post('/processTaskInstance/start', {
                 definitionId: form.processId
             })
             console.log(startResult)

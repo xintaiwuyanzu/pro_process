@@ -20,7 +20,7 @@ export default () => {
             if (resolve) {
                 instance.loading = true
                 //调用后台发送方法
-                const {data} = await http().post('/taskInstance/send', {
+                const {data} = await http().post('/processTaskInstance/send', {
                     taskInstanceId,
                     nextActivityId: form.taskDefinitionId,
                     nextPersonId: form.person.join(','),
