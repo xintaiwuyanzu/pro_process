@@ -15,26 +15,19 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContextFactory;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaDatasourceConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaProcessEngineConfiguration;
-import org.camunda.bpm.spring.boot.starter.property.CamundaBpmProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
-import java.util.Map;
 
 /**
  * 处理camunda自启动相关配置
@@ -58,7 +51,7 @@ public class CamundaAutoConfig {
     }
 
     @Bean
-    CommandContextFactory commandContextFactory(ProcessEngineConfigurationImpl processEngineConfiguration) {
+    CommandContextFactory processCommandContextFactory(ProcessEngineConfigurationImpl processEngineConfiguration) {
         return processEngineConfiguration.getCommandContextFactory();
     }
 
@@ -85,29 +78,23 @@ public class CamundaAutoConfig {
     }
 
     /**
-     * 配置数据源
+     * camunda绑定指定的数据源
      *
-     * @param transactionManager
-     * @param dataSourceMap
-     * @param name
-     * @param properties
      * @return
      */
     @Bean
-    CamundaDatasourceConfiguration camundaDatasourceConfiguration(PlatformTransactionManager transactionManager, Map<String, DataSource> dataSourceMap, @Value("${" + CamundaBpmProperties.PREFIX + ".database.name:}") String name, CamundaBpmProperties properties) {
-        Assert.notNull(transactionManager, "未启动事务管理器");
-        Assert.isTrue(!dataSourceMap.isEmpty(), "未设置数据源");
-        DataSource dataSource;
-        if (dataSourceMap.size() == 1) {
-            dataSource = dataSourceMap.values().iterator().next();
-        } else {
-            Assert.isTrue(!StringUtils.isEmpty(name), "检测到多个数据源，请使用：" + CamundaBpmProperties.PREFIX + ".database.name 声明流程引擎所属数据源！");
-            dataSource = dataSourceMap.get(name);
-            Assert.notNull(dataSource, "未检测到名称为：" + name + "的数据源！");
-        }
+    CamundaDataSourceBeanFactoryPostProcessor camundaDataSourceBeanFactoryPostProcessor() {
+        return new CamundaDataSourceBeanFactoryPostProcessor();
+    }
 
-
-        return new CamundaDbFixConfig(transactionManager, dataSource, properties);
+    /**
+     * 配置数据源
+     *
+     * @return
+     */
+    @Bean
+    CamundaDatasourceConfiguration camundaDatasourceConfiguration() {
+        return new CamundaDbFixConfig();
     }
 
     /**

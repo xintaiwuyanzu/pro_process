@@ -34,6 +34,8 @@ public abstract class BaseProcessServiceImpl implements InitializingBean, Applic
     protected RuntimeService runtimeService;
     @Autowired
     protected ProcessEngineConfigurationImpl processEngineConfiguration;
+    @Autowired
+    protected CommandExecutor commandExecutor;
     private ApplicationContext applicationContext;
 
 
@@ -77,7 +79,6 @@ public abstract class BaseProcessServiceImpl implements InitializingBean, Applic
     }
 
     public CommandExecutor getCommandExecutor() {
-        return processEngineConfiguration.getCommandExecutorTxRequired();
+        return commandExecutor;
     }
-
 }

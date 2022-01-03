@@ -21,6 +21,8 @@ import org.camunda.bpm.spring.boot.starter.property.CamundaBpmProperties;
 import org.camunda.bpm.spring.boot.starter.property.DatabaseProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -41,16 +43,22 @@ import java.util.Optional;
 public class CamundaDbFixConfig extends ApplicationObjectSupport implements CamundaDatasourceConfiguration {
     protected static final Logger logger = LoggerFactory.getLogger(CamundaDbFixConfig.class);
     protected static final String CUSTOM_MAPPER_PATH_PATTERN = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + "camunda/mapping/*.mapper.xml";
+    @Autowired
+    protected CamundaBpmProperties camundaBpmProperties;
 
-    private PlatformTransactionManager transactionManager;
-    private DataSource dataSource;
-    private CamundaBpmProperties properties;
+    @Autowired
+    protected PlatformTransactionManager transactionManager;
 
-    public CamundaDbFixConfig(PlatformTransactionManager transactionManager, DataSource dataSource, CamundaBpmProperties properties) {
-        this.transactionManager = transactionManager;
-        this.dataSource = dataSource;
-        this.properties = properties;
-    }
+    @Autowired(required = false)
+    @Qualifier("camundaBpmTransactionManager")
+    protected PlatformTransactionManager camundaTransactionManager;
+
+    @Autowired
+    protected DataSource dataSource;
+
+    @Autowired(required = false)
+    @Qualifier("camundaBpmDataSource")
+    protected DataSource camundaDataSource;
 
     @Override
     public void preInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
@@ -70,9 +78,9 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
     private void fixDataSource(ProcessEngineConfigurationImpl processEngineConfiguration) {
         if (processEngineConfiguration instanceof SpringProcessEngineConfiguration) {
             SpringProcessEngineConfiguration configuration = (SpringProcessEngineConfiguration) processEngineConfiguration;
-            configuration.setTransactionManager(transactionManager);
-            configuration.setDataSource(dataSource);
-            DatabaseProperty database = properties.getDatabase();
+            configuration.setTransactionManager(Optional.ofNullable(camundaTransactionManager).orElse(transactionManager));
+            configuration.setDataSource(Optional.ofNullable(camundaDataSource).orElse(dataSource));
+            DatabaseProperty database = camundaBpmProperties.getDatabase();
             configuration.setDatabaseType(database.getType());
             configuration.setDatabaseSchemaUpdate(database.getSchemaUpdate());
             if (!StringUtils.isEmpty(database.getTablePrefix())) {
@@ -80,7 +88,7 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
             }
             configuration.setJdbcBatchProcessing(database.isJdbcBatchProcessing());
         }
-        DataBaseMetaData dataBaseMetaData = new DataBaseMetaData(dataSource, "Camunda");
+        DataBaseMetaData dataBaseMetaData = new DataBaseMetaData(Optional.ofNullable(camundaDataSource).orElse(dataSource), "Camunda");
         String schema = Optional.ofNullable(dataBaseMetaData.getSchema()).orElse(dataBaseMetaData.getCatalog());
         if (!StringUtils.isEmpty(schema)) {
             //TODO?
