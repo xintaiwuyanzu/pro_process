@@ -11,6 +11,7 @@ import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.db.entitymanager.DbEntityManager;
+import org.camunda.bpm.engine.impl.db.sql.DbSqlSession;
 import org.camunda.bpm.engine.impl.db.sql.DbSqlSessionFactory;
 import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
 import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
@@ -121,6 +122,11 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
     public void postInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
         fixDataBaseInfo(processEngineConfiguration);
         fixFixMybatis(processEngineConfiguration);
+
+        DbFixSqlSessionFactory sqlSessionFactory = new DbFixSqlSessionFactory(processEngineConfiguration.isJdbcBatchProcessing(), processEngineConfiguration);
+        processEngineConfiguration.getSessionFactories().put(DbSqlSession.class, sqlSessionFactory);
+        processEngineConfiguration.setDbSqlSessionFactory(sqlSessionFactory);
+
     }
 
     /**
@@ -144,8 +150,7 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
      * @param configuration
      */
     private void fixFixMybatis(ProcessEngineConfigurationImpl configuration) {
-        DbSqlSessionFactory dbSqlSessionFactory = configuration.getDbSqlSessionFactory();
-        Configuration mybatisConfig = dbSqlSessionFactory.getSqlSessionFactory().getConfiguration();
+        Configuration mybatisConfig = configuration.getSqlSessionFactory().getConfiguration();
         try {
             for (Resource resource : getApplicationContext().getResources(CUSTOM_MAPPER_PATH_PATTERN)) {
                 new XMLMapperBuilder(resource.getInputStream(), mybatisConfig, resource.getFilename(), mybatisConfig.getSqlFragments()).parse();
