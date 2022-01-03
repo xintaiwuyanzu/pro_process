@@ -6,4 +6,4 @@ transaction-logs
 */target/
 */yarn.lock
 */node_modules/
-·web/dist
+/web/dist

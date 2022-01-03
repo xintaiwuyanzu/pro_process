@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("${common.api-path:/api}/taskDefinition")
-public class TaskDefinitionController extends AbstractTaskDefinitionController {
+public class ProcessTaskDefinitionController extends AbstractTaskDefinitionController {
 }

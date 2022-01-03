@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("${common.api-path:/api}/taskInstance")
-public class TaskInstanceController extends AbstractTaskInstanceController {
+public class ProcessTaskInstanceController extends AbstractTaskInstanceController {
 
 }

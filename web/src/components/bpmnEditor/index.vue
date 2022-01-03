@@ -50,16 +50,17 @@ export default {
     };
   },
   methods: {
-    init() {
+    async init() {
+      const Modeler = await lib.Modeler
       // 创建Bpmn对象
-      this.bpmnModeler = new lib.Modeler({
+      this.bpmnModeler = await new Modeler.default({
         container: this.$refs.canvas,
         propertiesPanel: {parent: this.$refs.properties},
         additionalModules: lib.editorConfig.additionalModules,
         moddleExtensions: lib.editorConfig.moddleExtensions
       });
       // 初始化建模器内容
-      this.loadXml(this.initTemplate);
+      await this.loadXml(this.initTemplate);
     },
     async loadXml(bpmn) {
       //替换模板中的Id
