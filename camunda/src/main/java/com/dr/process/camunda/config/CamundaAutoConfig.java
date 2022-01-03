@@ -83,8 +83,8 @@ public class CamundaAutoConfig {
      * @return
      */
     @Bean
-    CamundaDataSourceBeanFactoryPostProcessor camundaDataSourceBeanFactoryPostProcessor() {
-        return new CamundaDataSourceBeanFactoryPostProcessor();
+    CamundaBeanBeanFactoryPostProcessor camundaBeanBeanFactoryPostProcessor() {
+        return new CamundaBeanBeanFactoryPostProcessor();
     }
 
     /**
