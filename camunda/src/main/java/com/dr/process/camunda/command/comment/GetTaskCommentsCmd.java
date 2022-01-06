@@ -1,8 +1,7 @@
-package com.dr.process.camunda.command.process;
+package com.dr.process.camunda.command.comment;
 
 import com.dr.framework.core.organise.service.OrganisePersonService;
 import com.dr.framework.core.process.bo.Comment;
-import com.dr.process.camunda.command.task.AbstractGetTaskCommentCmd;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.springframework.util.Assert;
@@ -14,20 +13,20 @@ import java.util.stream.Collectors;
 /**
  * @author dr
  */
-public class GetProcessCommentsCmd extends AbstractGetTaskCommentCmd implements Command<List<Comment>> {
-    private String processInstanceId;
+public class GetTaskCommentsCmd extends AbstractGetTaskCommentCmd implements Command<List<Comment>> {
+    private String taskId;
 
-    public GetProcessCommentsCmd(String processInstanceId, OrganisePersonService organisePersonService) {
+    public GetTaskCommentsCmd(String taskId, OrganisePersonService organisePersonService) {
         super(organisePersonService);
-        this.processInstanceId = processInstanceId;
+        this.taskId = taskId;
     }
 
     @Override
     public List<Comment> execute(CommandContext commandContext) {
-        Assert.isTrue(!StringUtils.isEmpty(processInstanceId), "流程实例id不能为空");
+        Assert.isTrue(!StringUtils.isEmpty(taskId), "环节id不能为空");
         return commandContext.getProcessEngineConfiguration()
                 .getTaskService()
-                .getProcessInstanceComments(processInstanceId)
+                .getTaskComments(taskId)
                 .stream()
                 .map(t -> convert(t, commandContext))
                 .collect(Collectors.toList());

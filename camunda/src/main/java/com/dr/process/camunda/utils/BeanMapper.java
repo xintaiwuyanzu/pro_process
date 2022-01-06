@@ -1,6 +1,7 @@
 package com.dr.process.camunda.utils;
 
 import com.dr.framework.core.process.bo.ProcessDefinition;
+import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionEntityWithExtend;
 
 import java.util.Collections;
 import java.util.List;
@@ -32,9 +33,7 @@ public final class BeanMapper {
      * @return
      */
     public static List<ProcessDefinition> newProcessDefinitionList(List<org.camunda.bpm.engine.repository.ProcessDefinition> sourceList, Consumer<ProcessDefinition> consumer) {
-        return sourceList != null ? sourceList.stream()
-                .map(p -> BeanMapper.newProcessDefinition(p, consumer))
-                .collect(Collectors.toList()) : Collections.emptyList();
+        return sourceList != null ? sourceList.stream().map(p -> BeanMapper.newProcessDefinition(p, consumer)).collect(Collectors.toList()) : Collections.emptyList();
     }
 
     /**
@@ -62,7 +61,9 @@ public final class BeanMapper {
         processDefinition.setDescription(source.getDescription());
         processDefinition.setId(source.getId());
         processDefinition.setKey(source.getKey());
-
+        if (source instanceof ProcessDefinitionEntityWithExtend) {
+            processDefinition.setType(((ProcessDefinitionEntityWithExtend) source).getProcessType());
+        }
         if (consumer != null) {
             consumer.accept(processDefinition);
         }

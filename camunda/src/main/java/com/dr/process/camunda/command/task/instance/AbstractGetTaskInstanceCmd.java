@@ -1,4 +1,4 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.task.instance;
 
 import com.dr.framework.core.process.bo.TaskInstance;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -8,22 +8,36 @@ import org.camunda.bpm.engine.task.Task;
 import java.util.Map;
 
 import static com.dr.framework.core.process.service.ProcessConstants.*;
-import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.filter;
-import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.getProperty;
+import static com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd.filter;
+import static com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd.getProperty;
 
 /**
+ *
  * @author dr
  */
-public class AbstractGetTaskCmd {
+public class AbstractGetTaskInstanceCmd {
+    /**
+     * 包含环节实例变量
+     */
     private boolean withVariables;
+    /**
+     * 包含流程实例变量
+     */
+    private boolean withProcessVariables;
+    /**
+     * 包含环节扩展属性定义
+     */
     private boolean withProperties;
+    /**
+     * 包含流程扩展属性定义
+     */
     private boolean withProcessProperty;
 
-    public AbstractGetTaskCmd(boolean withProperties) {
+    public AbstractGetTaskInstanceCmd(boolean withProperties) {
         this.withProperties = withProperties;
     }
 
-    public AbstractGetTaskCmd(boolean withVariables, boolean withProperties, boolean withProcessProperty) {
+    public AbstractGetTaskInstanceCmd(boolean withVariables, boolean withProperties, boolean withProcessProperty) {
         this.withVariables = withVariables;
         this.withProperties = withProperties;
         this.withProcessProperty = withProcessProperty;
@@ -55,9 +69,9 @@ public class AbstractGetTaskCmd {
 
         to.setOwnerName((String) variables.get(OWNER_NAME_KEY));
 
-        to.setCreatePerson((String) variables.get(CREATE_KEY));
+        to.setCreatePerson((String) variables.get(PROCESS_CREATE_PERSON_KEY));
 
-        to.setCreatePersonName((String) variables.get(CREATE_NAME_KEY));
+        to.setCreatePersonName((String) variables.get(PROCESS_CREATE_NAME_KEY));
 
         to.setName(task.getName());
         to.setDescription(task.getDescription());
@@ -65,6 +79,9 @@ public class AbstractGetTaskCmd {
         to.setSuspend(task.isSuspended());
         if (withVariables) {
             to.setVariables(filter(variables));
+        }
+        if (withProcessVariables) {
+            //TODO
         }
         if (withProperties) {
             to.setProPerties(getProperty(task.getProcessDefinitionId(),
@@ -77,6 +94,10 @@ public class AbstractGetTaskCmd {
                     commandContext));
         }
         return to;
+    }
+
+    public void setWithProcessVariables(boolean withProcessVariables) {
+        this.withProcessVariables = withProcessVariables;
     }
 
 }

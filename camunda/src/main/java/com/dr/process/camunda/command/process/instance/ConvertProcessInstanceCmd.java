@@ -1,6 +1,7 @@
-package com.dr.process.camunda.command.process;
+package com.dr.process.camunda.command.process.instance;
 
 import com.dr.framework.core.process.bo.ProcessInstance;
+import com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.impl.interceptor.Command;
@@ -9,8 +10,8 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.dr.framework.core.process.service.ProcessConstants.CREATE_NAME_KEY;
-import static com.dr.framework.core.process.service.ProcessConstants.TITLE_KEY;
+import static com.dr.framework.core.process.service.ProcessConstants.PROCESS_CREATE_NAME_KEY;
+import static com.dr.framework.core.process.service.ProcessConstants.PROCESS_TITLE_KEY;
 
 
 /**
@@ -67,8 +68,8 @@ public class ConvertProcessInstanceCmd implements Command<ProcessInstance> {
         po.setSuspend(po.isSuspend());
 
         if (variables != null) {
-            po.setDescription((String) variables.get(TITLE_KEY));
-            po.setCreatePersonName((String) variables.get(CREATE_NAME_KEY));
+            po.setDescription((String) variables.get(PROCESS_TITLE_KEY));
+            po.setCreatePersonName((String) variables.get(PROCESS_CREATE_NAME_KEY));
             po.setVariables(AbstractProcessDefinitionCmd.filter(variables));
         }
         return po;

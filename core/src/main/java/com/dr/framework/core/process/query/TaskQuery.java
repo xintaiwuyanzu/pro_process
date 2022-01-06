@@ -43,7 +43,10 @@ public class TaskQuery extends AbsProcessQuery<TaskQuery> {
      * 是否查询环节扩展属性
      */
     private boolean withVariables;
-
+    /**
+     * 是否查询流程实例变量
+     */
+    private boolean withProcessVariables;
     /**
      * 是否查询流程扩展属性
      */
@@ -159,5 +162,13 @@ public class TaskQuery extends AbsProcessQuery<TaskQuery> {
 
     public String getProcessDefinitionKey() {
         return processDefinitionKey;
+    }
+
+    public boolean isWithProcessVariables() {
+        return withProcessVariables;
+    }
+
+    public void setWithProcessVariables(boolean withProcessVariables) {
+        this.withProcessVariables = withProcessVariables;
     }
 }

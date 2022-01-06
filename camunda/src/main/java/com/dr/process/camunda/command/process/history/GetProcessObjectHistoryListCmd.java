@@ -1,7 +1,8 @@
-package com.dr.process.camunda.command.process;
+package com.dr.process.camunda.command.process.history;
 
 import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.query.ProcessQuery;
+import com.dr.process.camunda.command.process.history.AbstractGetProcessObjectHistoryCmd;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 
@@ -11,9 +12,8 @@ import java.util.stream.Collectors;
 /**
  * @author dr
  */
-public class GetProcessInstanceListCmd extends AbstractGetProcessInstanceCmd implements Command<List<ProcessInstance>> {
-
-    public GetProcessInstanceListCmd(ProcessQuery query) {
+public class GetProcessObjectHistoryListCmd extends AbstractGetProcessObjectHistoryCmd implements Command<List<ProcessInstance>> {
+    public GetProcessObjectHistoryListCmd(ProcessQuery query) {
         super(query);
     }
 
@@ -22,9 +22,8 @@ public class GetProcessInstanceListCmd extends AbstractGetProcessInstanceCmd imp
         return convert(commandContext)
                 .list()
                 .stream()
-                .map(p -> convert(p, commandContext)
-                ).collect(Collectors.toList());
+                .map(p -> convert(p, commandContext))
+                .collect(Collectors.toList());
     }
-
 
 }

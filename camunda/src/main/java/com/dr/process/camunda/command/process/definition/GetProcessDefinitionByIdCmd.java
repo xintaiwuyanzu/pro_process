@@ -1,7 +1,6 @@
 package com.dr.process.camunda.command.process.definition;
 
 import com.dr.framework.core.process.bo.ProcessDefinition;
-import com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.springframework.util.Assert;

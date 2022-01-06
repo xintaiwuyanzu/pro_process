@@ -1,4 +1,4 @@
-package com.dr.process.camunda.config;
+package com.dr.process.camunda.manager;
 
 import org.camunda.bpm.engine.impl.interceptor.Session;
 import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
@@ -10,7 +10,7 @@ import java.util.function.Supplier;
  *
  * @author dr
  */
-class GenericAndCustomerImplManagerFactory implements SessionFactory {
+public class GenericAndCustomerImplManagerFactory implements SessionFactory {
     private Class sessionClass;
     private Supplier<Session> implObj;
     private Session object;

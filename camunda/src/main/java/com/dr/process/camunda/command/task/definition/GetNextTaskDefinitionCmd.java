@@ -1,4 +1,4 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.task.definition;
 
 import com.dr.framework.core.process.bo.TaskDefinition;
 import org.camunda.bpm.engine.impl.interceptor.Command;
@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 根据流程实例Id获取当前实例下一环节定义
+ *
  * @author dr
  */
 public class GetNextTaskDefinitionCmd extends AbstractGetTaskDefinitionCmd implements Command<List<TaskDefinition>> {

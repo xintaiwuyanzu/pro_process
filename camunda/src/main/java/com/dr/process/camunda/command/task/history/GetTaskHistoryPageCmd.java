@@ -1,4 +1,4 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.task.history;
 
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.process.bo.TaskInstance;
@@ -10,6 +10,8 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import java.util.stream.Collectors;
 
 /**
+ * 获取任务历史分页
+ *
  * @author dr
  */
 public class GetTaskHistoryPageCmd extends AbstractGetTaskHistoryCmd implements Command<Page<TaskInstance>> {

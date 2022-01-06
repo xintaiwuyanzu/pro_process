@@ -1,4 +1,4 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.task.instance;
 
 import com.dr.framework.core.process.query.TaskQuery;
 import com.dr.framework.core.process.service.ProcessConstants;
@@ -11,7 +11,7 @@ import org.springframework.util.StringUtils;
 /**
  * @author dr
  */
-public class AbstractGetTaskQueryCmd extends AbstractGetTaskCmd {
+public class AbstractGetTaskQueryCmd extends AbstractGetTaskInstanceCmd {
     TaskQuery query;
 
     public AbstractGetTaskQueryCmd(TaskQuery query) {
@@ -24,7 +24,7 @@ public class AbstractGetTaskQueryCmd extends AbstractGetTaskCmd {
         taskQuery.initializeFormKeys();
         if (query != null) {
             if (!StringUtils.isEmpty(query.getCreatePerson())) {
-                taskQuery.processVariableValueEquals(ProcessConstants.CREATE_KEY, query.getCreatePerson());
+                taskQuery.processVariableValueEquals(ProcessConstants.PROCESS_CREATE_PERSON_KEY, query.getCreatePerson());
             }
             if (!StringUtils.isEmpty(query.getOwner())) {
                 taskQuery.taskOwner(query.getOwner());
@@ -58,8 +58,8 @@ public class AbstractGetTaskQueryCmd extends AbstractGetTaskCmd {
     }
 
 
-    @SqlProxy(methodName = "selectList", originalSql = "selectTaskByQueryCriteria", proxySql = "selectTaskByQueryCriteriaCustom")
-    @SqlProxy(methodName = "selectOne", originalSql = "selectTaskCountByQueryCriteria", proxySql = "selectTaskCountByQueryCriteriaCustom")
+    @SqlProxy(methodName = SqlProxy.METHOD_NAME_LIST, originalSql = "selectTaskByQueryCriteria", proxySql = "selectTaskByQueryCriteriaCustom")
+    @SqlProxy(methodName = SqlProxy.METHOD_NAME_ONE, originalSql = "selectTaskCountByQueryCriteria", proxySql = "selectTaskCountByQueryCriteriaCustom")
     public static class TaskQueryImplWithExtend extends TaskQueryImpl {
         //环节定义key模糊查询
         private String taskDefinitionKeyNotLike;

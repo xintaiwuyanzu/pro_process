@@ -13,6 +13,8 @@ import java.lang.annotation.*;
 @Repeatable(SqlProxy.SqlProxies.class)
 public @interface SqlProxy {
 
+    String METHOD_NAME_LIST = "selectList";
+    String METHOD_NAME_ONE = "selectOne";
 
     /**
      * 要拦截的方法名称

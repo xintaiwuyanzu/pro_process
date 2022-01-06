@@ -47,7 +47,7 @@ public class CustomerEventListenerParser extends AbstractBpmnParseListener {
         ProcessDefinitionImpl processDefinition = startEventActivity.getProcessDefinition();
         String init = (String) processDefinition.getProperty(BpmnParse.PROPERTYNAME_INITIATOR_VARIABLE_NAME);
         if (StringUtils.isEmpty(init)) {
-            processDefinition.setProperty(BpmnParse.PROPERTYNAME_INITIATOR_VARIABLE_NAME, ProcessConstants.CREATE_KEY);
+            processDefinition.setProperty(BpmnParse.PROPERTYNAME_INITIATOR_VARIABLE_NAME, ProcessConstants.PROCESS_CREATE_PERSON_KEY);
         }
     }
 

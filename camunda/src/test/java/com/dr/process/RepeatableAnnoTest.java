@@ -1,7 +1,7 @@
 package com.dr.process;
 
 import com.dr.process.camunda.annotations.SqlProxy;
-import com.dr.process.camunda.command.task.AbstractGetTaskQueryCmd;
+import com.dr.process.camunda.command.task.instance.AbstractGetTaskQueryCmd;
 
 import java.lang.annotation.Annotation;
 

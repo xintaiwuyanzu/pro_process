@@ -2,10 +2,10 @@ package com.dr.process.camunda.config;
 
 import com.dr.framework.core.orm.database.DataBaseMetaData;
 import com.dr.process.camunda.manager.DbEntityManagerWithSqlProxy;
-import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionQueryImplWithExtend;
+import com.dr.process.camunda.manager.DbFixSqlSessionFactory;
+import com.dr.process.camunda.manager.GenericAndCustomerImplManagerFactory;
 import org.apache.ibatis.builder.xml.XMLMapperBuilder;
 import org.apache.ibatis.session.Configuration;
-import org.camunda.bpm.engine.impl.RepositoryServiceImpl;
 import org.camunda.bpm.engine.impl.cfg.IdGenerator;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.impl.context.Context;
@@ -13,9 +13,7 @@ import org.camunda.bpm.engine.impl.db.PersistenceSession;
 import org.camunda.bpm.engine.impl.db.entitymanager.DbEntityManager;
 import org.camunda.bpm.engine.impl.db.sql.DbSqlSession;
 import org.camunda.bpm.engine.impl.db.sql.DbSqlSessionFactory;
-import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
 import org.camunda.bpm.engine.impl.interceptor.SessionFactory;
-import org.camunda.bpm.engine.repository.ProcessDefinitionQuery;
 import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaDatasourceConfiguration;
 import org.camunda.bpm.spring.boot.starter.property.CamundaBpmProperties;
@@ -65,9 +63,6 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
     public void preInit(ProcessEngineConfigurationImpl processEngineConfiguration) {
         fixDataSource(processEngineConfiguration);
         fixCustomerSessionFactory(processEngineConfiguration);
-
-        //这里扩展了sql ，查询语句使用自定义实现
-        processEngineConfiguration.setRepositoryService(new RepositoryServiceImplFix(processEngineConfiguration.getCommandExecutorTxRequired()));
     }
 
 
@@ -157,17 +152,6 @@ public class CamundaDbFixConfig extends ApplicationObjectSupport implements Camu
             }
         } catch (IOException e) {
             logger.warn("加载自定义Camunda流程 mapper.xml失败:{}", e.getMessage());
-        }
-    }
-
-    static class RepositoryServiceImplFix extends RepositoryServiceImpl {
-        public RepositoryServiceImplFix(CommandExecutor commandExecutor) {
-            setCommandExecutor(commandExecutor);
-        }
-
-        @Override
-        public ProcessDefinitionQuery createProcessDefinitionQuery() {
-            return new ProcessDefinitionQueryImplWithExtend(getCommandExecutor());
         }
     }
 }

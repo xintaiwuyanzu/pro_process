@@ -39,11 +39,11 @@ public class OwnerTaskListener implements TaskListener, ExecutionListener {
      */
     @Override
     public void notify(DelegateExecution execution) {
-        String createPerson = (String) execution.getVariable(ProcessConstants.CREATE_KEY);
+        String createPerson = (String) execution.getVariable(ProcessConstants.PROCESS_CREATE_PERSON_KEY);
         if (!StringUtils.isEmpty(createPerson)) {
             //流程创建人名称
             Person person = organisePersonService.getPersonById(createPerson);
-            execution.setVariable(ProcessConstants.CREATE_NAME_KEY, person.getUserName());
+            execution.setVariable(ProcessConstants.PROCESS_CREATE_NAME_KEY, person.getUserName());
         }
         //流程创建时间
         execution.setVariable(ProcessConstants.CREATE_DATE_KEY, ClockUtil.getCurrentTime().getTime());

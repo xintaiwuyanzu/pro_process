@@ -2,8 +2,8 @@ package com.dr.process.camunda.service.impl;
 
 import com.dr.framework.core.process.bo.TaskDefinition;
 import com.dr.framework.core.process.service.TaskDefinitionService;
-import com.dr.process.camunda.command.task.GetNextTaskDefinitionCmd;
-import com.dr.process.camunda.command.task.GetProcessTaskDefinitionCmd;
+import com.dr.process.camunda.command.task.definition.GetNextTaskDefinitionCmd;
+import com.dr.process.camunda.command.process.definition.GetProcessTaskDefinitionCmd;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

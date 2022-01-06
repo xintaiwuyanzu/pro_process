@@ -28,13 +28,13 @@ public class DbEntityManagerWithSqlProxy extends DbEntityManager {
 
     @Override
     public List selectList(String statement, ListQueryParameterObject parameter) {
-        String proxySql = getProxySql("selectList", statement, parameter.getClass());
+        String proxySql = getProxySql(SqlProxy.METHOD_NAME_LIST, statement, parameter.getClass());
         return super.selectList(proxySql, parameter);
     }
 
     @Override
     public Object selectOne(String statement, Object parameter) {
-        String proxySql = getProxySql("selectOne", statement, parameter.getClass());
+        String proxySql = getProxySql(SqlProxy.METHOD_NAME_ONE, statement, parameter.getClass());
         return super.selectOne(proxySql, parameter);
     }
 

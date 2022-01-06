@@ -1,7 +1,8 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.task.instance;
 
 import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.TaskQuery;
+import com.dr.process.camunda.command.task.instance.AbstractGetTaskQueryCmd;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 
@@ -11,9 +12,9 @@ import java.util.stream.Collectors;
 /**
  * @author dr
  */
-public class GetTaskListCmd extends AbstractGetTaskQueryCmd implements Command<List<TaskInstance>> {
+public class GetTaskInstanceListCmd extends AbstractGetTaskQueryCmd implements Command<List<TaskInstance>> {
 
-    public GetTaskListCmd(TaskQuery query) {
+    public GetTaskInstanceListCmd(TaskQuery query) {
         super(query);
     }
 

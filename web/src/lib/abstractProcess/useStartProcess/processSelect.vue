@@ -23,6 +23,9 @@
                      :key="person.id"/>
         </el-select>
       </el-form-item>
+      <el-form-item prop="comment" label="意见">
+        <el-input v-model="form.comment" placeholder="请填写意见" type="textarea"/>
+      </el-form-item>
     </el-form>
     <div slot="footer">
       <el-button type="primary" @click="submit" :loading="loading">确 认</el-button>
@@ -54,7 +57,9 @@ export default {
     return {
       form: {
         processId: '',
-        person: []
+        person: [],
+        //启动意见
+        comment: ''
       },
       //当前登录人所属机构的所有人员
       currentPersons: []

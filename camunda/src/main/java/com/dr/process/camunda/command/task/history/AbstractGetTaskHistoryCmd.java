@@ -1,4 +1,4 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.task.history;
 
 import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.TaskQuery;
@@ -12,10 +12,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.dr.framework.core.process.service.ProcessConstants.*;
-import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.filter;
-import static com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd.getProperty;
+import static com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd.filter;
+import static com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd.getProperty;
 
 /**
+ * 抽象任务历史父类
+ *
  * @author dr
  */
 public class AbstractGetTaskHistoryCmd {
@@ -79,9 +81,9 @@ public class AbstractGetTaskHistoryCmd {
 
         to.setOwnerName((String) variables.get(OWNER_NAME_KEY));
 
-        to.setCreatePerson((String) variables.get(CREATE_KEY));
+        to.setCreatePerson((String) variables.get(PROCESS_CREATE_PERSON_KEY));
 
-        to.setCreatePersonName((String) variables.get(CREATE_NAME_KEY));
+        to.setCreatePersonName((String) variables.get(PROCESS_CREATE_NAME_KEY));
 
         to.setName(his.getName());
         to.setDescription(his.getDescription());

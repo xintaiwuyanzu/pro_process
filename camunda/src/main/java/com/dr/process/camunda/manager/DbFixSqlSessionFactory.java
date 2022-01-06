@@ -1,4 +1,4 @@
-package com.dr.process.camunda.config;
+package com.dr.process.camunda.manager;
 
 import com.dr.framework.core.orm.database.DataBaseMetaData;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;

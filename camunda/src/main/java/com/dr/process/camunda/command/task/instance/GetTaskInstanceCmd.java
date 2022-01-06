@@ -1,4 +1,4 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.task.instance;
 
 import com.dr.framework.core.process.bo.TaskInstance;
 import org.camunda.bpm.engine.impl.interceptor.Command;
@@ -9,15 +9,15 @@ import org.springframework.util.StringUtils;
 /**
  * @author dr
  */
-public class GetTaskCmd extends AbstractGetTaskCmd implements Command<TaskInstance> {
+public class GetTaskInstanceCmd extends AbstractGetTaskInstanceCmd implements Command<TaskInstance> {
     private String taskId;
 
-    public GetTaskCmd(boolean withProperties, String taskId) {
+    public GetTaskInstanceCmd(boolean withProperties, String taskId) {
         super(withProperties);
         this.taskId = taskId;
     }
 
-    public GetTaskCmd(String taskId) {
+    public GetTaskInstanceCmd(String taskId) {
         super(true, true, true);
         this.taskId = taskId;
     }

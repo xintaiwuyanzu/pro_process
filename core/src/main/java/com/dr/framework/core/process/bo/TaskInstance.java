@@ -1,6 +1,7 @@
 package com.dr.framework.core.process.bo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author dr
@@ -16,6 +17,10 @@ public class TaskInstance<T> extends ProcessInstance {
      * 流程实例Id
      */
     private String processInstanceId;
+    /**
+     * 流程实例变量
+     */
+    private Map<String, Object> processVariables;
     /**
      * 流程定义的扩展属性
      */
@@ -131,5 +136,13 @@ public class TaskInstance<T> extends ProcessInstance {
 
     public void setProcessProPerties(List<Property> processProPerties) {
         this.processProPerties = processProPerties;
+    }
+
+    public Map<String, Object> getProcessVariables() {
+        return processVariables;
+    }
+
+    public void setProcessVariables(Map<String, Object> processVariables) {
+        this.processVariables = processVariables;
     }
 }

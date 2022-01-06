@@ -8,10 +8,16 @@ import com.dr.framework.core.process.service.ProcessContext;
 import com.dr.framework.core.process.service.ProcessDefinitionService;
 import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.process.service.TaskInstanceService;
-import com.dr.process.camunda.command.process.ConvertProcessInstanceCmd;
+import com.dr.process.camunda.command.process.instance.ConvertProcessInstanceCmd;
 import com.dr.process.camunda.command.process.EndProcessCmd;
-import com.dr.process.camunda.command.process.GetProcessCommentsCmd;
+import com.dr.process.camunda.command.comment.GetProcessCommentsCmd;
 import com.dr.process.camunda.command.task.*;
+import com.dr.process.camunda.command.comment.GetTaskCommentsCmd;
+import com.dr.process.camunda.command.task.history.GetTaskHistoryListCmd;
+import com.dr.process.camunda.command.task.history.GetTaskHistoryPageCmd;
+import com.dr.process.camunda.command.task.instance.GetTaskInstanceCmd;
+import com.dr.process.camunda.command.task.instance.GetTaskInstanceListCmd;
+import com.dr.process.camunda.command.task.instance.GetTaskInstancePageCmd;
 import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,17 +46,17 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
 
     @Override
     public TaskInstance taskInfo(String taskId) {
-        return getCommandExecutor().execute(new GetTaskCmd(taskId));
+        return getCommandExecutor().execute(new GetTaskInstanceCmd(taskId));
     }
 
     @Override
     public List<TaskInstance> taskList(TaskQuery query) {
-        return getCommandExecutor().execute(new GetTaskListCmd(query));
+        return getCommandExecutor().execute(new GetTaskInstanceListCmd(query));
     }
 
     @Override
     public Page<TaskInstance> taskPage(TaskQuery query, int start, int end) {
-        return getCommandExecutor().execute(new GetTaskPageCmd(query, start, end));
+        return getCommandExecutor().execute(new GetTaskInstancePageCmd(query, start, end));
     }
 
     @Override
@@ -125,18 +131,18 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
         //启动前拦截
         processTypeProvider.onBeforeStartProcess(context);
 
-        Property proPerty = processDefinition.getProPerty(FORM_URL_KEY);
+        Property proPerty = processDefinition.getProPerty(PROCESS_FORM_URL_KEY);
         if (proPerty != null) {
-            context.addVar(FORM_URL_KEY, proPerty.getValue());
+            context.addVar(PROCESS_FORM_URL_KEY, proPerty.getValue());
         }
 
         if (StringUtils.hasText(context.getProcessInstanceTitle())) {
-            context.addVar(TITLE_KEY, context.getProcessInstanceTitle());
+            context.addVar(PROCESS_TITLE_KEY, context.getProcessInstanceTitle());
         }
         if (StringUtils.hasText(context.getProcessInstanceDescription())) {
-            context.addVar(DESCRIPTION_KEY, context.getProcessInstanceDescription());
+            context.addVar(PROCESS_DESCRIPTION_KEY, context.getProcessInstanceDescription());
         } else {
-            context.addVar(DESCRIPTION_KEY, "默认标题！！！");
+            context.addVar(PROCESS_DESCRIPTION_KEY, "默认标题！！！");
         }
         //设置启动环节任务人为传进来的登陆人信息
         context.addVar(ASSIGNEE_KEY, person.getId());
@@ -151,11 +157,11 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
         //启动后拦截
         processTypeProvider.onAfterStartProcess(context);
         //有可能启动后直接跳转到第二个环节
-        if (variMap.containsKey(NEXT_TASK_ID) && variMap.containsKey(NEXT_TASK_PERSON)) {
-            String taskId = (String) variMap.get(NEXT_TASK_ID);
-            String personId = (String) variMap.get(NEXT_TASK_PERSON);
+        if (variMap.containsKey(VAR_NEXT_TASK_ID) && variMap.containsKey(VAR_NEXT_TASK_PERSON)) {
+            String taskId = (String) variMap.get(VAR_NEXT_TASK_ID);
+            String personId = (String) variMap.get(VAR_NEXT_TASK_PERSON);
             if (StringUtils.hasText(taskId) && StringUtils.hasText(personId)) {
-                send(taskId, personId, (String) variMap.get(COMMENT_KEY), variMap);
+                send(taskId, personId, (String) variMap.get(VAR_COMMENT_KEY), variMap);
             }
         }
         return instance1;

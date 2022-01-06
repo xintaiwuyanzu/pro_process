@@ -1,19 +1,20 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.task.definition;
 
 import com.dr.framework.core.process.bo.TaskDefinition;
-import com.dr.process.camunda.command.process.AbstractProcessDefinitionCmd;
+import com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd;
 import org.camunda.bpm.engine.impl.core.model.PropertyKey;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 
 /**
+ * 抽象环节定义父类
+ *
  * @author dr
  */
 public class AbstractGetTaskDefinitionCmd {
     private boolean withProperty;
     private boolean withProcessProperty;
     private boolean withStartUser;
-
 
     static final PropertyKey<String> documentation = new PropertyKey<>("documentation");
 

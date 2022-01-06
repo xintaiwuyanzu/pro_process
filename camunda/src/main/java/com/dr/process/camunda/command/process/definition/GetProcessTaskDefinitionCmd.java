@@ -1,6 +1,7 @@
-package com.dr.process.camunda.command.task;
+package com.dr.process.camunda.command.process.definition;
 
 import com.dr.framework.core.process.bo.TaskDefinition;
+import com.dr.process.camunda.command.task.definition.AbstractGetTaskDefinitionCmd;
 import org.camunda.bpm.engine.impl.bpmn.helper.BpmnProperties;
 import org.camunda.bpm.engine.impl.context.Context;
 import org.camunda.bpm.engine.impl.interceptor.Command;

@@ -10,10 +10,21 @@ import org.camunda.bpm.engine.impl.interceptor.CommandExecutor;
  *
  * @author dr
  */
-@SqlProxy(methodName = "selectList", originalSql = "selectProcessDefinitionsByQueryCriteria", proxySql = "selectProcessDefinitionsByQueryCriteria")
+@SqlProxy(methodName = SqlProxy.METHOD_NAME_LIST, originalSql = "selectProcessDefinitionsByQueryCriteria", proxySql = "selectProcessDefinitionsByQueryCriteriaFix")
+@SqlProxy(methodName = SqlProxy.METHOD_NAME_ONE, originalSql = "selectProcessDefinitionCountByQueryCriteria", proxySql = "selectProcessDefinitionCountByQueryCriteriaFix")
 public class ProcessDefinitionQueryImplWithExtend extends ProcessDefinitionQueryImpl {
+    //流程定义类型模糊查询
+    private String processTypeLike;
 
     public ProcessDefinitionQueryImplWithExtend(CommandExecutor commandExecutor) {
         super(commandExecutor);
+    }
+
+    public String getProcessTypeLike() {
+        return processTypeLike;
+    }
+
+    public void setProcessTypeLike(String processTypeLike) {
+        this.processTypeLike = processTypeLike;
     }
 }
