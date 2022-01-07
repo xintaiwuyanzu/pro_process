@@ -67,7 +67,7 @@ public class JumpTaskCmd implements Command<Void> {
 
         Map<String, Object> map = new HashMap<>();
         if (!StringUtils.isEmpty(nextPerson)) {
-            map.put(ProcessConstants.ASSIGNEE_KEY, nextPerson);
+            map.put(ProcessConstants.TASK_ASSIGNEE_KEY, nextPerson);
         }
         executionEntity.setEventSource(current);
         executionEntity.setActivity(current);

@@ -27,11 +27,11 @@ public abstract class AbstractProcessDefinitionCmd {
     /**
      * 自定义扩展属性key，用来过滤使用
      */
-    static final List<String> CUSTOM_KEYS = Arrays.asList(PROCESS_CREATE_PERSON_KEY, PROCESS_CREATE_NAME_KEY, CREATE_DATE_KEY,
+    static final List<String> CUSTOM_KEYS = Arrays.asList(PROCESS_CREATE_PERSON_KEY, PROCESS_CREATE_NAME_KEY, PROCESS_CREATE_DATE_KEY,
 
-            OWNER_KEY, OWNER_NAME_KEY,
+            OWNER_KEY, TASK_OWNER_NAME_KEY,
 
-            ASSIGNEE_KEY, ASSIGNEE_NAME_KEY,
+            TASK_ASSIGNEE_KEY, TASK_ASSIGNEE_NAME_KEY,
 
             PROCESS_TITLE_KEY,
 

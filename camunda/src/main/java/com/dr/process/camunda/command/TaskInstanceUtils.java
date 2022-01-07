@@ -2,11 +2,10 @@ package com.dr.process.camunda.command;
 
 import com.dr.framework.core.process.bo.TaskInstance;
 import org.camunda.bpm.engine.HistoryService;
-import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.camunda.bpm.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
-import org.camunda.bpm.engine.task.Task;
 
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,7 +32,7 @@ public class TaskInstanceUtils {
      * @param withProcessProperty
      * @return
      */
-    public static TaskInstance newTaskInstance(Task task, CommandContext commandContext,
+    public static TaskInstance newTaskInstance(TaskEntity task, CommandContext commandContext,
                                                boolean withVariables,
                                                boolean withProcessVariables,
                                                boolean withProperties,
@@ -41,42 +40,36 @@ public class TaskInstanceUtils {
         if (task == null) {
             return null;
         }
+
         TaskInstance to = new TaskInstance();
-        Map<String, Object> variables = commandContext
-                .getProcessEngineConfiguration()
-                .getTaskService()
-                .getVariables(task.getId());
-        to.setAssignee(task.getAssignee());
-        to.setAssigneeName((String) variables.get(ASSIGNEE_NAME_KEY));
-
-        to.setCreateDate(task.getCreateTime().getTime());
-
-        if (task instanceof TaskEntity) {
-            ((TaskEntity) task).initializeFormKey();
-        }
-        to.setFormKey(task.getFormKey());
+        //主键
         to.setId(task.getId());
+        //环节任务接收人Id
+        to.setAssignee(task.getAssignee());
+        //环节创建时间
+        to.setCreateDate(task.getCreateTime().getTime());
+        //环节表单Id，这个是从环节定义中获取的
+        to.setFormKey(task.getFormKey());
+        //流程实例Id
         to.setProcessInstanceId(task.getProcessInstanceId());
+        //流程定义Id
         to.setProcessDefineId(task.getProcessDefinitionId());
+        //环节定义编码
         to.setTaskDefineKey(task.getTaskDefinitionKey());
+        //任务发送人Id
         to.setOwner(task.getOwner());
-
-        to.setOwnerName((String) variables.get(OWNER_NAME_KEY));
-
-        to.setCreatePerson((String) variables.get(PROCESS_CREATE_PERSON_KEY));
-
-        to.setCreatePersonName((String) variables.get(PROCESS_CREATE_NAME_KEY));
-
+        //任务定义名称
         to.setName(task.getName());
+        //任务定义描述
         to.setDescription(task.getDescription());
-
+        //任务状态
         to.setSuspend(task.isSuspended());
-        if (withVariables) {
-            to.setVariables(filter(variables));
-        }
-        if (withProcessVariables) {
-            //TODO
-        }
+
+        //这里会查询所有的环境变量，包括环节和流程的变量
+        Map<String, Object> variables = task.getVariables();
+        //绑定环境变量
+        bindVaris(variables, to, withVariables, withProcessVariables);
+        //绑定定义属性
         if (withProperties) {
             to.setProPerties(getProperty(task.getProcessDefinitionId(),
                     task.getTaskDefinitionKey(),
@@ -90,7 +83,8 @@ public class TaskInstanceUtils {
         return to;
     }
 
-    public static TaskInstance newTaskInstance(HistoricTaskInstance his, CommandContext commandContext,
+
+    public static TaskInstance newTaskInstance(HistoricTaskInstanceEntity his, CommandContext commandContext,
                                                boolean withVariables,
                                                boolean withProcessVariables,
                                                boolean withProperties,
@@ -99,6 +93,15 @@ public class TaskInstanceUtils {
             return null;
         }
         TaskInstance to = new TaskInstance();
+        to.setId(his.getId());
+        to.setAssignee(his.getAssignee());
+        to.setCreateDate(his.getStartTime().getTime());
+        to.setProcessInstanceId(his.getProcessInstanceId());
+        to.setProcessDefineId(his.getProcessDefinitionId());
+        to.setTaskDefineKey(his.getTaskDefinitionKey());
+        to.setOwner(his.getOwner());
+        to.setName(his.getName());
+        to.setDescription(his.getDescription());
 
         HistoryService historyService = commandContext.getProcessEngineConfiguration().getHistoryService();
 
@@ -108,39 +111,39 @@ public class TaskInstanceUtils {
                 .list()
                 .stream()
                 .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
-        to.setAssignee(his.getAssignee());
-        to.setAssigneeName((String) variables.get(ASSIGNEE_NAME_KEY));
 
-        to.setCreateDate(his.getStartTime().getTime());
-        //TODO
-        //to.setFormKey(his.getFormKey());
-        to.setId(his.getId());
-        to.setProcessInstanceId(his.getProcessInstanceId());
-        to.setProcessDefineId(his.getProcessDefinitionId());
-        to.setTaskDefineKey(his.getTaskDefinitionKey());
-        to.setOwner(his.getOwner());
+        bindVaris(variables, to, withVariables, withProcessVariables);
 
-        to.setOwnerName((String) variables.get(OWNER_NAME_KEY));
-
-        to.setCreatePerson((String) variables.get(PROCESS_CREATE_PERSON_KEY));
-
-        to.setCreatePersonName((String) variables.get(PROCESS_CREATE_NAME_KEY));
-
-        to.setName(his.getName());
-        to.setDescription(his.getDescription());
-
-        if (withVariables) {
-            to.setVariables(filter(variables));
-        }
-        if (withProcessVariables) {
-            //to.setProcessVariables();
-        }
         if (withProperties) {
             to.setProPerties(getProperty(his.getProcessDefinitionId(),
                     his.getTaskDefinitionKey(),
                     commandContext));
         }
+        if (withProcessProperty) {
+            to.setProcessProPerties(getProperty(his.getProcessDefinitionId(),
+                    his.getProcessDefinitionId().split(":")[0],
+                    commandContext));
+        }
         return to;
+    }
+
+    private static void bindVaris(Map<String, Object> variables, TaskInstance to, boolean withVariables, boolean withProcessVariables) {
+        //接收人名称
+        to.setAssigneeName((String) variables.get(TASK_ASSIGNEE_NAME_KEY));
+        //任务发送人名称
+        to.setOwnerName((String) variables.get(TASK_OWNER_NAME_KEY));
+        //创建人Id
+        to.setCreatePerson((String) variables.get(PROCESS_CREATE_PERSON_KEY));
+        //创建人名称
+        to.setCreatePersonName((String) variables.get(PROCESS_CREATE_NAME_KEY));
+
+        if (withVariables) {
+            to.setVariables(filter(variables));
+        }
+        if (withProcessVariables) {
+            //TODO
+            to.setProcessVariables(filter(variables));
+        }
     }
 
 }

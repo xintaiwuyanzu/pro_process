@@ -4,6 +4,7 @@ import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.TaskInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ public class GetTaskInstanceListCmd extends AbstractGetTaskQueryCmd implements C
         return convert(commandContext)
                 .list()
                 .stream()
-                .map(t -> convert(t, commandContext))
+                .map(t -> convert((TaskEntity) t, commandContext))
                 .collect(Collectors.toList());
     }
 }

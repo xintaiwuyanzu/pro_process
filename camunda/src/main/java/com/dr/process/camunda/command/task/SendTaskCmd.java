@@ -42,7 +42,7 @@ public class SendTaskCmd implements Command<Void> {
             map.putAll(variables);
         }
         if (!StringUtils.isEmpty(nextPerson)) {
-            map.put(ProcessConstants.ASSIGNEE_KEY, nextPerson);
+            map.put(ProcessConstants.TASK_ASSIGNEE_KEY, nextPerson);
         }
         taskService.complete(taskId, map);
         return null;

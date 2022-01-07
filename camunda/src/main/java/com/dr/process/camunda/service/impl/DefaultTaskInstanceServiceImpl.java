@@ -147,7 +147,7 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
             context.addVar(PROCESS_DESCRIPTION_KEY, "默认标题！！！");
         }
         //设置启动环节任务人为传进来的登陆人信息
-        context.addVar(ASSIGNEE_KEY, person.getId());
+        context.addVar(TASK_ASSIGNEE_KEY, person.getId());
         //设置流程任务类型变量
         context.addVar(PROCESS_TYPE_KEY, processTypeProvider.getType());
         //调用流程引擎启动流程

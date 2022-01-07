@@ -24,7 +24,7 @@
     <!--条件查询方法-->
     <select id="selectProcessDefinitionsByQueryCriteriaFix"
             parameterType="com.dr.process.camunda.command.process.definition.AbstractGetProcessQueryCmd$ProcessDefinitionQueryImplWithExtend"
-            resultMap="processDefinitionResultMap">
+            resultMap="processDefinitionResultMapFix">
         <include refid="org.camunda.bpm.engine.impl.persistence.entity.Commons.bindOrderBy"/>
         ${limitBefore}
         select ${distinct} RES.*,EXT.processType as processType

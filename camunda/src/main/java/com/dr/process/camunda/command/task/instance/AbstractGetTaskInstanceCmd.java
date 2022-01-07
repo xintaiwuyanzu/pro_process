@@ -4,13 +4,6 @@ import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.process.camunda.command.TaskInstanceUtils;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
-import org.camunda.bpm.engine.task.Task;
-
-import java.util.Map;
-
-import static com.dr.framework.core.process.service.ProcessConstants.*;
-import static com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd.filter;
-import static com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd.getProperty;
 
 /**
  * @author dr
@@ -40,7 +33,7 @@ public class AbstractGetTaskInstanceCmd {
         this.withProcessProperty = withProcessProperty;
     }
 
-    protected TaskInstance convert(Task task, CommandContext commandContext) {
+    protected TaskInstance convert(TaskEntity task, CommandContext commandContext) {
         return TaskInstanceUtils.newTaskInstance(task, commandContext, withVariables, withProcessVariables, withProperties, withProcessProperty);
     }
 

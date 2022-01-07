@@ -3,9 +3,9 @@ package com.dr.process.camunda.command.task.history;
 import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.TaskInstanceQuery;
 import com.dr.process.camunda.command.TaskInstanceUtils;
-import org.camunda.bpm.engine.history.HistoricTaskInstance;
 import org.camunda.bpm.engine.history.HistoricTaskInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.camunda.bpm.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,7 +56,7 @@ public class AbstractGetTaskHistoryCmd {
      * @param commandContext
      * @return
      */
-    protected TaskInstance convert(HistoricTaskInstance his, CommandContext commandContext) {
+    protected TaskInstance convert(HistoricTaskInstanceEntity his, CommandContext commandContext) {
         return TaskInstanceUtils.newTaskInstance(
                 his,
                 commandContext,
