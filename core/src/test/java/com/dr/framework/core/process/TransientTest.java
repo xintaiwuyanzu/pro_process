@@ -1,6 +1,6 @@
 package com.dr.framework.core.process;
 
-import com.dr.framework.core.process.bo.ProcessTypeProviderWrapper;
+import com.dr.framework.core.process.vo.ProcessTypeProviderWrapper;
 import com.dr.framework.core.process.service.impl.DefaultProcessTypeProvider;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

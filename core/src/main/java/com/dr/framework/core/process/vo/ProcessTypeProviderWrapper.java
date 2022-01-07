@@ -1,4 +1,4 @@
-package com.dr.framework.core.process.bo;
+package com.dr.framework.core.process.vo;
 
 import com.dr.framework.core.process.service.ProcessTypeProvider;
 

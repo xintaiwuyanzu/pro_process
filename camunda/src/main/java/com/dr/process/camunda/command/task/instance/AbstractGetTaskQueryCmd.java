@@ -1,6 +1,6 @@
 package com.dr.process.camunda.command.task.instance;
 
-import com.dr.framework.core.process.query.TaskQuery;
+import com.dr.framework.core.process.query.TaskInstanceQuery;
 import com.dr.framework.core.process.service.ProcessConstants;
 import com.dr.process.camunda.annotations.SqlProxy;
 import org.camunda.bpm.engine.impl.TaskQueryImpl;
@@ -12,10 +12,10 @@ import org.springframework.util.StringUtils;
  * @author dr
  */
 public class AbstractGetTaskQueryCmd extends AbstractGetTaskInstanceCmd {
-    TaskQuery query;
+    TaskInstanceQuery query;
 
-    public AbstractGetTaskQueryCmd(TaskQuery query) {
-        super(query.isWithVariables(), query.isWithProperty(), query.isWithProcessProperty());
+    public AbstractGetTaskQueryCmd(TaskInstanceQuery query) {
+        super(query.isWithVariables(), query.isWithProcessVariables(), query.isWithProperty(), query.isWithProcessProperty());
         this.query = query;
     }
 

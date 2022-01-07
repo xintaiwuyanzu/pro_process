@@ -13,10 +13,6 @@ public class ProcessInstance extends ProcessDefinition {
      */
     private long createDate;
     /**
-     * 流程结束时间
-     */
-    private long endDate;
-    /**
      * 流程创建人
      */
     private String createPerson;
@@ -28,6 +24,11 @@ public class ProcessInstance extends ProcessDefinition {
      * 流程定义ID
      */
     private String processDefineId;
+
+    /**
+     * 流程结束时间
+     */
+    private long endDate;
     /**
      * 流程是否暂停
      */

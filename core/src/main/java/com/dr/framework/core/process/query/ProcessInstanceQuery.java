@@ -1,9 +1,12 @@
 package com.dr.framework.core.process.query;
 
 /**
+ * 流程实例查询工具类
+ *  TODO 起止时间
+ *
  * @author dr
  */
-public class ProcessQuery extends AbsProcessQuery<ProcessQuery> {
+public class ProcessInstanceQuery extends AbsProcessQuery<ProcessInstanceQuery> {
     /**
      * 流程名称
      */
@@ -25,27 +28,27 @@ public class ProcessQuery extends AbsProcessQuery<ProcessQuery> {
      */
     private String taskPerson;
 
-    public ProcessQuery nameLike(String name) {
+    public ProcessInstanceQuery nameLike(String name) {
         this.name = name;
         return this;
     }
 
-    public ProcessQuery typeLike(String type) {
+    public ProcessInstanceQuery typeLike(String type) {
         this.type = type;
         return this;
     }
 
-    public ProcessQuery descriptionLike(String description) {
+    public ProcessInstanceQuery descriptionLike(String description) {
         this.description = description;
         return this;
     }
 
-    public ProcessQuery createPersonEqual(String createPerson) {
+    public ProcessInstanceQuery createPersonEqual(String createPerson) {
         this.createPerson = createPerson;
         return this;
     }
 
-    public ProcessQuery taskPersonEqual(String taskPerson) {
+    public ProcessInstanceQuery taskPersonEqual(String taskPerson) {
         this.taskPerson = taskPerson;
         return this;
     }

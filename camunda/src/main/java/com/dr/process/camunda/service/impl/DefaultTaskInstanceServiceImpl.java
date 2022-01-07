@@ -3,16 +3,18 @@ package com.dr.process.camunda.service.impl;
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.process.bo.*;
-import com.dr.framework.core.process.query.TaskQuery;
+import com.dr.framework.core.process.query.TaskInstanceQuery;
 import com.dr.framework.core.process.service.ProcessContext;
 import com.dr.framework.core.process.service.ProcessDefinitionService;
 import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.process.service.TaskInstanceService;
-import com.dr.process.camunda.command.process.instance.ConvertProcessInstanceCmd;
-import com.dr.process.camunda.command.process.EndProcessCmd;
 import com.dr.process.camunda.command.comment.GetProcessCommentsCmd;
-import com.dr.process.camunda.command.task.*;
 import com.dr.process.camunda.command.comment.GetTaskCommentsCmd;
+import com.dr.process.camunda.command.process.EndProcessCmd;
+import com.dr.process.camunda.command.process.instance.ConvertProcessInstanceCmd;
+import com.dr.process.camunda.command.task.BackTaskCmd;
+import com.dr.process.camunda.command.task.JumpTaskCmd;
+import com.dr.process.camunda.command.task.SendTaskCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryListCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryPageCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstanceCmd;
@@ -50,22 +52,22 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     }
 
     @Override
-    public List<TaskInstance> taskList(TaskQuery query) {
+    public List<TaskInstance> taskList(TaskInstanceQuery query) {
         return getCommandExecutor().execute(new GetTaskInstanceListCmd(query));
     }
 
     @Override
-    public Page<TaskInstance> taskPage(TaskQuery query, int start, int end) {
+    public Page<TaskInstance> taskPage(TaskInstanceQuery query, int start, int end) {
         return getCommandExecutor().execute(new GetTaskInstancePageCmd(query, start, end));
     }
 
     @Override
-    public List<TaskInstance> taskHistoryList(TaskQuery query) {
+    public List<TaskInstance> taskHistoryList(TaskInstanceQuery query) {
         return getCommandExecutor().execute(new GetTaskHistoryListCmd(query));
     }
 
     @Override
-    public Page<TaskInstance> taskHistoryPage(TaskQuery query, int start, int end) {
+    public Page<TaskInstance> taskHistoryPage(TaskInstanceQuery query, int start, int end) {
         return getCommandExecutor().execute(new GetTaskHistoryPageCmd(query, start, end));
     }
 

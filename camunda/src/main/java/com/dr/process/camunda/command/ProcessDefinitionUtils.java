@@ -1,4 +1,4 @@
-package com.dr.process.camunda.utils;
+package com.dr.process.camunda.command;
 
 import com.dr.framework.core.process.bo.ProcessDefinition;
 import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionEntityWithExtend;
@@ -9,11 +9,12 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
+ * 流程定义转换工具类
  * 统一实现类的映射
  *
  * @author dr
  */
-public final class BeanMapper {
+public final class ProcessDefinitionUtils {
 
     /**
      * 创建list
@@ -33,7 +34,7 @@ public final class BeanMapper {
      * @return
      */
     public static List<ProcessDefinition> newProcessDefinitionList(List<org.camunda.bpm.engine.repository.ProcessDefinition> sourceList, Consumer<ProcessDefinition> consumer) {
-        return sourceList != null ? sourceList.stream().map(p -> BeanMapper.newProcessDefinition(p, consumer)).collect(Collectors.toList()) : Collections.emptyList();
+        return sourceList != null ? sourceList.stream().map(p -> ProcessDefinitionUtils.newProcessDefinition(p, consumer)).collect(Collectors.toList()) : Collections.emptyList();
     }
 
     /**
@@ -55,12 +56,13 @@ public final class BeanMapper {
      */
     public static ProcessDefinition newProcessDefinition(org.camunda.bpm.engine.repository.ProcessDefinition source, Consumer<ProcessDefinition> consumer) {
         ProcessDefinition processDefinition = new ProcessDefinition();
-
-        processDefinition.setVersion(source.getVersion());
+        //基本信息
         processDefinition.setName(source.getName());
         processDefinition.setDescription(source.getDescription());
         processDefinition.setId(source.getId());
+        //专有信息
         processDefinition.setKey(source.getKey());
+        processDefinition.setVersion(source.getVersion());
         if (source instanceof ProcessDefinitionEntityWithExtend) {
             processDefinition.setType(((ProcessDefinitionEntityWithExtend) source).getProcessType());
         }

@@ -1,8 +1,7 @@
 package com.dr.process.camunda.command.task.history;
 
 import com.dr.framework.core.process.bo.TaskInstance;
-import com.dr.framework.core.process.query.TaskQuery;
-import com.dr.process.camunda.command.task.history.AbstractGetTaskHistoryCmd;
+import com.dr.framework.core.process.query.TaskInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
  */
 public class GetTaskHistoryListCmd extends AbstractGetTaskHistoryCmd implements Command<List<TaskInstance>> {
 
-    public GetTaskHistoryListCmd(TaskQuery query) {
+    public GetTaskHistoryListCmd(TaskInstanceQuery query) {
         super(query);
     }
 

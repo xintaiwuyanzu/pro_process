@@ -5,7 +5,7 @@ package com.dr.framework.core.process.query;
  *
  * @author dr
  */
-public class TaskQuery extends AbsProcessQuery<TaskQuery> {
+public class TaskInstanceQuery extends AbsProcessQuery<TaskInstanceQuery> {
     /**
      * 流程创建人
      */
@@ -52,57 +52,57 @@ public class TaskQuery extends AbsProcessQuery<TaskQuery> {
      */
     private boolean withProcessProperty;
 
-    public TaskQuery processInstanceIdEqual(String processInstanceId) {
+    public TaskInstanceQuery processInstanceIdEqual(String processInstanceId) {
         this.processInstanceId = processInstanceId;
         return this;
     }
 
-    public TaskQuery createPersonEqual(String createPerson) {
+    public TaskInstanceQuery createPersonEqual(String createPerson) {
         this.createPerson = createPerson;
         return this;
     }
 
-    public TaskQuery ownerEqual(String owner) {
+    public TaskInstanceQuery ownerEqual(String owner) {
         this.owner = owner;
         return this;
     }
 
-    public TaskQuery assigneeEqual(String assignee) {
+    public TaskInstanceQuery assigneeEqual(String assignee) {
         this.assignee = assignee;
         return this;
     }
 
-    public TaskQuery taskKeyLike(String taskKeyLike) {
+    public TaskInstanceQuery taskKeyLike(String taskKeyLike) {
         this.taskKeyLike = taskKeyLike;
         return this;
     }
 
-    public TaskQuery taskKeyNotLike(String taskKeyNotLike) {
+    public TaskInstanceQuery taskKeyNotLike(String taskKeyNotLike) {
         this.taskKeyNotLike = taskKeyNotLike;
         return this;
     }
 
-    public TaskQuery withVariables() {
+    public TaskInstanceQuery withVariables() {
         this.withVariables = true;
         return this;
     }
 
-    public TaskQuery titleLike(String title) {
+    public TaskInstanceQuery titleLike(String title) {
         this.title = title;
         return this;
     }
 
-    public TaskQuery descriptionLike(String description) {
+    public TaskInstanceQuery descriptionLike(String description) {
         this.description = description;
         return this;
     }
 
-    public TaskQuery withProcessProperty(boolean withProcessProperty) {
+    public TaskInstanceQuery withProcessProperty(boolean withProcessProperty) {
         this.withProcessProperty = withProcessProperty;
         return this;
     }
 
-    public TaskQuery processDefinitionKeyLike(String processDefinitionKey) {
+    public TaskInstanceQuery processDefinitionKeyLike(String processDefinitionKey) {
         this.processDefinitionKey = processDefinitionKey;
         return this;
     }

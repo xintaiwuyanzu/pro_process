@@ -1,6 +1,8 @@
 package com.dr.process.camunda.command;
 
 /**
+ * 任务变量转换工具类
+ * <p>
  * 流程和任务变量工具类
  * <p>
  * 用来转换变量信息到实体类

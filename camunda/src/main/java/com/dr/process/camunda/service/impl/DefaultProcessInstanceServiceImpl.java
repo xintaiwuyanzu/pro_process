@@ -2,12 +2,12 @@ package com.dr.process.camunda.service.impl;
 
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.process.bo.ProcessInstance;
-import com.dr.framework.core.process.query.ProcessQuery;
+import com.dr.framework.core.process.query.ProcessInstanceQuery;
 import com.dr.framework.core.process.service.ProcessInstanceService;
+import com.dr.process.camunda.command.process.history.GetProcessHistoryListCmd;
+import com.dr.process.camunda.command.process.history.GetProcessHistoryPageCmd;
 import com.dr.process.camunda.command.process.instance.GetProcessInstanceListCmd;
 import com.dr.process.camunda.command.process.instance.GetProcessInstancePageCmd;
-import com.dr.process.camunda.command.process.history.GetProcessObjectHistoryListCmd;
-import com.dr.process.camunda.command.process.history.GetProcessObjectHistoryPageCmd;
 import org.camunda.bpm.engine.RuntimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,23 +27,23 @@ public class DefaultProcessInstanceServiceImpl extends BaseProcessServiceImpl im
     private RuntimeService runtimeService;
 
     @Override
-    public List<ProcessInstance> processInstanceList(ProcessQuery query) {
+    public List<ProcessInstance> processInstanceList(ProcessInstanceQuery query) {
         return getCommandExecutor().execute(new GetProcessInstanceListCmd(query));
     }
 
     @Override
-    public Page<ProcessInstance> processInstancePage(ProcessQuery query, int start, int end) {
+    public Page<ProcessInstance> processInstancePage(ProcessInstanceQuery query, int start, int end) {
         return getCommandExecutor().execute(new GetProcessInstancePageCmd(query, start, end));
     }
 
     @Override
-    public List<ProcessInstance> processInstanceHistoryList(ProcessQuery query) {
-        return getCommandExecutor().execute(new GetProcessObjectHistoryListCmd(query));
+    public List<ProcessInstance> processInstanceHistoryList(ProcessInstanceQuery query) {
+        return getCommandExecutor().execute(new GetProcessHistoryListCmd(query));
     }
 
     @Override
-    public Page<ProcessInstance> processInstanceHistoryPage(ProcessQuery query, int start, int end) {
-        return getCommandExecutor().execute(new GetProcessObjectHistoryPageCmd(query, start, end));
+    public Page<ProcessInstance> processInstanceHistoryPage(ProcessInstanceQuery query, int start, int end) {
+        return getCommandExecutor().execute(new GetProcessHistoryPageCmd(query, start, end));
     }
 
 

@@ -7,18 +7,15 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
+ * 根据Id查询环节实例
+ *
  * @author dr
  */
 public class GetTaskInstanceCmd extends AbstractGetTaskInstanceCmd implements Command<TaskInstance> {
     private String taskId;
 
-    public GetTaskInstanceCmd(boolean withProperties, String taskId) {
-        super(withProperties);
-        this.taskId = taskId;
-    }
-
     public GetTaskInstanceCmd(String taskId) {
-        super(true, true, true);
+        super(true, true, true, true);
         this.taskId = taskId;
     }
 

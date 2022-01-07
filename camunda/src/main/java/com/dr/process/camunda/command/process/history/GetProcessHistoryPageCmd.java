@@ -2,8 +2,7 @@ package com.dr.process.camunda.command.process.history;
 
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.process.bo.ProcessInstance;
-import com.dr.framework.core.process.query.ProcessQuery;
-import com.dr.process.camunda.command.process.history.AbstractGetProcessObjectHistoryCmd;
+import com.dr.framework.core.process.query.ProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -11,13 +10,15 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import java.util.stream.Collectors;
 
 /**
+ * 根据条件查询查询流转历史分页数据
+ *
  * @author dr
  */
-public class GetProcessObjectHistoryPageCmd extends AbstractGetProcessObjectHistoryCmd implements Command<Page<ProcessInstance>> {
+public class GetProcessHistoryPageCmd extends AbstractGetProcessHistoryCmd implements Command<Page<ProcessInstance>> {
     private int start;
     private int end;
 
-    public GetProcessObjectHistoryPageCmd(ProcessQuery query, int start, int end) {
+    public GetProcessHistoryPageCmd(ProcessInstanceQuery query, int start, int end) {
         super(query);
         this.start = start;
         this.end = end;

@@ -1,12 +1,11 @@
 package com.dr.process.camunda.command.process.instance;
 
 import com.dr.framework.core.process.bo.ProcessInstance;
-import com.dr.framework.core.process.query.ProcessQuery;
-import com.dr.framework.core.process.service.ProcessConstants;
+import com.dr.framework.core.process.query.ProcessInstanceQuery;
+import com.dr.process.camunda.command.QueryUtils;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
-import org.springframework.util.StringUtils;
 
 /**
  * 流程实例没有
@@ -16,29 +15,25 @@ import org.springframework.util.StringUtils;
  * @author dr
  */
 public class AbstractGetProcessInstanceCmd {
-    private ProcessQuery query;
+    private ProcessInstanceQuery query;
 
-    public AbstractGetProcessInstanceCmd(ProcessQuery query) {
+    public AbstractGetProcessInstanceCmd(ProcessInstanceQuery query) {
         this.query = query;
     }
 
     protected HistoricProcessInstanceQuery convert(CommandContext commandContext) {
-        HistoricProcessInstanceQuery pq = commandContext.getProcessEngineConfiguration().getHistoryService().createHistoricProcessInstanceQuery();
-        if (query != null) {
-            if (!StringUtils.isEmpty(query.getDescription())) {
-                pq.variableValueLike(ProcessConstants.PROCESS_TITLE_KEY, query.getDescription());
-            }
-            pq.startedBy(query.getCreatePerson());
-            if (!StringUtils.isEmpty(query.getName())) {
-                pq.processDefinitionNameLike(query.getName());
-            }
-            if (!StringUtils.isEmpty(query.getType())) {
-                pq.variableValueLike(ProcessConstants.PROCESS_TYPE_KEY, query.getType());
-            }
-        }
-        return pq.active().orderByProcessInstanceStartTime().asc();
+        return QueryUtils.processHistoryQuery(commandContext, query)
+                //根据启动时间倒序排序
+                .orderByProcessInstanceStartTime().desc();
     }
 
+    /**
+     * 根据历史数据查询id，再根据id查询实例
+     *
+     * @param instance
+     * @param commandContext
+     * @return
+     */
     protected ProcessInstance convert(HistoricProcessInstance instance, CommandContext commandContext) {
         return commandContext.getProcessEngineConfiguration().getCommandExecutorTxRequired().execute(new ConvertProcessInstanceCmd(instance.getId()));
     }

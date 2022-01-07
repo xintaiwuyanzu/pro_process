@@ -6,7 +6,6 @@ import org.camunda.bpm.engine.impl.bpmn.helper.BpmnProperties;
 import org.camunda.bpm.engine.impl.bpmn.parser.AbstractBpmnParseListener;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
 import org.camunda.bpm.engine.impl.core.model.Properties;
-import org.camunda.bpm.engine.impl.el.Expression;
 import org.camunda.bpm.engine.impl.el.ExpressionManager;
 import org.camunda.bpm.engine.impl.el.UelExpressionCondition;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;

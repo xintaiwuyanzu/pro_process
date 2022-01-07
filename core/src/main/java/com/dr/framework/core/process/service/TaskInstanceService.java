@@ -5,7 +5,7 @@ import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.process.bo.Comment;
 import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.bo.TaskInstance;
-import com.dr.framework.core.process.query.TaskQuery;
+import com.dr.framework.core.process.query.TaskInstanceQuery;
 
 import java.util.List;
 import java.util.Map;
@@ -110,7 +110,7 @@ public interface TaskInstanceService {
      * @param query
      * @return
      */
-    List<TaskInstance> taskList(TaskQuery query);
+    List<TaskInstance> taskList(TaskInstanceQuery query);
 
     /**
      * 根据条件查询流程环节分页
@@ -120,7 +120,7 @@ public interface TaskInstanceService {
      * @param end
      * @return
      */
-    Page<TaskInstance> taskPage(TaskQuery query, int start, int end);
+    Page<TaskInstance> taskPage(TaskInstanceQuery query, int start, int end);
 
     /**
      * 查询任务历史信息
@@ -128,7 +128,7 @@ public interface TaskInstanceService {
      * @param query
      * @return
      */
-    List<TaskInstance> taskHistoryList(TaskQuery query);
+    List<TaskInstance> taskHistoryList(TaskInstanceQuery query);
 
     /**
      * 查询流程历史信息分页
@@ -138,7 +138,7 @@ public interface TaskInstanceService {
      * @param end
      * @return
      */
-    Page<TaskInstance> taskHistoryPage(TaskQuery query, int start, int end);
+    Page<TaskInstance> taskHistoryPage(TaskInstanceQuery query, int start, int end);
 
 
     /**

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * 根据条件查询流程定义列表
+ *
  * @author dr
  */
 public class GetProcessDefinitionListCmd extends AbstractGetProcessQueryCmd implements Command<List<ProcessDefinition>> {

@@ -18,6 +18,7 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
     private String type;
     /**
      * 流程定义描述，这个可能会用表达式
+     * TODO 没有根据描述查询的方法，需要的时候需要自己额外封装
      */
     private String description;
     /**
