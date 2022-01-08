@@ -59,6 +59,16 @@ public interface ProcessTypeProvider extends Ordered {
         return "";
     }
 
+    /**
+     * 获取流程详情地址，默认是空，可以被拦截修改，如果没有设置就使用这个
+     *
+     * @return
+     * @param context
+     */
+    default String getFormUrl(ProcessContext context) {
+        return "";
+    }
+
     @Override
     default int getOrder() {
         return 0;

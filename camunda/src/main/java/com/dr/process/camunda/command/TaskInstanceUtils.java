@@ -1,6 +1,8 @@
 package com.dr.process.camunda.command;
 
+import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.bo.TaskInstance;
+import com.dr.framework.core.process.service.ProcessConstants;
 import org.camunda.bpm.engine.HistoryService;
 import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -49,7 +51,7 @@ public class TaskInstanceUtils {
         //环节创建时间
         to.setCreateDate(task.getCreateTime().getTime());
         //环节表单Id，这个是从环节定义中获取的
-        to.setFormKey(task.getFormKey());
+        //to.setFormKey(task.getFormKey());
         //流程实例Id
         to.setProcessInstanceId(task.getProcessInstanceId());
         //流程定义Id
@@ -105,14 +107,22 @@ public class TaskInstanceUtils {
 
         HistoryService historyService = commandContext.getProcessEngineConfiguration().getHistoryService();
 
-        Map<String, Object> variables = historyService
+        Map<String, Object> taskVaris = historyService
                 .createHistoricVariableInstanceQuery()
                 .taskIdIn(his.getId())
                 .list()
                 .stream()
                 .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
+        bindVaris(taskVaris, to, withVariables, false);
 
-        bindVaris(variables, to, withVariables, withProcessVariables);
+        Map<String, Object> processVaris = historyService
+                .createHistoricVariableInstanceQuery()
+                .processInstanceId(his.getProcessInstanceId())
+                .list()
+                .stream()
+                .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
+
+        bindVaris(processVaris, to, false, withProcessVariables);
 
         if (withProperties) {
             to.setProPerties(getProperty(his.getProcessDefinitionId(),
@@ -128,14 +138,12 @@ public class TaskInstanceUtils {
     }
 
     private static void bindVaris(Map<String, Object> variables, TaskInstance to, boolean withVariables, boolean withProcessVariables) {
+        //先绑定流程相关变量
+        bindVaris(variables, to);
         //接收人名称
         to.setAssigneeName((String) variables.get(TASK_ASSIGNEE_NAME_KEY));
         //任务发送人名称
         to.setOwnerName((String) variables.get(TASK_OWNER_NAME_KEY));
-        //创建人Id
-        to.setCreatePerson((String) variables.get(PROCESS_CREATE_PERSON_KEY));
-        //创建人名称
-        to.setCreatePersonName((String) variables.get(PROCESS_CREATE_NAME_KEY));
 
         if (withVariables) {
             to.setVariables(filter(variables));
@@ -145,5 +153,20 @@ public class TaskInstanceUtils {
             to.setProcessVariables(filter(variables));
         }
     }
+
+
+    public static void bindVaris(Map<String, Object> variables, ProcessInstance po) {
+        if (variables != null) {
+            po.setTitle((String) variables.get(ProcessConstants.PROCESS_TITLE_KEY));
+            po.setDetail((String) variables.get(ProcessConstants.PROCESS_DETAIL_KEY));
+            //创建人Id
+            po.setCreatePerson((String) variables.get(PROCESS_CREATE_PERSON_KEY));
+            //创建人名称
+            po.setCreatePersonName((String) variables.get(ProcessConstants.PROCESS_CREATE_NAME_KEY));
+            po.setType((String) variables.get(ProcessConstants.PROCESS_TYPE_KEY));
+            po.setFormUrl((String) variables.get(ProcessConstants.PROCESS_FORM_URL_KEY));
+        }
+    }
+
 
 }

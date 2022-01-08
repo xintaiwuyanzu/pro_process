@@ -2,6 +2,7 @@ package com.dr.process.camunda.command.process.instance;
 
 import com.dr.framework.core.process.bo.ProcessDefinition;
 import com.dr.framework.core.process.bo.ProcessInstance;
+import com.dr.process.camunda.command.TaskInstanceUtils;
 import com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd;
 import com.dr.process.camunda.command.process.definition.GetProcessDefinitionByIdCmd;
 import org.camunda.bpm.engine.history.HistoricProcessInstance;
@@ -11,9 +12,6 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.dr.framework.core.process.service.ProcessConstants.PROCESS_CREATE_NAME_KEY;
-import static com.dr.framework.core.process.service.ProcessConstants.PROCESS_TITLE_KEY;
 
 
 /**
@@ -54,9 +52,7 @@ public class ConvertProcessInstanceCmd implements Command<ProcessInstance> {
                 .singleResult();
         ProcessInstance po = new ProcessInstance();
         po.setId(his.getId());
-        po.setType(his.getBusinessKey());
         po.setName(his.getProcessDefinitionName());
-
 
         po.setVersion(his.getProcessDefinitionVersion());
         po.setCreateDate(his.getStartTime().getTime());
@@ -76,8 +72,8 @@ public class ConvertProcessInstanceCmd implements Command<ProcessInstance> {
                     .stream()
                     .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
         }
-        po.setDescription((String) variables.get(PROCESS_TITLE_KEY));
-        po.setCreatePersonName((String) variables.get(PROCESS_CREATE_NAME_KEY));
+
+        TaskInstanceUtils.bindVaris(variables, po);
         //TODO 过滤变量分很多种场景
         po.setVariables(AbstractProcessDefinitionCmd.filter(variables));
         //额外变量

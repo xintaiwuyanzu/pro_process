@@ -10,36 +10,28 @@ public class ProcessInstanceQuery extends AbsProcessQuery<ProcessInstanceQuery> 
     /**
      * 流程名称
      */
-    private String name;
-    /**
-     * 流程类型
-     */
-    private String type;
+    private String title;
     /**
      * 流程实例描述
      */
-    private String description;
+    private String detail;
     /**
      * 流程实例创建人
      */
     private String createPerson;
     /**
+     * TODO
      * 环节实例接收人
      */
     private String taskPerson;
 
     public ProcessInstanceQuery nameLike(String name) {
-        this.name = name;
-        return this;
-    }
-
-    public ProcessInstanceQuery typeLike(String type) {
-        this.type = type;
+        this.title = name;
         return this;
     }
 
     public ProcessInstanceQuery descriptionLike(String description) {
-        this.description = description;
+        this.detail = description;
         return this;
     }
 
@@ -53,16 +45,12 @@ public class ProcessInstanceQuery extends AbsProcessQuery<ProcessInstanceQuery> 
         return this;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public String getDescription() {
-        return description;
+    public String getDetail() {
+        return detail;
     }
 
     public String getCreatePerson() {

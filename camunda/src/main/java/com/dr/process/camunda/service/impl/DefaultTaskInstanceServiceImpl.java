@@ -12,14 +12,12 @@ import com.dr.process.camunda.command.comment.GetProcessCommentsCmd;
 import com.dr.process.camunda.command.comment.GetTaskCommentsCmd;
 import com.dr.process.camunda.command.process.EndProcessCmd;
 import com.dr.process.camunda.command.process.instance.ConvertProcessInstanceCmd;
-import com.dr.process.camunda.command.task.BackTaskCmd;
-import com.dr.process.camunda.command.task.JumpTaskCmd;
-import com.dr.process.camunda.command.task.SendTaskCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryListCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryPageCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstanceCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstanceListCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstancePageCmd;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +26,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -121,7 +120,6 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
         }
     }
 
-
     @Override
     @Transactional
     public ProcessInstance start(String processDefinitionId, Map<String, Object> variMap, Person person) {
@@ -133,23 +131,36 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
         //启动前拦截
         processTypeProvider.onBeforeStartProcess(context);
 
-        Property proPerty = processDefinition.getProPerty(PROCESS_FORM_URL_KEY);
-        if (proPerty != null) {
-            context.addVar(PROCESS_FORM_URL_KEY, proPerty.getValue());
+        //详情页面URL地址
+        if (!context.getProcessVarMap().containsKey(PROCESS_FORM_URL_KEY)) {
+            //先尝试从流程定义中获取表单地址，代码是死的，配置是灵活的
+            Property proPerty = processDefinition.getProPerty(PROCESS_FORM_URL_KEY);
+            if (proPerty != null) {
+                context.addVar(PROCESS_FORM_URL_KEY, proPerty.getValue());
+            } else {
+                String providerFormUrl = processTypeProvider.getFormUrl(context);
+                if (StringUtils.hasText(providerFormUrl)) {
+                    context.addVar(PROCESS_FORM_URL_KEY, providerFormUrl);
+                }
+            }
         }
 
+        //流程实例标题
         if (StringUtils.hasText(context.getProcessInstanceTitle())) {
             context.addVar(PROCESS_TITLE_KEY, context.getProcessInstanceTitle());
-        }
-        if (StringUtils.hasText(context.getProcessInstanceDescription())) {
-            context.addVar(PROCESS_DESCRIPTION_KEY, context.getProcessInstanceDescription());
         } else {
-            context.addVar(PROCESS_DESCRIPTION_KEY, "默认标题！！！");
+            context.addVar(PROCESS_TITLE_KEY, processDefinition.getName() + DateFormatUtils.format(new Date(), "YYYY-MM-DD"));
         }
-        //设置启动环节任务人为传进来的登陆人信息
-        context.addVar(TASK_ASSIGNEE_KEY, person.getId());
+        //流程实例详情描述
+        if (StringUtils.hasText(context.getProcessInstanceDetail())) {
+            //业务自定义流程实例标题
+            context.addVar(PROCESS_DETAIL_KEY, context.getProcessInstanceDetail());
+        }
         //设置流程任务类型变量
         context.addVar(PROCESS_TYPE_KEY, processTypeProvider.getType());
+
+        //设置启动环节任务人为传进来的登陆人信息
+        context.addVar(TASK_ASSIGNEE_KEY, person.getId());
         //调用流程引擎启动流程
         ProcessInstanceWithVariables instance = (ProcessInstanceWithVariables) getRuntimeService().startProcessInstanceById(processDefinition.getId(), context.getBusinessId(), context.getProcessVarMap());
         //转换流程实例对象
@@ -158,14 +169,6 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
         context.setProcessInstance(instance1);
         //启动后拦截
         processTypeProvider.onAfterStartProcess(context);
-        //有可能启动后直接跳转到第二个环节
-        if (variMap.containsKey(VAR_NEXT_TASK_ID) && variMap.containsKey(VAR_NEXT_TASK_PERSON)) {
-            String taskId = (String) variMap.get(VAR_NEXT_TASK_ID);
-            String personId = (String) variMap.get(VAR_NEXT_TASK_PERSON);
-            if (StringUtils.hasText(taskId) && StringUtils.hasText(personId)) {
-                send(taskId, personId, (String) variMap.get(VAR_COMMENT_KEY), variMap);
-            }
-        }
         return instance1;
     }
 
@@ -174,20 +177,6 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     public void complete(String taskId, Map<String, Object> variables) {
         Assert.isTrue(!StringUtils.isEmpty(taskId), "环节Id不能为空！");
         getTaskService().complete(taskId, variables);
-    }
-
-    /**
-     * 发送到下一环节
-     *
-     * @param taskId
-     * @param nextPerson
-     * @param comment
-     * @param variables
-     */
-    @Override
-    @Transactional
-    public void send(String taskId, String nextPerson, String comment, Map<String, Object> variables) {
-        getCommandExecutor().execute(new SendTaskCmd(taskId, nextPerson, comment, variables));
     }
 
     @Override
@@ -205,16 +194,6 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     @Override
     public void endProcess(String taskId, String comment) {
         getCommandExecutor().execute(new EndProcessCmd(taskId, comment));
-    }
-
-    @Override
-    public void back(String taskId, String comment) {
-        getCommandExecutor().execute(new BackTaskCmd(taskId, comment));
-    }
-
-    @Override
-    public void jump(String taskId, String nextTaskId, String nextPerson, String comment, Map<String, Object> variables) {
-        getCommandExecutor().execute(new JumpTaskCmd(taskId, nextTaskId, nextPerson, comment, variables));
     }
 
     @Override

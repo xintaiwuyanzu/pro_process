@@ -29,6 +29,8 @@ public class AbstractGetProcessHistoryCmd {
      */
     protected HistoricProcessInstanceQuery convert(CommandContext commandContext) {
         return QueryUtils.processHistoryQuery(commandContext, query)
+                //查询已经办结的流程实例
+                .finished()
                 //根据办结时间倒叙排序
                 .orderByProcessInstanceEndTime().desc();
     }

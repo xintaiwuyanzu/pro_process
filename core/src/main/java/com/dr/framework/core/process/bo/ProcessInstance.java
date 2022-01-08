@@ -9,6 +9,14 @@ import java.util.Map;
  */
 public class ProcessInstance extends ProcessDefinition {
     /**
+     * 流程实例名称
+     */
+    private String title;
+    /**
+     * 流程实例描述
+     */
+    private String detail;
+    /**
      * 流程创建时间
      */
     private long createDate;
@@ -33,26 +41,30 @@ public class ProcessInstance extends ProcessDefinition {
      * 流程是否暂停
      */
     private boolean suspend;
+    /**
+     * 表单跳转地址
+     */
+    private String formUrl;
 
     /**
      * 流程运行时的环境变量
      */
     private Map<String, Object> variables;
 
-    public Map<String, Object> getVariables() {
-        return variables;
+    public String getTitle() {
+        return title;
     }
 
-    public void setVariables(Map<String, Object> variables) {
-        this.variables = variables;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public String getProcessDefineId() {
-        return processDefineId;
+    public String getDetail() {
+        return detail;
     }
 
-    public void setProcessDefineId(String processDefineId) {
-        this.processDefineId = processDefineId;
+    public void setDetail(String detail) {
+        this.detail = detail;
     }
 
     public long getCreateDate() {
@@ -79,6 +91,14 @@ public class ProcessInstance extends ProcessDefinition {
         this.createPersonName = createPersonName;
     }
 
+    public String getProcessDefineId() {
+        return processDefineId;
+    }
+
+    public void setProcessDefineId(String processDefineId) {
+        this.processDefineId = processDefineId;
+    }
+
     public long getEndDate() {
         return endDate;
     }
@@ -93,5 +113,21 @@ public class ProcessInstance extends ProcessDefinition {
 
     public void setSuspend(boolean suspend) {
         this.suspend = suspend;
+    }
+
+    public Map<String, Object> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(Map<String, Object> variables) {
+        this.variables = variables;
+    }
+
+    public String getFormUrl() {
+        return formUrl;
+    }
+
+    public void setFormUrl(String formUrl) {
+        this.formUrl = formUrl;
     }
 }

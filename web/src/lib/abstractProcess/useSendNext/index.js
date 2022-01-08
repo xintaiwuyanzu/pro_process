@@ -26,13 +26,14 @@ export default () => {
                     nextPersonId: form.person.join(','),
                     comment: ''
                 })
-                console.log(data)
-                resolve(form)
+                resolve(data, form)
                 instance.loading = false
                 instance.visible = false
             }
         })
         instance.$on('close', () => {
+            instance.loading = false
+            instance.visible = false
             if (resolve) {
                 resolve()
             }

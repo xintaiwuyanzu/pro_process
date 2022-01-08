@@ -41,7 +41,7 @@ public class ProcessContext {
     /**
      * 流程实例描述
      */
-    private String processInstanceDescription;
+    private String processInstanceDetail;
     /**
      * 业务关联Id
      */
@@ -98,12 +98,12 @@ public class ProcessContext {
         this.processInstanceTitle = processInstanceTitle;
     }
 
-    public String getProcessInstanceDescription() {
-        return processInstanceDescription;
+    public String getProcessInstanceDetail() {
+        return processInstanceDetail;
     }
 
-    public void setProcessInstanceDescription(String processInstanceDescription) {
-        this.processInstanceDescription = processInstanceDescription;
+    public void setProcessInstanceDetail(String processInstanceDetail) {
+        this.processInstanceDetail = processInstanceDetail;
     }
 
     public String getBusinessId() {

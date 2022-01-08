@@ -10,7 +10,7 @@
 export default {
   name: "taskHistoryDialog",
   props: {
-    loading:{type:Boolean,default:false},
+    loading: {type: Boolean, default: false},
     /**
      * 历史任务列表
      */
@@ -28,8 +28,7 @@ export default {
         createDate: {dateFormat: true, label: '发送时间', width: 100},
         name: {label: '当前环节名称', width: 160},
         title: {label: '任务名称'},
-        process_TYPE: {label: '任务类型'},
-        description: {label: '环节描述'}
+        description: {label: '任务描述'}
       }
     }
   }

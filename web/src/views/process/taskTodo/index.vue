@@ -33,8 +33,13 @@ export default {
      * @param row
      */
     showDetail(row) {
+      let path = row.formUrl
+      if (!path) {
+        path = this.$route.path + "/detail"
+        this.$message.warning('未配置详情页面，跳转默认页面')
+      }
       this.$router.push({
-        path: this.$route.path + "/detail",
+        path: path,
         query: {processInstanceId: row.processInstanceId, taskId: row.id}
       })
     }

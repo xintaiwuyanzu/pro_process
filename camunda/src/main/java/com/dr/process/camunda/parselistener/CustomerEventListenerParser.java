@@ -27,13 +27,11 @@ public class CustomerEventListenerParser extends AbstractBpmnParseListener {
     protected Expression taskListenerExpression;
     protected Expression processListenerExpression;
     protected Expression assigneeExpression;
-    protected Expression descriptionExpression;
 
     public CustomerEventListenerParser(ExpressionManager expressionManager) {
         taskListenerExpression = expressionManager.createExpression("${" + FixTaskVarListener.BEAN_NAME + "}");
         processListenerExpression = expressionManager.createExpression("${" + FixProcessVarListener.BEAN_NAME + "}");
         assigneeExpression = expressionManager.createExpression("${assignee}");
-        descriptionExpression = expressionManager.createExpression("${$description}");
     }
 
     @Override
@@ -63,10 +61,6 @@ public class CustomerEventListenerParser extends AbstractBpmnParseListener {
         //手动设置接收人表达式
         if (taskDefinition.getAssigneeExpression() == null) {
             taskDefinition.setAssigneeExpression(assigneeExpression);
-        }
-        //手动设置任务描述表达式
-        if (taskDefinition.getDescriptionExpression() == null) {
-            taskDefinition.setDescriptionExpression(descriptionExpression);
         }
         TaskListener delegateListener = new DelegateExpressionTaskListener(taskListenerExpression, null);
         //添加用户任务监听

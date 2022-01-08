@@ -72,7 +72,7 @@ public class ProcessServiceTest {
         map.put("formId", "aaaa");
         ProcessInstance processInstance = taskInstanceService.start(processDefinition.getId(), map, person);
 
-        TaskInstanceQuery query = new TaskInstanceQuery().processDefinitionKeyLike("%aaa%").taskKeyNotLike("bbb").withProperty().withVariables();
+        TaskInstanceQuery query = (TaskInstanceQuery) new TaskInstanceQuery().processDefinitionKeyLike("%aaa%").withVariables().withProperty();
 
         List<TaskInstance> taskObjects = taskInstanceService.taskList(query);
 
@@ -89,12 +89,6 @@ public class ProcessServiceTest {
     @Test
     public void testStartUser() {
 
-    }
-
-    @Test
-    public void testJump() {
-        TaskInstance taskObject = taskInstanceService.taskList(new TaskInstanceQuery()).get(0);
-        taskInstanceService.jump(taskObject.getId(), "Task_0oihs3n", "admin");
     }
 
     @Test

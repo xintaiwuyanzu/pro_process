@@ -41,7 +41,6 @@ public class FixTransitionBpmnParseListener extends AbstractBpmnParseListener {
 
     @Override
     public void parseProcess(Element processElement, ProcessDefinitionEntity processDefinition) {
-        super.parseProcess(processElement, processDefinition);
         //获取排除了开始节点的所有节点
         List<ActivityImpl> activitiesWithOutStart = filterStartActivities(processDefinition);
         for (ActivityImpl task : activitiesWithOutStart) {
@@ -61,6 +60,12 @@ public class FixTransitionBpmnParseListener extends AbstractBpmnParseListener {
      * @param endActivities
      */
     protected void fixTransition(ActivityImpl task, List<ActivityImpl> endActivities) {
+        //如果环节只有一个，并且没有默认环节属性，则设置默认的下一环节
+        if (task.getOutgoingTransitions().size() == 1) {
+            if (task.getProperty("default") == null) {
+                task.setProperty("default", task.getOutgoingTransitions().get(0).getId());
+            }
+        }
         //先算出来所有已经连接的节点了
         Set<String> outIds = task.getOutgoingTransitions().stream().map(t -> t.getDestination().getId()).collect(Collectors.toSet());
         //在计算出来需要连接的节点
@@ -113,6 +118,9 @@ public class FixTransitionBpmnParseListener extends AbstractBpmnParseListener {
         return false;
     }
 
+    /**
+     * 启动类型的任务节点
+     */
     static final Set<String> START_EVENT_SETS = Stream.of(ActivityTypes.START_EVENT, ActivityTypes.START_EVENT_TIMER, ActivityTypes.START_EVENT_MESSAGE, ActivityTypes.START_EVENT_SIGNAL, ActivityTypes.START_EVENT_ESCALATION, ActivityTypes.START_EVENT_COMPENSATION, ActivityTypes.START_EVENT_ERROR, ActivityTypes.START_EVENT_CONDITIONAL).collect(Collectors.toSet());
     /**
      * 结束类型的节点

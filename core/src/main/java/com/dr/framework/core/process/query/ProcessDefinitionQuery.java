@@ -13,10 +13,6 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
      */
     private String name;
     /**
-     * 流程定义Id，当作类型使用
-     */
-    private String type;
-    /**
      * 流程定义描述，这个可能会用表达式
      * TODO 没有根据描述查询的方法，需要的时候需要自己额外封装
      */
@@ -42,11 +38,6 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
         return this;
     }
 
-    public ProcessDefinitionQuery typeLike(String type) {
-        this.type = type;
-        return this;
-    }
-
     public ProcessDefinitionQuery descriptionLike(String description) {
         this.description = description;
         return this;
@@ -65,9 +56,6 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
         return name;
     }
 
-    public String getType() {
-        return type;
-    }
 
     public String getDescription() {
         return description;
@@ -79,10 +67,6 @@ public class ProcessDefinitionQuery extends AbsProcessQuery<ProcessDefinitionQue
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public void setDescription(String description) {

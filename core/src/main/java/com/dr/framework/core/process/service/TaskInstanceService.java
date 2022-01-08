@@ -17,14 +17,6 @@ import java.util.Map;
  */
 public interface TaskInstanceService {
     /**
-     * 完成任务，自动跳转下一环节
-     *
-     * @param taskId
-     * @param variables
-     */
-    void complete(String taskId, Map<String, Object> variables);
-
-    /**
      * 设置流程实例环境变量
      *
      * @param taskId
@@ -152,47 +144,12 @@ public interface TaskInstanceService {
     ProcessInstance start(String processDefinitionId, Map<String, Object> variMap, Person person);
 
     /**
-     * 发送到默认的下一环节，不带有环境变量信息
+     * 办结任务
      *
      * @param taskId
-     * @param nextPerson
-     */
-    default void send(String taskId, String nextPerson) {
-        send(taskId, nextPerson, null, null);
-    }
-
-    /**
-     * 发送到默认的下一环节
-     *
-     * @param taskId
-     * @param nextPerson
      * @param variables
      */
-    default void send(String taskId, String nextPerson, Map<String, Object> variables) {
-        send(taskId, nextPerson, null, variables);
-    }
-
-    /**
-     * 发送给下一环节，带有备注
-     *
-     * @param taskId
-     * @param nextPerson
-     * @param comment
-     */
-    default void send(String taskId, String nextPerson, String comment) {
-        send(taskId, nextPerson, comment);
-    }
-
-    /**
-     * 完整的发送方法
-     *
-     * @param taskId
-     * @param nextPerson
-     * @param comment
-     * @param variables
-     */
-    void send(String taskId, String nextPerson, String comment, Map<String, Object> variables);
-
+    void complete(String taskId, Map<String, Object> variables);
 
     /**
      * 挂起流程实例
@@ -215,46 +172,4 @@ public interface TaskInstanceService {
      * @param comment 批注
      */
     void endProcess(String taskId, String comment);
-
-    /**
-     * 跳转
-     *
-     * @param taskId
-     * @param nextTaskId
-     * @param nextPerson
-     */
-    default void jump(String taskId, String nextTaskId, String nextPerson) {
-        jump(taskId, nextTaskId, nextPerson, null);
-    }
-
-    /**
-     * 跳转
-     *
-     * @param taskId
-     * @param nextTaskId
-     * @param nextPerson
-     * @param comment
-     */
-    default void jump(String taskId, String nextTaskId, String nextPerson, String comment) {
-        jump(taskId, nextTaskId, nextPerson, comment, null);
-    }
-
-    /**
-     * 跳转到指定的流程环节，可以是往前，也可以是往后
-     *
-     * @param taskId
-     * @param nextTaskId
-     * @param nextPerson
-     * @param comment
-     * @param variables
-     */
-    void jump(String taskId, String nextTaskId, String nextPerson, String comment, Map<String, Object> variables);
-
-    /**
-     * 完成当前环节，并退回到上一环节
-     *
-     * @param taskId
-     * @param comment
-     */
-    void back(String taskId, String comment);
 }

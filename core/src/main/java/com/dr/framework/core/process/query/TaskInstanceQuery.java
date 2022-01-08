@@ -5,7 +5,7 @@ package com.dr.framework.core.process.query;
  *
  * @author dr
  */
-public class TaskInstanceQuery extends AbsProcessQuery<TaskInstanceQuery> {
+public class TaskInstanceQuery extends ProcessInstanceQuery {
     /**
      * 流程创建人
      */
@@ -23,12 +23,7 @@ public class TaskInstanceQuery extends AbsProcessQuery<TaskInstanceQuery> {
      * 环节定义Id
      */
     private String taskKeyLike;
-    private String taskKeyNotLike;
 
-    /**
-     * 环节名称
-     */
-    private String title;
     /**
      * 环节描述
      */
@@ -77,20 +72,11 @@ public class TaskInstanceQuery extends AbsProcessQuery<TaskInstanceQuery> {
         return this;
     }
 
-    public TaskInstanceQuery taskKeyNotLike(String taskKeyNotLike) {
-        this.taskKeyNotLike = taskKeyNotLike;
-        return this;
-    }
-
     public TaskInstanceQuery withVariables() {
         this.withVariables = true;
         return this;
     }
 
-    public TaskInstanceQuery titleLike(String title) {
-        this.title = title;
-        return this;
-    }
 
     public TaskInstanceQuery descriptionLike(String description) {
         this.description = description;
@@ -119,17 +105,8 @@ public class TaskInstanceQuery extends AbsProcessQuery<TaskInstanceQuery> {
         return assignee;
     }
 
-
     public String getTaskKeyLike() {
         return taskKeyLike;
-    }
-
-    public String getTaskKeyNotLike() {
-        return taskKeyNotLike;
-    }
-
-    public String getTitle() {
-        return title;
     }
 
     public String getDescription() {

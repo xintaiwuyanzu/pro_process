@@ -41,7 +41,7 @@ export default () => {
                 resolve(form, data.data)
             } else {
                 //启动失败
-                Message.warn(data.message)
+                Message.warning(data.message)
             }
         })
     })

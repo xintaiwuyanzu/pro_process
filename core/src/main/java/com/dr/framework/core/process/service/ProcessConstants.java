@@ -39,19 +39,19 @@ public interface ProcessConstants {
     /**
      * 流程实例创建人ID
      */
-    String PROCESS_CREATE_PERSON_KEY = "CREATE_PERSON";
+    String PROCESS_CREATE_PERSON_KEY = "$createPersonId";
     /**
      * 流程实例创建人名称
      */
-    String PROCESS_CREATE_NAME_KEY = "CREATE_PERSON_NAME";
+    String PROCESS_CREATE_NAME_KEY = "$createPersonName";
     /**
      * 流程办结人ID
      */
-    String PROCESS_END_PERSON_KEY = "END_PERSON";
+    String PROCESS_END_PERSON_KEY = "$endPersonId";
     /**
      * 流程办结人名称
      */
-    String PROCESS_END_NAME_KEY = "END_PERSON_NAME";
+    String PROCESS_END_NAME_KEY = "$endPersonName";
     /**
      * 流程实例标题
      */
@@ -59,7 +59,7 @@ public interface ProcessConstants {
     /**
      * 描述key
      */
-    String PROCESS_DESCRIPTION_KEY = "$description";
+    String PROCESS_DETAIL_KEY = "$detail";
     /**
      * 详情url
      */

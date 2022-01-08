@@ -1,6 +1,5 @@
 package com.dr.process.camunda.command.process;
 
-import com.dr.process.camunda.command.task.JumpTaskCmd;
 import org.camunda.bpm.engine.impl.bpmn.behavior.NoneEndEventActivityBehavior;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -52,9 +51,9 @@ public class EndProcessCmd implements Command<Void> {
             Collection<EndEvent> endEvents = bpmnModelInstance.getModelElementById(taskEntity.getProcessDefinition().getKey())
                     .getChildElementsByType(EndEvent.class);
             //先查到end的id，然后执行jumpcmd
-            commandContext.getProcessEngineConfiguration()
+            /*commandContext.getProcessEngineConfiguration()
                     .getCommandExecutorTxRequired()
-                    .execute(new JumpTaskCmd(taskId, endEvents.iterator().next().getId(), null, null, null));
+                    .execute(new JumpTaskCmd(taskId, endEvents.iterator().next().getId(), null, null, null));*/
         }
         return null;
     }
