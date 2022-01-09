@@ -1,5 +1,6 @@
 package com.dr.process.camunda.parselistener;
 
+import com.dr.framework.core.process.service.ProcessConstants;
 import org.camunda.bpm.engine.ActivityTypes;
 import org.camunda.bpm.engine.impl.Condition;
 import org.camunda.bpm.engine.impl.bpmn.helper.BpmnProperties;
@@ -24,6 +25,9 @@ import java.util.stream.Stream;
 /**
  * 在解析bpmn流程文件完成的时候
  * 把所有节点都连接上，用来实现任意环节的跳转
+ * <p>
+ * 使用变量{@link ProcessConstants#VAR_NEXT_TASK_ID}
+ * 手动设置具体的要跳转的环节
  *
  * @author dr
  */
@@ -32,7 +36,7 @@ public class FixTransitionBpmnParseListener extends AbstractBpmnParseListener {
     /**
      * 自己添加连接线条件key
      */
-    public static final String SELF_TRANSITION_FIX_CONDITION_KEY = "nextActivityId";
+    public static final String SELF_TRANSITION_FIX_CONDITION_KEY = ProcessConstants.VAR_NEXT_TASK_ID;
     protected ExpressionManager expressionManager;
 
     public FixTransitionBpmnParseListener(ExpressionManager expressionManager) {

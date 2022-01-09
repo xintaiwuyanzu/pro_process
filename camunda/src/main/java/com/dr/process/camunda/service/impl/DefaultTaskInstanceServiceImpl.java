@@ -4,21 +4,20 @@ import com.dr.framework.common.page.Page;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.process.bo.*;
 import com.dr.framework.core.process.query.TaskInstanceQuery;
-import com.dr.framework.core.process.service.ProcessContext;
-import com.dr.framework.core.process.service.ProcessDefinitionService;
-import com.dr.framework.core.process.service.ProcessTypeProvider;
-import com.dr.framework.core.process.service.TaskInstanceService;
+import com.dr.framework.core.process.service.*;
 import com.dr.process.camunda.command.comment.GetProcessCommentsCmd;
 import com.dr.process.camunda.command.comment.GetTaskCommentsCmd;
 import com.dr.process.camunda.command.process.EndProcessCmd;
 import com.dr.process.camunda.command.process.instance.ConvertProcessInstanceCmd;
+import com.dr.process.camunda.command.task.definition.GetNextTaskDefinitionCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryListCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryPageCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstanceCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstanceListCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstancePageCmd;
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.camunda.bpm.engine.runtime.ProcessInstanceWithVariables;
+import org.camunda.bpm.engine.impl.persistence.entity.ProcessInstanceWithVariablesImpl;
+import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -162,19 +161,40 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
         //设置启动环节任务人为传进来的登陆人信息
         context.addVar(TASK_ASSIGNEE_KEY, person.getId());
         //调用流程引擎启动流程
-        ProcessInstanceWithVariables instance = (ProcessInstanceWithVariables) getRuntimeService().startProcessInstanceById(processDefinition.getId(), context.getBusinessId(), context.getProcessVarMap());
+        ProcessInstanceWithVariablesImpl instance = (ProcessInstanceWithVariablesImpl) getRuntimeService().startProcessInstanceById(processDefinition.getId(), context.getBusinessId(), context.getProcessVarMap());
         //转换流程实例对象
         ProcessInstance instance1 = getCommandExecutor().execute(new ConvertProcessInstanceCmd(instance.getId(), instance.getVariables()));
 
         context.setProcessInstance(instance1);
         //启动后拦截
         processTypeProvider.onAfterStartProcess(context);
+        //如果直接启动到第二环节
+        if (variMap.containsKey(VAR_COMPLETE_TO_NEXT)) {
+            //自动发送到第二个环节
+            boolean isAuto = false;
+            try {
+                isAuto = Boolean.parseBoolean((String) variMap.get(VAR_COMPLETE_TO_NEXT));
+            } catch (Exception ignore) {
+            }
+            if (isAuto) {
+                //当前流程实例对应的所有的环节实例
+                List<TaskEntity> taskEntities = instance.getExecutionEntity().getTasks();
+                if (taskEntities.size() == 1) {
+                    List<TaskDefinition> next = commandExecutor.execute(new GetNextTaskDefinitionCmd(taskEntities.get(0).getId()));
+                    if (next != null && next.size() == 1) {
+                        //读取下一个
+                        variMap.put(VAR_NEXT_TASK_ID, next.get(0).getId());
+                        complete(taskEntities.get(0).getId(), variMap, person);
+                    }
+                }
+            }
+        }
         return instance1;
     }
 
 
     @Override
-    public void complete(String taskId, Map<String, Object> variables) {
+    public void complete(String taskId, Map<String, Object> variables, Person person) {
         Assert.isTrue(!StringUtils.isEmpty(taskId), "环节Id不能为空！");
         getTaskService().complete(taskId, variables);
     }
@@ -192,7 +212,8 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     }
 
     @Override
-    public void endProcess(String taskId, String comment) {
+    public void endProcess(String taskId, Map<String, Object> variables, Person person) {
+        String comment = (String) variables.get(VAR_COMMENT_KEY);
         getCommandExecutor().execute(new EndProcessCmd(taskId, comment));
     }
 

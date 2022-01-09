@@ -97,6 +97,10 @@ public interface ProcessConstants {
      * 备注信息key
      */
     String VAR_COMMENT_KEY = "$comment";
+    /**
+     * 是否自动启动到第二个环节
+     */
+    String VAR_COMPLETE_TO_NEXT = "$autoComplete";
 
 }
 

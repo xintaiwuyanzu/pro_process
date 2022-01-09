@@ -101,7 +101,7 @@ public class ProcessServiceTest {
         ProcessInstance object = taskInstanceService.start(processObject.getId(), map, person);
         List<TaskInstance> objects = taskInstanceService.taskList(new TaskInstanceQuery().processInstanceIdEqual(object.getId()));
 
-        taskInstanceService.endProcess(objects.get(0).getId(), null);
+        taskInstanceService.endProcess(objects.get(0).getId(), new HashMap<>(), person);
 
     }
 

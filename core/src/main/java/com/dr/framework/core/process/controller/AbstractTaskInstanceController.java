@@ -35,16 +35,22 @@ public abstract class AbstractTaskInstanceController extends BaseProcessControll
      * 发送到下一环节
      *
      * @param taskInstanceId 环节实例Id
-     * @param nextPersonId   下一环节人Id
-     * @param comment        备注信息
      * @param requestParams  额外请求参数
      * @param person         当前登录人
      * @return
      */
     @PostMapping("send")
-    public ResultEntity<String> complete(String taskInstanceId, String nextPersonId, String comment, @RequestParam Map<String, Object> requestParams, @Current Person person) {
-        // getTaskInstanceService().complete(taskInstanceId, nextPersonId, comment, requestParams);
+    public ResultEntity<String> send(String taskInstanceId, @RequestParam Map<String, Object> requestParams, @Current Person person) {
+        //下一环节接收人
+        getTaskInstanceService().complete(taskInstanceId, requestParams, person);
         return ResultEntity.success("发送成功！");
+    }
+
+    @PostMapping("end")
+    public ResultEntity<String> end(String taskInstanceId, @RequestParam Map<String, Object> requestParams, @Current Person person) {
+        //下一环节接收人
+        getTaskInstanceService().endProcess(taskInstanceId, requestParams, person);
+        return ResultEntity.success("办结成功！");
     }
 
 

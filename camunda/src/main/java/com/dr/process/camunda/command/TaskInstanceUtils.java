@@ -9,6 +9,7 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -107,20 +108,20 @@ public class TaskInstanceUtils {
 
         HistoryService historyService = commandContext.getProcessEngineConfiguration().getHistoryService();
 
-        Map<String, Object> taskVaris = historyService
+        Map<String, Object> taskVaris = new HashMap<>();
+        historyService
                 .createHistoricVariableInstanceQuery()
                 .taskIdIn(his.getId())
                 .list()
-                .stream()
-                .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
+                .forEach(h -> taskVaris.put(h.getName(), h.getValue()));
         bindVaris(taskVaris, to, withVariables, false);
 
-        Map<String, Object> processVaris = historyService
+        Map<String, Object> processVaris = new HashMap<>();
+        historyService
                 .createHistoricVariableInstanceQuery()
                 .processInstanceId(his.getProcessInstanceId())
                 .list()
-                .stream()
-                .collect(Collectors.toMap(HistoricVariableInstance::getName, HistoricVariableInstance::getValue));
+                .forEach(h -> processVaris.put(h.getName(), h.getValue()));
 
         bindVaris(processVaris, to, false, withProcessVariables);
 

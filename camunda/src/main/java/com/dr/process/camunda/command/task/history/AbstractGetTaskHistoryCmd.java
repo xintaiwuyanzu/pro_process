@@ -23,7 +23,7 @@ public class AbstractGetTaskHistoryCmd {
     protected HistoricTaskInstanceQuery convert(CommandContext commandContext) {
         return QueryUtils.taskHistoryQuery(commandContext, query)
                 .orderByHistoricTaskInstanceEndTime()
-                .desc();
+                .asc();
     }
 
     /**

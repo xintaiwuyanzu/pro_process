@@ -146,10 +146,11 @@ public interface TaskInstanceService {
     /**
      * 办结任务
      *
-     * @param taskId
-     * @param variables
+     * @param taskId    当前任务实例Id
+     * @param variables 任务变量
+     * @param person    操作人信息
      */
-    void complete(String taskId, Map<String, Object> variables);
+    void complete(String taskId, Map<String, Object> variables, Person person);
 
     /**
      * 挂起流程实例
@@ -171,5 +172,5 @@ public interface TaskInstanceService {
      * @param taskId  环节实例id
      * @param comment 批注
      */
-    void endProcess(String taskId, String comment);
+    void endProcess(String taskId, Map<String, Object> variables, Person person);
 }
