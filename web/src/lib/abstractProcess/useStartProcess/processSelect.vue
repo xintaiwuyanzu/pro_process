@@ -23,13 +23,14 @@
                      :key="person.id"/>
         </el-select>
       </el-form-item>
+      <slot :form="form"/>
       <el-form-item prop="comment" label="意见">
         <el-input v-model="form.comment" placeholder="请填写意见" type="textarea"/>
       </el-form-item>
     </el-form>
     <div slot="footer">
       <el-button type="primary" @click="submit" :loading="loading">确 认</el-button>
-      <el-button type="info" @click="$emit('close')" :loading="loading">取 消</el-button>
+      <el-button type="info" @click="close" :loading="loading">取 消</el-button>
     </div>
   </el-dialog>
 </template>
@@ -75,6 +76,12 @@ export default {
       if (valid) {
         this.$emit('submit', this.form)
       }
+    },
+    /**
+     * 广播关闭事件
+     */
+    close() {
+      this.$emit('close')
     },
     async $init() {
       const {data} = await this.$post('/processDefinition/currentOrganisePersons/')

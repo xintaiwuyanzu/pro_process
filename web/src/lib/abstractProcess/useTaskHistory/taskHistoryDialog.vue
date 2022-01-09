@@ -26,9 +26,8 @@ export default {
         ownerName: {label: '任务发起人', search: true, width: 100},
         assigneeName: {label: '发送人', width: 100},
         createDate: {dateFormat: true, label: '发送时间', width: 100},
-        name: {label: '当前环节名称', width: 160},
-        title: {label: '任务名称'},
-        description: {label: '任务描述'}
+        name: {label: '环节定义名称', width: 160},
+        title: {label: '任务描述'}
       }
     }
   }

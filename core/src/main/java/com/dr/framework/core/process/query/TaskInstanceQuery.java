@@ -52,6 +52,7 @@ public class TaskInstanceQuery extends ProcessInstanceQuery {
         return this;
     }
 
+    @Override
     public TaskInstanceQuery createPersonEqual(String createPerson) {
         this.createPerson = createPerson;
         return this;
@@ -78,6 +79,7 @@ public class TaskInstanceQuery extends ProcessInstanceQuery {
     }
 
 
+    @Override
     public TaskInstanceQuery descriptionLike(String description) {
         this.description = description;
         return this;
@@ -97,6 +99,7 @@ public class TaskInstanceQuery extends ProcessInstanceQuery {
         return owner;
     }
 
+    @Override
     public String getCreatePerson() {
         return createPerson;
     }
