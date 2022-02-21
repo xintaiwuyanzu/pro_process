@@ -7,7 +7,7 @@
       </template>
     </el-table-column>
     <template slot="table-$btns" slot-scope="{row}">
-      <el-button type="text" width="40" @click="showDetail(row)">查看</el-button>
+      <el-button type="text" width="40" @click="showDetail(row)">审核</el-button>
       <el-button type="text" width="60" @click="()=>showHistory(row.processInstanceId)">流转历史</el-button>
     </template>
   </table-index>
@@ -32,7 +32,7 @@ export default {
           width: 120,
           requestMethod: 'get'
         },
-        title: {label: '任务描述', search: true},
+        title: {label: '任务标题', search: true},
         ownerName: {label: '任务发起人', search: true, width: 100},
         assigneeName: {label: '发送人', width: 100},
         createDate: {dateFormat: true, label: '发送时间', width: 100},
@@ -59,7 +59,9 @@ export default {
           //环节实例Id
           taskId: row.id,
           //批次Id
-          batchId: row.processVariables?.batchId
+          batchId: row.processVariables?.batchId,
+          //业务外键
+          businessId: row.processVariables?.$businessId
         }
       })
     }

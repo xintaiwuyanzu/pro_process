@@ -45,6 +45,10 @@ public class ProcessInstance extends ProcessDefinition {
      * 表单跳转地址
      */
     private String formUrl;
+    /**
+     * 业务外键
+     */
+    private String businessId;
 
     /**
      * 流程运行时的环境变量
@@ -129,5 +133,13 @@ public class ProcessInstance extends ProcessDefinition {
 
     public void setFormUrl(String formUrl) {
         this.formUrl = formUrl;
+    }
+
+    public String getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(String businessId) {
+        this.businessId = businessId;
     }
 }

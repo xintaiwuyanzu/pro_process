@@ -7,7 +7,6 @@ import com.dr.framework.core.process.query.TaskInstanceQuery;
 import com.dr.framework.core.process.service.*;
 import com.dr.process.camunda.command.comment.GetProcessCommentsCmd;
 import com.dr.process.camunda.command.comment.GetTaskCommentsCmd;
-import com.dr.process.camunda.command.process.EndProcessCmd;
 import com.dr.process.camunda.command.process.instance.ConvertProcessInstanceCmd;
 import com.dr.process.camunda.command.task.definition.GetNextTaskDefinitionCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryListCmd;
@@ -15,9 +14,12 @@ import com.dr.process.camunda.command.task.history.GetTaskHistoryPageCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstanceCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstanceListCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstancePageCmd;
+import com.dr.process.camunda.parselistener.FixTransitionBpmnParseListener;
 import org.apache.commons.lang3.time.DateFormatUtils;
+import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessInstanceWithVariablesImpl;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
+import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -196,7 +198,18 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     @Override
     public void complete(String taskId, Map<String, Object> variables, Person person) {
         Assert.isTrue(!StringUtils.isEmpty(taskId), "环节Id不能为空！");
-        getTaskService().complete(taskId, variables);
+        //查询环节实例
+        TaskInstance taskInstance = taskInfo(taskId);
+        //查询流程实例
+        ProcessDefinition processDefinition = getProcessDefinitionService().getProcessDefinitionById(taskInstance.getProcessDefineId());
+        //构造上下文
+        TaskContext context = buildContext(processDefinition, taskInstance, person, variables);
+        //找到typeProvider
+        ProcessTypeProvider processTypeProvider = processTypeProviderMap.get(processDefinition.getType());
+        Assert.isTrue(processTypeProvider != null, "不支持指定的流程类型：" + processDefinition.getType());
+        processTypeProvider.onBeforeCompleteTask(context);
+        getTaskService().complete(taskId, context.getProcessVarMap());
+        processTypeProvider.onAfterCompleteTask(context);
     }
 
     @Override
@@ -213,8 +226,28 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
 
     @Override
     public void endProcess(String taskId, Map<String, Object> variables, Person person) {
-        String comment = (String) variables.get(VAR_COMMENT_KEY);
-        getCommandExecutor().execute(new EndProcessCmd(taskId, comment));
+        Assert.isTrue(!StringUtils.isEmpty(taskId), "环节Id不能为空！");
+        //查询环节实例
+        TaskInstance taskInstance = taskInfo(taskId);
+        //查询流程实例
+        ProcessDefinition processDefinition = getProcessDefinitionService().getProcessDefinitionById(taskInstance.getProcessDefineId());
+        //构造上下文
+        TaskContext context = buildContext(processDefinition, taskInstance, person, variables);
+        //找到typeProvider
+        ProcessTypeProvider processTypeProvider = processTypeProviderMap.get(processDefinition.getType());
+        Assert.isTrue(processTypeProvider != null, "不支持指定的流程类型：" + processDefinition.getType());
+        processTypeProvider.onBeforeEndProcess(context);
+        String nextId = (String) variables.get(VAR_NEXT_TASK_ID);
+        if (!StringUtils.hasText(nextId)) {
+            //如果没有指定下一环节
+            ProcessDefinitionEntity pd = (ProcessDefinitionEntity) getProcessEngineConfiguration().getRepositoryService().getProcessDefinition(processDefinition.getId());
+            List<ActivityImpl> activities = pd.getActivities().stream().filter(FixTransitionBpmnParseListener::isEndTask).collect(Collectors.toList());
+            Assert.isTrue(activities.size() == 1, "流程定义多个办结节点，请指定节点");
+            context.addVar(VAR_NEXT_TASK_ID, activities.get(0).getActivityId());
+        }
+        getTaskService().complete(taskId, context.getProcessVarMap());
+
+        processTypeProvider.onAfterEndProcess(context);
     }
 
     @Override

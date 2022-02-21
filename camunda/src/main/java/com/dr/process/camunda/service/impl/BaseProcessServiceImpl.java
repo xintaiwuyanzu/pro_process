@@ -3,7 +3,9 @@ package com.dr.process.camunda.service.impl;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.organise.service.OrganisePersonService;
 import com.dr.framework.core.process.bo.ProcessDefinition;
+import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.service.ProcessContext;
+import com.dr.framework.core.process.service.TaskContext;
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.TaskService;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
@@ -36,9 +38,35 @@ public abstract class BaseProcessServiceImpl implements InitializingBean, Applic
     protected CommandExecutor commandExecutor;
     private ApplicationContext applicationContext;
 
-
+    /**
+     * 构造流程上下文
+     *
+     * @param processDefinition
+     * @param person
+     * @param params
+     * @return
+     */
     public ProcessContext buildContext(ProcessDefinition processDefinition, Person person, Map<String, Object> params) {
         ProcessContext context = new ProcessContext(person, processDefinition);
+        context.setBusinessParams(params);
+        RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
+        if (attributes != null) {
+            context.setRequest((HttpServletRequest) attributes.resolveReference(RequestAttributes.REFERENCE_REQUEST));
+        }
+        return context;
+    }
+
+    /**
+     * 构造环节上下文
+     *
+     * @param processDefinition
+     * @param taskInstance
+     * @param person
+     * @param params
+     * @return
+     */
+    public TaskContext buildContext(ProcessDefinition processDefinition, TaskInstance taskInstance, Person person, Map<String, Object> params) {
+        TaskContext context = new TaskContext(person, processDefinition, taskInstance);
         context.setBusinessParams(params);
         RequestAttributes attributes = RequestContextHolder.getRequestAttributes();
         if (attributes != null) {

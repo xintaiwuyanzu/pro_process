@@ -10,6 +10,7 @@ import org.camunda.bpm.engine.impl.core.model.Properties;
 import org.camunda.bpm.engine.impl.el.ExpressionManager;
 import org.camunda.bpm.engine.impl.el.UelExpressionCondition;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
+import org.camunda.bpm.engine.impl.pvm.PvmTransition;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 import org.camunda.bpm.engine.impl.pvm.process.TransitionImpl;
 import org.camunda.bpm.engine.impl.util.xml.Element;
@@ -114,12 +115,28 @@ public class FixTransitionBpmnParseListener extends AbstractBpmnParseListener {
      * @param act
      * @return
      */
-    private boolean isEndTask(ActivityImpl act) {
+    public static boolean isEndTask(ActivityImpl act) {
         Properties properties = act.getProperties();
         if (properties.contains(BpmnProperties.TYPE)) {
             return END_EVENT_SETS.contains(properties.get(BpmnProperties.TYPE));
         }
         return false;
+    }
+
+    /**
+     * 过滤环节连接点
+     *
+     * @param transition
+     * @return
+     */
+    public static boolean filter(PvmTransition transition, boolean all) {
+        if (!all) {
+            //过滤掉自定义的连接点
+            if (transition.getProperty("fix") != null && (Boolean) transition.getProperty("fix")) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
