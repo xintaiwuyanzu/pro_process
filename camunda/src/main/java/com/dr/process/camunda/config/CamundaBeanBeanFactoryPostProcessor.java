@@ -61,8 +61,8 @@ public class CamundaBeanBeanFactoryPostProcessor implements BeanDefinitionRegist
     public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
         if (registry.containsBeanDefinition(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME) && registry.containsBeanDefinition(DefaultJobConfiguration.JobConfiguration.CAMUNDA_TASK_EXECUTOR_QUALIFIER)) {
             //spring上下文已经有applicationTaskExecutor了，删除掉camundaTaskExecutor
-            registry.registerAlias(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, DefaultJobConfiguration.JobConfiguration.CAMUNDA_TASK_EXECUTOR_QUALIFIER);
             registry.removeBeanDefinition(DefaultJobConfiguration.JobConfiguration.CAMUNDA_TASK_EXECUTOR_QUALIFIER);
+            registry.registerAlias(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME, DefaultJobConfiguration.JobConfiguration.CAMUNDA_TASK_EXECUTOR_QUALIFIER);
         }
     }
 }
