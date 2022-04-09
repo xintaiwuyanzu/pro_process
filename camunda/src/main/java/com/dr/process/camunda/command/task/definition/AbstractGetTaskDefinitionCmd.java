@@ -14,8 +14,10 @@ import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
 public class AbstractGetTaskDefinitionCmd {
     private boolean withProperty;
     private boolean withProcessProperty;
+    //TODO
     private boolean withStartUser;
 
+    //描述定义属性
     static final PropertyKey<String> documentation = new PropertyKey<>("documentation");
 
     public AbstractGetTaskDefinitionCmd(boolean withProperty, boolean withProcessProperty, boolean withStartUser) {
@@ -24,6 +26,13 @@ public class AbstractGetTaskDefinitionCmd {
         this.withStartUser = withStartUser;
     }
 
+    /**
+     * 转换环节定义
+     *
+     * @param activity
+     * @param commandContext
+     * @return
+     */
     protected TaskDefinition convert(ActivityImpl activity, CommandContext commandContext) {
         if (activity == null) {
             return null;
@@ -32,6 +41,7 @@ public class AbstractGetTaskDefinitionCmd {
         taskDefinition.setId(activity.getId());
         taskDefinition.setName(activity.getName());
         taskDefinition.setDescription(activity.getProperties().get(documentation));
+
         if (withProperty) {
             taskDefinition.setProPerties(AbstractProcessDefinitionCmd.getProperty(
                     activity.getProcessDefinition().getId(),

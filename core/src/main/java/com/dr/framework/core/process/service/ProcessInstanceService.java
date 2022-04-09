@@ -2,7 +2,7 @@ package com.dr.framework.core.process.service;
 
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.process.bo.ProcessInstance;
-import com.dr.framework.core.process.query.ProcessQuery;
+import com.dr.framework.core.process.query.ProcessInstanceQuery;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ public interface ProcessInstanceService {
      * @param query
      * @return
      */
-    List<ProcessInstance> processInstanceList(ProcessQuery query);
+    List<ProcessInstance> processInstanceList(ProcessInstanceQuery query);
 
     /**
      * 查询流程实例分页
@@ -28,7 +28,7 @@ public interface ProcessInstanceService {
      * @param end
      * @return
      */
-    Page<ProcessInstance> processInstancePage(ProcessQuery query, int start, int end);
+    Page<ProcessInstance> processInstancePage(ProcessInstanceQuery query, int start, int end);
 
     /**
      * 查询流程实例历史
@@ -36,7 +36,7 @@ public interface ProcessInstanceService {
      * @param query
      * @return
      */
-    List<ProcessInstance> processInstanceHistoryList(ProcessQuery query);
+    List<ProcessInstance> processInstanceHistoryList(ProcessInstanceQuery query);
 
     /**
      * 查询流程实例历史分页
@@ -46,7 +46,7 @@ public interface ProcessInstanceService {
      * @param end
      * @return
      */
-    Page<ProcessInstance> processInstanceHistoryPage(ProcessQuery query, int start, int end);
+    Page<ProcessInstance> processInstanceHistoryPage(ProcessInstanceQuery query, int start, int end);
 
 
     /**

@@ -2,10 +2,11 @@ package com.dr.process.camunda.command.task.history;
 
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.process.bo.TaskInstance;
-import com.dr.framework.core.process.query.TaskQuery;
+import com.dr.framework.core.process.query.TaskInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricTaskInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
+import org.camunda.bpm.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 
 import java.util.stream.Collectors;
 
@@ -18,7 +19,7 @@ public class GetTaskHistoryPageCmd extends AbstractGetTaskHistoryCmd implements 
     private int start;
     private int end;
 
-    public GetTaskHistoryPageCmd(TaskQuery query, int start, int end) {
+    public GetTaskHistoryPageCmd(TaskInstanceQuery query, int start, int end) {
         super(query);
         this.start = start;
         this.end = end;
@@ -33,7 +34,7 @@ public class GetTaskHistoryPageCmd extends AbstractGetTaskHistoryCmd implements 
                 hq.count(),
                 () -> hq.listPage(start, end)
                         .stream()
-                        .map(h -> convert(h, commandContext))
+                        .map(h -> convert((HistoricTaskInstanceEntity) h, commandContext))
                         .collect(Collectors.toList())
         );
     }

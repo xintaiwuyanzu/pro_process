@@ -162,4 +162,16 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>release</id>
+            <name>release</name>
+            <url>${repository.baseUrl}maven-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>deployment</id>
+            <name>deployment</name>
+            <url>${repository.baseUrl}maven-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

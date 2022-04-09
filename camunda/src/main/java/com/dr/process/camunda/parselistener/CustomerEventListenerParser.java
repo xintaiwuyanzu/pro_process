@@ -1,8 +1,8 @@
 package com.dr.process.camunda.parselistener;
 
 import com.dr.framework.core.process.service.ProcessConstants;
-import com.dr.process.camunda.listener.OwnerTaskListener;
-import org.camunda.bpm.engine.delegate.DelegateListener;
+import com.dr.process.camunda.listener.FixProcessVarListener;
+import com.dr.process.camunda.listener.FixTaskVarListener;
 import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.delegate.TaskListener;
 import org.camunda.bpm.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
@@ -24,21 +24,23 @@ import org.springframework.util.StringUtils;
  * @author dr
  */
 public class CustomerEventListenerParser extends AbstractBpmnParseListener {
-    protected Expression listenerExpression;
+    protected Expression taskListenerExpression;
+    protected Expression processListenerExpression;
     protected Expression assigneeExpression;
-    protected Expression descriptionExpression;
 
     public CustomerEventListenerParser(ExpressionManager expressionManager) {
-        listenerExpression = expressionManager.createExpression("${" + OwnerTaskListener.BEAN_NAME + "}");
+        taskListenerExpression = expressionManager.createExpression("${" + FixTaskVarListener.BEAN_NAME + "}");
+        processListenerExpression = expressionManager.createExpression("${" + FixProcessVarListener.BEAN_NAME + "}");
         assigneeExpression = expressionManager.createExpression("${assignee}");
-        descriptionExpression = expressionManager.createExpression("${$description}");
     }
 
     @Override
     public void parseProcess(Element processElement, ProcessDefinitionEntity processDefinition) {
         super.parseProcess(processElement, processDefinition);
-        DelegateListener delegateListener = new DelegateExpressionExecutionListener(listenerExpression, null);
+        //流程事件监听器
+        DelegateExpressionExecutionListener delegateListener = new DelegateExpressionExecutionListener(processListenerExpression, null);
         processDefinition.addListener(ExecutionListener.EVENTNAME_START, delegateListener);
+        processDefinition.addListener(ExecutionListener.EVENTNAME_END, delegateListener);
     }
 
     @Override
@@ -60,11 +62,13 @@ public class CustomerEventListenerParser extends AbstractBpmnParseListener {
         if (taskDefinition.getAssigneeExpression() == null) {
             taskDefinition.setAssigneeExpression(assigneeExpression);
         }
-        //手动设置任务描述表达式
-        if (taskDefinition.getDescriptionExpression() == null) {
-            taskDefinition.setDescriptionExpression(descriptionExpression);
-        }
-        TaskListener delegateListener = new DelegateExpressionTaskListener(listenerExpression, null);
+        TaskListener delegateListener = new DelegateExpressionTaskListener(taskListenerExpression, null);
+        //添加用户任务监听
+        //任务创建
         taskDefinition.addTaskListener(TaskListener.EVENTNAME_CREATE, delegateListener);
+        //任务分配
+        taskDefinition.addTaskListener(TaskListener.EVENTNAME_ASSIGNMENT, delegateListener);
+        //任务完成
+        taskDefinition.addTaskListener(TaskListener.EVENTNAME_COMPLETE, delegateListener);
     }
 }

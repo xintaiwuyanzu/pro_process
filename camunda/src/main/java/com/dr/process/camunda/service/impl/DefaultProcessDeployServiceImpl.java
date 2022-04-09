@@ -3,9 +3,9 @@ package com.dr.process.camunda.service.impl;
 import com.dr.framework.common.dao.CommonMapper;
 import com.dr.framework.core.process.bo.ProcessDefinition;
 import com.dr.framework.core.process.service.ProcessConstants;
+import com.dr.process.camunda.command.ProcessDefinitionUtils;
 import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionExtendEntity;
 import com.dr.process.camunda.service.ProcessDeployService;
-import com.dr.process.camunda.utils.BeanMapper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.engine.RepositoryService;
@@ -60,7 +60,7 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
                 e.printStackTrace();
             }
         }
-        List<ProcessDefinition> processDefinitions = BeanMapper.newProcessDefinitionList(buildDeployment().source(ProcessDeployService.DEFAULT_DEPLOY_NAME).addInputStream(resourceName, stream).deployWithResult().getDeployedProcessDefinitions());
+        List<ProcessDefinition> processDefinitions = ProcessDefinitionUtils.newProcessDefinitionList(buildDeployment().source(ProcessDeployService.DEFAULT_DEPLOY_NAME).addInputStream(resourceName, stream).deployWithResult().getDeployedProcessDefinitions());
         //添加类型
         for (ProcessDefinition processDefinition : processDefinitions) {
             ProcessDefinitionExtendEntity entity = new ProcessDefinitionExtendEntity();

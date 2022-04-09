@@ -1,6 +1,7 @@
 package com.dr.framework.core.process.service.impl;
 
 import com.dr.framework.core.process.service.ProcessConstants;
+import com.dr.framework.core.process.service.ProcessContext;
 import com.dr.framework.core.process.service.ProcessTypeProvider;
 
 /**
@@ -9,6 +10,11 @@ import com.dr.framework.core.process.service.ProcessTypeProvider;
  * @author dr
  */
 public class DefaultProcessTypeProvider implements ProcessTypeProvider {
+
+    @Override
+    public String getFormUrl(ProcessContext context) {
+        return "/process/taskTodo/detail";
+    }
 
     @Override
     public String getType() {

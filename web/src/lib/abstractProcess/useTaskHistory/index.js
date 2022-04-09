@@ -7,10 +7,10 @@ import {Message} from 'element-ui'
  * 流转历史弹窗
  */
 export default () => {
-    const {initDialog} = useDialog(taskHistoryDialog, dialog => {
-        dialog.$on('close', () => {
-            dialog.visible = false
-        })
+    const {initDialog} = useDialog(taskHistoryDialog, {
+        close() {
+            this.visible = false
+        }
     })
 
     const showHistory = async (processInstanceId) => {

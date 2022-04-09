@@ -7,7 +7,7 @@ import com.dr.framework.core.organise.entity.Organise;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.organise.service.OrganisePersonService;
 import com.dr.framework.core.process.bo.ProcessDefinition;
-import com.dr.framework.core.process.bo.ProcessTypeProviderWrapper;
+import com.dr.framework.core.process.vo.ProcessTypeProviderWrapper;
 import com.dr.framework.core.process.query.ProcessDefinitionQuery;
 import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.process.service.impl.ProcessPermissionTypeProvider;

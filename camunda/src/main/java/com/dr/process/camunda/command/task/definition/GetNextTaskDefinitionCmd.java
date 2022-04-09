@@ -1,6 +1,7 @@
 package com.dr.process.camunda.command.task.definition;
 
 import com.dr.framework.core.process.bo.TaskDefinition;
+import com.dr.process.camunda.parselistener.FixTransitionBpmnParseListener;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
@@ -38,27 +39,12 @@ public class GetNextTaskDefinitionCmd extends AbstractGetTaskDefinitionCmd imple
         if (activity != null) {
             return activity.getOutgoingTransitions()
                     .stream()
-                    .filter(this::filter)
+                    .filter(t -> FixTransitionBpmnParseListener.filter(t, all))
                     .map(o -> convert((ActivityImpl) o.getDestination(), commandContext))
                     .collect(Collectors.toList());
         }
         return null;
     }
 
-    /**
-     * 过滤环节连接点
-     *
-     * @param transition
-     * @return
-     */
-    private boolean filter(PvmTransition transition) {
-        if (!all) {
-            //过滤掉自定义的连接点
-            if (transition.getProperty("fix") != null && (Boolean) transition.getProperty("fix")) {
-                return false;
-            }
-        }
-        return true;
-    }
 
 }

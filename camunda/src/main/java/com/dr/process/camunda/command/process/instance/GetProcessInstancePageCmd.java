@@ -2,8 +2,7 @@ package com.dr.process.camunda.command.process.instance;
 
 import com.dr.framework.common.page.Page;
 import com.dr.framework.core.process.bo.ProcessInstance;
-import com.dr.framework.core.process.query.ProcessQuery;
-import com.dr.process.camunda.command.process.instance.AbstractGetProcessInstanceCmd;
+import com.dr.framework.core.process.query.ProcessInstanceQuery;
 import org.camunda.bpm.engine.history.HistoricProcessInstanceQuery;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -11,13 +10,15 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import java.util.stream.Collectors;
 
 /**
+ * 根据条件查询流转实例分页数据
+ *
  * @author dr
  */
 public class GetProcessInstancePageCmd extends AbstractGetProcessInstanceCmd implements Command<Page<ProcessInstance>> {
     private int start;
     private int end;
 
-    public GetProcessInstancePageCmd(ProcessQuery query, int start, int end) {
+    public GetProcessInstancePageCmd(ProcessInstanceQuery query, int start, int end) {
         super(query);
         this.start = start;
         this.end = end;

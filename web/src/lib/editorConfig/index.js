@@ -5,5 +5,5 @@ import editAddition from './additionalModules'
 export default {
     template,
     moddleExtensions: viewConfig.moddleExtensions,
-    additionalModules: [].concat(editAddition).concat(viewConfig.additionalModules)
+    additionalModules: [...viewConfig.additionalModules, ...editAddition]
 }

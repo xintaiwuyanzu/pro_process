@@ -7,8 +7,8 @@ import com.dr.framework.core.process.bo.ProcessDefinition;
 import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.ProcessDefinitionQuery;
-import com.dr.framework.core.process.query.ProcessQuery;
-import com.dr.framework.core.process.query.TaskQuery;
+import com.dr.framework.core.process.query.ProcessInstanceQuery;
+import com.dr.framework.core.process.query.TaskInstanceQuery;
 import com.dr.framework.core.process.service.ProcessDefinitionService;
 import com.dr.framework.core.process.service.ProcessInstanceService;
 import com.dr.framework.core.process.service.TaskDefinitionService;
@@ -72,7 +72,7 @@ public class ProcessServiceTest {
         map.put("formId", "aaaa");
         ProcessInstance processInstance = taskInstanceService.start(processDefinition.getId(), map, person);
 
-        TaskQuery query = new TaskQuery().processDefinitionKeyLike("%aaa%").taskKeyNotLike("bbb").withProperty().withVariables();
+        TaskInstanceQuery query = (TaskInstanceQuery) new TaskInstanceQuery().processDefinitionKeyLike("%aaa%").withVariables().withProperty();
 
         List<TaskInstance> taskObjects = taskInstanceService.taskList(query);
 
@@ -92,12 +92,6 @@ public class ProcessServiceTest {
     }
 
     @Test
-    public void testJump() {
-        TaskInstance taskObject = taskInstanceService.taskList(new TaskQuery()).get(0);
-        taskInstanceService.jump(taskObject.getId(), "Task_0oihs3n", "admin");
-    }
-
-    @Test
     public void testEnd() {
         ProcessDefinition processObject = processService.getProcessDefinitionByKey("sp_leave");
         Map<String, Object> map = new HashMap<>();
@@ -105,16 +99,16 @@ public class ProcessServiceTest {
         map.put("assignee", "aaa");
         map.put("formId", "aaa");
         ProcessInstance object = taskInstanceService.start(processObject.getId(), map, person);
-        List<TaskInstance> objects = taskInstanceService.taskList(new TaskQuery().processInstanceIdEqual(object.getId()));
+        List<TaskInstance> objects = taskInstanceService.taskList(new TaskInstanceQuery().processInstanceIdEqual(object.getId()));
 
-        taskInstanceService.endProcess(objects.get(0).getId(), null);
+        taskInstanceService.endProcess(objects.get(0).getId(), new HashMap<>(), person);
 
     }
 
     @Test
     public void testProcess() {
-        List<ProcessInstance> pr = processInstanceService.processInstanceList(new ProcessQuery());
-        List<ProcessInstance> processInstanceHistoryList = processInstanceService.processInstanceHistoryList(new ProcessQuery());
+        List<ProcessInstance> pr = processInstanceService.processInstanceList(new ProcessInstanceQuery());
+        List<ProcessInstance> processInstanceHistoryList = processInstanceService.processInstanceHistoryList(new ProcessInstanceQuery());
         repositoryService.getBpmnModelInstance(pr.get(0).getId());
     }
 

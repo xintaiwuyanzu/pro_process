@@ -47,7 +47,7 @@ public class DbEntityManagerWithSqlProxy extends DbEntityManager {
      * @return
      */
     private String getProxySql(String methodName, String originalSql, Class<?> aClass) {
-        if (aClass.isAnnotationPresent(SqlProxy.class)) {
+        if (aClass.isAnnotationPresent(SqlProxy.class) || aClass.isAnnotationPresent(SqlProxy.SqlProxies.class)) {
             ClassAnnotationHolder holder = classClassAnnotationHolderMap.computeIfAbsent(aClass, ClassAnnotationHolder::new);
             return holder.getProxySql(methodName, originalSql);
         }

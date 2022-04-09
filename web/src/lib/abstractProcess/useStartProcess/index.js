@@ -16,14 +16,16 @@ export default () => {
             resolve = null
         }
     }
-
-    const {initDialog} = useDialog(processSelect, (dialog) => {
-        dialog.$on('close', () => {
-            dialog.visible = false
+    const {initDialog} = useDialog(processSelect, {
+        close() {
+            this.visible = false
             resolveBack()
-        })
-        dialog.$on('submit', async (form) => {
-            dialog.loading = true
+        },
+        async submit(form) {
+            console.log(form)
+            this.loading = true
+            const $autoComplete = !!params.send
+
             const {data} = await http().post('/processTaskInstance/start', {
                 //流程定义Id
                 definitionId: form.processId,
@@ -31,25 +33,29 @@ export default () => {
                 person: form.person.join(','),
                 //审核意见
                 comment: form.comment,
+                ...form,
+                //自动发送发到下一环节
+                $autoComplete,
                 //额外参数
                 ...params
             })
-            dialog.loading = false
+            this.loading = false
             if (data.success) {
                 //启动成功，回调状态
-                dialog.visible = false
+                this.visible = false
                 resolve(form, data.data)
             } else {
                 //启动失败
-                Message.warn(data.message)
+                Message.warning(data.message)
             }
-        })
-    })
+        }
+    }, 'processForm')
 
     /**
      * 当前登录人启动特性类型的流程
      * @param processType 流程类型
      * @param addParams 额外的业务参数
+     * @param scopedSlots 可以自定义扩展组件
      * @returns {Promise<void>}
      */
     const startProcess = async (processType, addParams) => {

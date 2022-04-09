@@ -28,7 +28,10 @@ public interface ProcessConstants {
      * 后面也可以关联表实现精确查询
      *============================================================================
      */
-
+    /**
+     * 流程创建变量key
+     */
+    String PROCESS_CREATE_DATE_KEY = "CREATE_DATE";
     /**
      * 流程实例类型
      */
@@ -36,19 +39,19 @@ public interface ProcessConstants {
     /**
      * 流程实例创建人ID
      */
-    String PROCESS_CREATE_PERSON_KEY = "CREATE_PERSON";
+    String PROCESS_CREATE_PERSON_KEY = "$createPersonId";
     /**
      * 流程实例创建人名称
      */
-    String PROCESS_CREATE_NAME_KEY = "CREATE_PERSON_NAME";
+    String PROCESS_CREATE_NAME_KEY = "$createPersonName";
     /**
      * 流程办结人ID
      */
-    String PROCESS_END_PERSON_KEY = "END_PERSON";
+    String PROCESS_END_PERSON_KEY = "$endPersonId";
     /**
      * 流程办结人名称
      */
-    String PROCESS_END_NAME_KEY = "END_PERSON";
+    String PROCESS_END_NAME_KEY = "$endPersonName";
     /**
      * 流程实例标题
      */
@@ -56,8 +59,7 @@ public interface ProcessConstants {
     /**
      * 描述key
      */
-    String PROCESS_DESCRIPTION_KEY = "$description";
-
+    String PROCESS_DETAIL_KEY = "$detail";
     /**
      * 详情url
      */
@@ -67,15 +69,21 @@ public interface ProcessConstants {
      */
     String PROCESS_BUSINESS_KEY = "$businessId";
 
-    String CREATE_DATE_KEY = "CREATE_DATE";
-
 
     String OWNER_KEY = "OWNER_PERSON";
-    String OWNER_NAME_KEY = "OWNER_PERSON_NAME";
 
-
-    String ASSIGNEE_KEY = "assignee";
-    String ASSIGNEE_NAME_KEY = "ASSIGNEE_NAME";
+    /**
+     * 任务所有人名称Ky
+     */
+    String TASK_OWNER_NAME_KEY = "OWNER_PERSON_NAME";
+    /**
+     * 任务接收人名称key
+     */
+    String TASK_ASSIGNEE_NAME_KEY = "ASSIGNEE_NAME";
+    /**
+     * 任务接收人Id key
+     */
+    String TASK_ASSIGNEE_KEY = "assignee";
 
     /**
      * 下一环节Id
@@ -89,6 +97,10 @@ public interface ProcessConstants {
      * 备注信息key
      */
     String VAR_COMMENT_KEY = "$comment";
+    /**
+     * 是否自动启动到第二个环节
+     */
+    String VAR_COMPLETE_TO_NEXT = "$autoComplete";
 
 }
 

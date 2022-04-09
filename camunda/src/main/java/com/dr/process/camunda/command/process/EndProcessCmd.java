@@ -1,6 +1,7 @@
 package com.dr.process.camunda.command.process;
 
-import com.dr.process.camunda.command.task.JumpTaskCmd;
+import com.dr.framework.core.process.service.ProcessConstants;
+import com.dr.process.camunda.parselistener.FixTransitionBpmnParseListener;
 import org.camunda.bpm.engine.impl.bpmn.behavior.NoneEndEventActivityBehavior;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -14,6 +15,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 办结流程，不管流程处在哪个环节
@@ -39,11 +41,15 @@ public class EndProcessCmd implements Command<Void> {
                     .createComment(taskId, taskEntity.getProcessInstanceId(), comment);
         }
         ActivityImpl activity = taskEntity.getProcessDefinition().findActivity(taskEntity.getTaskDefinitionKey());
-        List<PvmTransition> transitions = activity.getOutgoingTransitions();
+        List<PvmTransition> transitions = activity.getOutgoingTransitions()
+                .stream()
+                .filter(t -> FixTransitionBpmnParseListener.filter(t, false))
+                .collect(Collectors.toList());
         if (transitions.size() == 1 &&
                 transitions.get(0)
                         .getDestination()
                         .getActivityBehavior() instanceof NoneEndEventActivityBehavior) {
+            taskEntity.setVariableLocal(ProcessConstants.VAR_NEXT_TASK_ID, transitions.get(0).getDestination().getId());
             taskEntity.complete();
         } else {
             BpmnModelInstance bpmnModelInstance = commandContext.getProcessEngineConfiguration()
@@ -52,9 +58,9 @@ public class EndProcessCmd implements Command<Void> {
             Collection<EndEvent> endEvents = bpmnModelInstance.getModelElementById(taskEntity.getProcessDefinition().getKey())
                     .getChildElementsByType(EndEvent.class);
             //先查到end的id，然后执行jumpcmd
-            commandContext.getProcessEngineConfiguration()
+            /*commandContext.getProcessEngineConfiguration()
                     .getCommandExecutorTxRequired()
-                    .execute(new JumpTaskCmd(taskId, endEvents.iterator().next().getId(), null, null, null));
+                    .execute(new JumpTaskCmd(taskId, endEvents.iterator().next().getId(), null, null, null));*/
         }
         return null;
     }

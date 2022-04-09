@@ -5,7 +5,7 @@ import com.dr.framework.common.page.Page;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.bo.TaskInstance;
-import com.dr.framework.core.process.query.TaskQuery;
+import com.dr.framework.core.process.query.TaskInstanceQuery;
 import com.dr.framework.core.web.annotations.Current;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,16 +35,22 @@ public abstract class AbstractTaskInstanceController extends BaseProcessControll
      * 发送到下一环节
      *
      * @param taskInstanceId 环节实例Id
-     * @param nextPersonId   下一环节人Id
-     * @param comment        备注信息
      * @param requestParams  额外请求参数
      * @param person         当前登录人
      * @return
      */
     @PostMapping("send")
-    public ResultEntity<String> send(String taskInstanceId, String nextPersonId, String comment, @RequestParam Map<String, Object> requestParams, @Current Person person) {
-        getTaskInstanceService().send(taskInstanceId, nextPersonId, comment, requestParams);
+    public ResultEntity<String> send(String taskInstanceId, @RequestParam Map<String, Object> requestParams, @Current Person person) {
+        //下一环节接收人
+        getTaskInstanceService().complete(taskInstanceId, requestParams, person);
         return ResultEntity.success("发送成功！");
+    }
+
+    @PostMapping("end")
+    public ResultEntity<String> end(String taskInstanceId, @RequestParam Map<String, Object> requestParams, @Current Person person) {
+        //下一环节接收人
+        getTaskInstanceService().endProcess(taskInstanceId, requestParams, person);
+        return ResultEntity.success("办结成功！");
     }
 
 
@@ -61,7 +67,7 @@ public abstract class AbstractTaskInstanceController extends BaseProcessControll
 
     //查询
     @RequestMapping("/page")
-    public ResultEntity page(@Current Person person, TaskQuery query, @RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = Page.DEFAULT_PAGE_SIZE + "") int pageSize, @RequestParam(defaultValue = "true") boolean page) {
+    public ResultEntity page(@Current Person person, TaskInstanceQuery query, @RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = Page.DEFAULT_PAGE_SIZE + "") int pageSize, @RequestParam(defaultValue = "true") boolean page) {
         query.assigneeEqual(person.getId());
         if (page) {
             return ResultEntity.success(getTaskInstanceService().taskPage(query, pageIndex, pageSize));
@@ -72,7 +78,7 @@ public abstract class AbstractTaskInstanceController extends BaseProcessControll
 
 
     @RequestMapping("/history")
-    public ResultEntity history(@Current Person person, TaskQuery query, @RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = Page.DEFAULT_PAGE_SIZE + "") int pageSize, @RequestParam(defaultValue = "true") boolean page) {
+    public ResultEntity history(@Current Person person, TaskInstanceQuery query, @RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = Page.DEFAULT_PAGE_SIZE + "") int pageSize, @RequestParam(defaultValue = "true") boolean page) {
         query.assigneeEqual(person.getId());
         if (page) {
             return ResultEntity.success(getTaskInstanceService().taskHistoryPage(query, pageIndex, pageSize));

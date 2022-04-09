@@ -22,6 +22,9 @@
                      :key="person.id"/>
         </el-select>
       </el-form-item>
+      <el-form-item prop="comment" label="意见">
+        <el-input v-model="form.comment" placeholder="请填写意见" type="textarea"/>
+      </el-form-item>
     </el-form>
     <section slot="footer">
       <el-button type="primary" @click="submit" :loading="loading">确 认</el-button>
@@ -60,7 +63,8 @@ export default {
         //选择的环节定义Id
         taskDefinitionId: '',
         //选择的人员Id
-        person: []
+        person: [],
+        comment: ''
       },
       //当前登录人所属机构的所有人员
       currentPersons: []

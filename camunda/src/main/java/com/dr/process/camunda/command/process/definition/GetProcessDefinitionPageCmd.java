@@ -9,6 +9,8 @@ import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import java.util.stream.Collectors;
 
 /**
+ * 根据条件查询流程定义分页数据
+ *
  * @author dr
  */
 public class GetProcessDefinitionPageCmd extends AbstractGetProcessQueryCmd implements Command<Page<ProcessDefinition>> {

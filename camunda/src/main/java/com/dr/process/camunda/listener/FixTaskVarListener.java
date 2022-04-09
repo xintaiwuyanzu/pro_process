@@ -4,49 +4,29 @@ import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.organise.service.OrganisePersonService;
 import com.dr.framework.core.process.service.ProcessConstants;
 import org.camunda.bpm.engine.IdentityService;
-import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.DelegateTask;
-import org.camunda.bpm.engine.delegate.ExecutionListener;
 import org.camunda.bpm.engine.delegate.TaskListener;
 import org.camunda.bpm.engine.impl.identity.Authentication;
-import org.camunda.bpm.engine.impl.util.ClockUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import static com.dr.framework.core.process.service.ProcessConstants.OWNER_NAME_KEY;
-import static com.dr.process.camunda.listener.OwnerTaskListener.BEAN_NAME;
+import static com.dr.framework.core.process.service.ProcessConstants.TASK_OWNER_NAME_KEY;
+import static com.dr.process.camunda.listener.FixTaskVarListener.BEAN_NAME;
 
 /**
- * 用来设置任务创建人信息
+ * 用来在流程运行的时候绑定自定义变量
  *
  * @author dr
  */
 @Component(BEAN_NAME)
-public class OwnerTaskListener implements TaskListener, ExecutionListener {
-    public static final String BEAN_NAME = "OwnerTaskListener";
+public class FixTaskVarListener implements TaskListener {
+    public static final String BEAN_NAME = "FixVarListener";
     private IdentityService identityService;
     private OrganisePersonService organisePersonService;
 
-    public OwnerTaskListener(IdentityService identityService, OrganisePersonService organisePersonService) {
+    public FixTaskVarListener(IdentityService identityService, OrganisePersonService organisePersonService) {
         this.identityService = identityService;
         this.organisePersonService = organisePersonService;
-    }
-
-    /**
-     * 流程启动监听
-     *
-     * @param execution
-     */
-    @Override
-    public void notify(DelegateExecution execution) {
-        String createPerson = (String) execution.getVariable(ProcessConstants.PROCESS_CREATE_PERSON_KEY);
-        if (!StringUtils.isEmpty(createPerson)) {
-            //流程创建人名称
-            Person person = organisePersonService.getPersonById(createPerson);
-            execution.setVariable(ProcessConstants.PROCESS_CREATE_NAME_KEY, person.getUserName());
-        }
-        //流程创建时间
-        execution.setVariable(ProcessConstants.CREATE_DATE_KEY, ClockUtil.getCurrentTime().getTime());
     }
 
     /**
@@ -56,21 +36,35 @@ public class OwnerTaskListener implements TaskListener, ExecutionListener {
      */
     @Override
     public void notify(DelegateTask delegateTask) {
+        switch (delegateTask.getEventName()) {
+            case EVENTNAME_ASSIGNMENT:
+                bindAssignment(delegateTask);
+                break;
+        }
+    }
+
+    /**
+     * 绑定任务分发事件
+     *
+     * @param delegateTask
+     */
+    private void bindAssignment(DelegateTask delegateTask) {
         Authentication authentication = identityService.getCurrentAuthentication();
         if (authentication != null && !StringUtils.isEmpty(authentication.getUserId())) {
             //绑定任务创建人信息
             Person person = organisePersonService.getPersonById(authentication.getUserId());
             delegateTask.setOwner(authentication.getUserId());
             if (person != null) {
-                delegateTask.setVariableLocal(OWNER_NAME_KEY, person.getUserName());
+                delegateTask.setVariableLocal(TASK_OWNER_NAME_KEY, person.getUserName());
             }
         }
+        //绑定任务接收人变量
         String assignee = delegateTask.getAssignee();
         if (!StringUtils.isEmpty(assignee)) {
             Person person = organisePersonService.getPersonById(assignee);
             if (person != null) {
                 //绑定任务接收人名称
-                delegateTask.setVariableLocal(ProcessConstants.ASSIGNEE_NAME_KEY, person.getUserName());
+                delegateTask.setVariableLocal(ProcessConstants.TASK_ASSIGNEE_NAME_KEY, person.getUserName());
             }
         }
     }
