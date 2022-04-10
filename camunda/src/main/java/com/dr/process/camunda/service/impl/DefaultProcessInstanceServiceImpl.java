@@ -32,8 +32,8 @@ public class DefaultProcessInstanceServiceImpl extends BaseProcessServiceImpl im
     }
 
     @Override
-    public Page<ProcessInstance> processInstancePage(ProcessInstanceQuery query, int start, int end) {
-        return getCommandExecutor().execute(new GetProcessInstancePageCmd(query, start, end));
+    public Page<ProcessInstance> processInstancePage(ProcessInstanceQuery query, int pageIndex, int pageSize) {
+        return getCommandExecutor().execute(new GetProcessInstancePageCmd(query, pageIndex, pageSize));
     }
 
     @Override
@@ -42,8 +42,8 @@ public class DefaultProcessInstanceServiceImpl extends BaseProcessServiceImpl im
     }
 
     @Override
-    public Page<ProcessInstance> processInstanceHistoryPage(ProcessInstanceQuery query, int start, int end) {
-        return getCommandExecutor().execute(new GetProcessHistoryPageCmd(query, start, end));
+    public Page<ProcessInstance> processInstanceHistoryPage(ProcessInstanceQuery query, int pageIndex, int pageSize) {
+        return getCommandExecutor().execute(new GetProcessHistoryPageCmd(query, pageIndex, pageSize));
     }
 
 

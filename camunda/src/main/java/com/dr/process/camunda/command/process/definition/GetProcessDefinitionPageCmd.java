@@ -14,22 +14,23 @@ import java.util.stream.Collectors;
  * @author dr
  */
 public class GetProcessDefinitionPageCmd extends AbstractGetProcessQueryCmd implements Command<Page<ProcessDefinition>> {
-    private int start;
-    private int end;
+    private int pageIndex;
+    private int pageSize;
 
-    public GetProcessDefinitionPageCmd(ProcessDefinitionQuery processDefinitionQuery, int start, int end) {
+    public GetProcessDefinitionPageCmd(ProcessDefinitionQuery processDefinitionQuery, int pageIndex, int pageSize) {
         super(processDefinitionQuery);
-        this.end = end;
-        this.start = start;
+        this.pageSize = pageSize;
+        this.pageIndex = pageIndex;
     }
 
     @Override
     public Page<ProcessDefinition> execute(CommandContext commandContext) {
         org.camunda.bpm.engine.repository.ProcessDefinitionQuery processDefinitionQuery = convertQuery(commandContext);
-        return new Page(start,
-                end - start,
+        return new Page(
+                pageIndex * pageSize,
+                pageSize,
                 processDefinitionQuery.count(),
-                () -> processDefinitionQuery.listPage(start, end)
+                () -> processDefinitionQuery.listPage(pageIndex * pageSize, pageSize)
                         .stream()
                         .map(p -> convertDefinition(p, commandContext))
                         .collect(Collectors.toList()));

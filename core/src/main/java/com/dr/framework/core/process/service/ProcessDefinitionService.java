@@ -48,9 +48,9 @@ public interface ProcessDefinitionService {
      * 查询流程定义分页
      *
      * @param processDefinitionQuery
-     * @param start
-     * @param end
+     * @param pageIndex
+     * @param pageSize
      * @return
      */
-    Page<ProcessDefinition> processDefinitionPage(ProcessDefinitionQuery processDefinitionQuery, int start, int end);
+    Page<ProcessDefinition> processDefinitionPage(ProcessDefinitionQuery processDefinitionQuery, int pageIndex, int pageSize);
 }

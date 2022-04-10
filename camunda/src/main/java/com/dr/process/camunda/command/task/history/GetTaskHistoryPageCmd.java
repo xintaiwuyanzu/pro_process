@@ -16,23 +16,23 @@ import java.util.stream.Collectors;
  * @author dr
  */
 public class GetTaskHistoryPageCmd extends AbstractGetTaskHistoryCmd implements Command<Page<TaskInstance>> {
-    private int start;
-    private int end;
+    private int index;
+    private int pageSize;
 
     public GetTaskHistoryPageCmd(TaskInstanceQuery query, int start, int end) {
         super(query);
-        this.start = start;
-        this.end = end;
+        this.index = start;
+        this.pageSize = end;
     }
 
     @Override
     public Page<TaskInstance> execute(CommandContext commandContext) {
         HistoricTaskInstanceQuery hq = convert(commandContext);
         return new Page<>(
-                start,
-                end - start,
+                index * pageSize,
+                pageSize,
                 hq.count(),
-                () -> hq.listPage(start, end)
+                () -> hq.listPage(index * pageSize, pageSize)
                         .stream()
                         .map(h -> convert((HistoricTaskInstanceEntity) h, commandContext))
                         .collect(Collectors.toList())

@@ -44,7 +44,7 @@ public class DefaultProcessDefinitionServiceImpl extends BaseProcessServiceImpl 
 
     @Override
     @Transactional(readOnly = true)
-    public Page<ProcessDefinition> processDefinitionPage(ProcessDefinitionQuery processDefinitionQuery, int start, int end) {
-        return getCommandExecutor().execute(new GetProcessDefinitionPageCmd(processDefinitionQuery, start, end));
+    public Page<ProcessDefinition> processDefinitionPage(ProcessDefinitionQuery processDefinitionQuery, int pageIndex, int pageSize) {
+        return getCommandExecutor().execute(new GetProcessDefinitionPageCmd(processDefinitionQuery, pageIndex, pageSize));
     }
 }

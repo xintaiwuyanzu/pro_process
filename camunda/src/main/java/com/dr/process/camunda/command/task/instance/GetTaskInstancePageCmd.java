@@ -15,23 +15,23 @@ import java.util.stream.Collectors;
  * @author dr
  */
 public class GetTaskInstancePageCmd extends AbstractGetTaskQueryCmd implements Command<Page<TaskInstance>> {
-    private int start;
-    private int end;
+    private int index;
+    private int pageSize;
 
-    public GetTaskInstancePageCmd(TaskInstanceQuery query, int start, int end) {
+    public GetTaskInstancePageCmd(TaskInstanceQuery query, int index, int pageSize) {
         super(query);
-        this.start = start;
-        this.end = end;
+        this.index = index;
+        this.pageSize = pageSize;
     }
 
     @Override
     public Page<TaskInstance> execute(CommandContext commandContext) {
         org.camunda.bpm.engine.task.TaskQuery query = convert(commandContext);
         return new Page<>(
-                start,
-                end - start,
+                index * pageSize,
+                pageSize,
                 query.count(),
-                () -> query.list()
+                () -> query.listPage(index * pageSize, pageSize)
                         .stream()
                         .map(t -> convert((TaskEntity) t, commandContext))
                         .collect(Collectors.toList())

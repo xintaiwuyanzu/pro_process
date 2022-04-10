@@ -24,11 +24,11 @@ public interface ProcessInstanceService {
      * 查询流程实例分页
      *
      * @param query
-     * @param start
-     * @param end
+     * @param pageIndex
+     * @param pageSize
      * @return
      */
-    Page<ProcessInstance> processInstancePage(ProcessInstanceQuery query, int start, int end);
+    Page<ProcessInstance> processInstancePage(ProcessInstanceQuery query, int pageIndex, int pageSize);
 
     /**
      * 查询流程实例历史
@@ -42,11 +42,11 @@ public interface ProcessInstanceService {
      * 查询流程实例历史分页
      *
      * @param query
-     * @param start
-     * @param end
+     * @param pageIndex
+     * @param pageSize
      * @return
      */
-    Page<ProcessInstance> processInstanceHistoryPage(ProcessInstanceQuery query, int start, int end);
+    Page<ProcessInstance> processInstanceHistoryPage(ProcessInstanceQuery query, int pageIndex, int pageSize);
 
 
     /**

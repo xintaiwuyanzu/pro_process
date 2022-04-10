@@ -57,8 +57,8 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     }
 
     @Override
-    public Page<TaskInstance> taskPage(TaskInstanceQuery query, int start, int end) {
-        return getCommandExecutor().execute(new GetTaskInstancePageCmd(query, start, end));
+    public Page<TaskInstance> taskPage(TaskInstanceQuery query, int index, int pageSize) {
+        return getCommandExecutor().execute(new GetTaskInstancePageCmd(query, index, pageSize));
     }
 
     @Override
@@ -67,8 +67,8 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     }
 
     @Override
-    public Page<TaskInstance> taskHistoryPage(TaskInstanceQuery query, int start, int end) {
-        return getCommandExecutor().execute(new GetTaskHistoryPageCmd(query, start, end));
+    public Page<TaskInstance> taskHistoryPage(TaskInstanceQuery query, int index, int pageSize) {
+        return getCommandExecutor().execute(new GetTaskHistoryPageCmd(query, index, pageSize));
     }
 
     @Override

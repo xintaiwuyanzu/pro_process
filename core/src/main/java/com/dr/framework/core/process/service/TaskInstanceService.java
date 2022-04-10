@@ -108,11 +108,11 @@ public interface TaskInstanceService {
      * 根据条件查询流程环节分页
      *
      * @param query
-     * @param start
-     * @param end
+     * @param index
+     * @param pageSize
      * @return
      */
-    Page<TaskInstance> taskPage(TaskInstanceQuery query, int start, int end);
+    Page<TaskInstance> taskPage(TaskInstanceQuery query, int index, int pageSize);
 
     /**
      * 查询任务历史信息
@@ -126,11 +126,11 @@ public interface TaskInstanceService {
      * 查询流程历史信息分页
      *
      * @param query
-     * @param start
-     * @param end
+     * @param index
+     * @param pageSize
      * @return
      */
-    Page<TaskInstance> taskHistoryPage(TaskInstanceQuery query, int start, int end);
+    Page<TaskInstance> taskHistoryPage(TaskInstanceQuery query, int index, int pageSize);
 
 
     /**

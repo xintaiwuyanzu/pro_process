@@ -15,24 +15,24 @@ import java.util.stream.Collectors;
  * @author dr
  */
 public class GetProcessInstancePageCmd extends AbstractGetProcessInstanceCmd implements Command<Page<ProcessInstance>> {
-    private int start;
-    private int end;
+    private int pageIndex;
+    private int pageSize;
 
-    public GetProcessInstancePageCmd(ProcessInstanceQuery query, int start, int end) {
+    public GetProcessInstancePageCmd(ProcessInstanceQuery query, int pageIndex, int pageSize) {
         super(query);
-        this.start = start;
-        this.end = end;
+        this.pageIndex = pageIndex;
+        this.pageSize = pageSize;
     }
 
     @Override
     public Page<ProcessInstance> execute(CommandContext commandContext) {
         HistoricProcessInstanceQuery query = convert(commandContext);
         return new Page(
-                start,
-                end - start,
+                pageIndex * pageSize,
+                pageSize,
                 query.count(),
                 () ->
-                        query.listPage(start, end)
+                        query.listPage(pageIndex * pageSize, pageSize)
                                 .stream()
                                 .map(p -> convert(p, commandContext))
                                 .collect(Collectors.toList())
