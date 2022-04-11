@@ -36,14 +36,17 @@ export default {
             if (this.$refs.form) {
                 this.$refs.form.resetFields()
             }
-            this.dialogVisible = true
             this.dialogLoading = true
             /**
              * 弹窗打开时回调
              */
             if (this.beforeOpen) {
-                await this.beforeOpen(this.dialogForm)
+                const result = await this.beforeOpen(this.dialogForm)
+                if (result === false) {
+                    this.dialogLoading = false
+                }
             }
+            this.dialogVisible = true
             //弹窗表单数据初始化
             if (this.$initDialogForm) {
                 await this.$initDialogForm()

@@ -4,8 +4,7 @@
   </section>
 </template>
 <script>
-import lib from "../../lib";
-
+import {Modeler, viewConfig} from "../../lib";
 
 /**
  * 流程查看器
@@ -15,17 +14,17 @@ export default {
     return {
       bpmnModeler: null,
       // 这部分具体的代码我放到了下面
-      initTemplate: lib.viewConfig.template
+      initTemplate: viewConfig.template
     };
   },
   methods: {
     async init() {
-      const Modeler = await lib.Modeler
+      const modelerConstruct = await Modeler
       // 创建Bpmn对象
-      this.bpmnModeler = await new Modeler.default({
+      this.bpmnModeler = await new modelerConstruct.default({
         container: this.$refs.canvas,
-        additionalModules: lib.viewConfig.additionalModules,
-        moddleExtensions: lib.viewConfig.moddleExtensions
+        additionalModules: viewConfig.additionalModules,
+        moddleExtensions: viewConfig.moddleExtensions
       });
       // 初始化建模器内容
       await this.initDiagram(this.initTemplate);

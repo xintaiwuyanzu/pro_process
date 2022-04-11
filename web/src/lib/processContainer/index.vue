@@ -1,7 +1,7 @@
 <template>
   <section style="display: inline-block">
     <slot>
-      <el-button type="primary" @click="open">提交审核</el-button>
+      <el-button type="primary" @click="open" :loading="dialogLoading">{{ btnText }}</el-button>
     </slot>
     <el-dialog :title="dialogTitle" ref="dialog"
                append-to-body
@@ -9,15 +9,15 @@
                :show-close="false">
       <el-form :model="dialogForm" label-width="100px" ref="form" v-loading="dialogLoading">
         <el-form-item prop="processId" label="流程" required>
-          <el-select v-model="dialogForm.processId" placeholder="请选择要发起的流程" filterable>
+          <el-select v-model="dialogForm.processId" placeholder="请选择要发起的流程" filterable clearable>
             <el-option v-for="define in processDefinition"
                        :value="define.id"
-                       :label="`${define.name||define.key}-${define.version}`"
+                       :label="`${define.name||define.key}`"
                        :key="define.id"/>
           </el-select>
         </el-form-item>
         <el-form-item prop="person" label="接收人" required>
-          <el-select v-model="dialogForm.person" multiple placeholder="请选择接收人" filterable>
+          <el-select v-model="dialogForm.person" placeholder="请选择接收人" filterable>
             <el-option v-for="person in currentPersons"
                        :value="person.id"
                        :label="person.userName"
@@ -36,12 +36,10 @@
     </el-dialog>
   </section>
 </template>
-
 <script>/**
  * 启动流程容器
  */
 import abstractDialog from "../abstractDialog";
-import {http} from "@dr/framework/src/plugins/http";
 
 export default {
   name: 'processContainer',
@@ -54,7 +52,11 @@ export default {
     /**
      * 业务外键
      */
-    businessId: {type: String}
+    businessId: {type: String},
+    /**
+     * 提交按钮显示名称
+     */
+    btnText: {type: String, default: '提交审核'}
   },
   data() {
     return {
@@ -73,16 +75,20 @@ export default {
       this.dialogLoading = true
       //保存前拦截
       if (this.beforeSave) {
-        await this.beforeSave(this.dialogForm)
+        const result = await this.beforeSave(this.dialogForm)
+        if (result === false) {
+          this.dialogLoading = false
+          return
+        }
       }
       const form = this.dialogForm
-      const {data} = await http().post('/processTaskInstance/start', {
+      const {data} = await this.$post('/processTaskInstance/start', {
         ...form,
         businessId: this.businessId,
         //流程定义Id
         definitionId: form.processId,
         //环节人员
-        person: form.person.join(','),
+        assignee: form.person,
         //审核意见
         comment: form.comment
       })
@@ -101,15 +107,29 @@ export default {
           this.currentPersons = data.data
         }
       }
+      //设置默认数据
+      if (this.currentPersons.length > 0) {
+        this.$set(this.dialogForm, 'person', this.currentPersons[0].id)
+      }
       if (this.processDefinition.length === 0 || this.lastProcessType !== this.processType) {
         this.lastProcessType = this.processType
         //如果流程定义还未加载或者上次的流程类型与现在的流程类型不同，则重新加载流程数据
-        const {data} = await http().post('/processDefinition/userProcessDefinition', {processType: this.processType})
+        const {data} = await this.$post('/processDefinition/userProcessDefinition', {
+          processType: this.processType,
+          useLatestVersion: true
+        })
         if (data.success) {
           this.processDefinition = data.data
         } else {
           this.processDefinition = []
         }
+      }
+      //设置默认数据
+      if (this.processDefinition.length > 0) {
+        this.$set(this.dialogForm, 'processId', this.processDefinition[0].id)
+      }
+      if (this.processDefinition.length === 0) {
+        this.$message.error("未找到指定类型的流程，请联系系统管理员分配权限")
       }
     },
     $init() {

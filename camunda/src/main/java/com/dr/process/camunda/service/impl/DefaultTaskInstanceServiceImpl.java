@@ -4,14 +4,16 @@ import com.dr.framework.common.page.Page;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.process.bo.*;
 import com.dr.framework.core.process.query.TaskInstanceQuery;
-import com.dr.framework.core.process.service.*;
+import com.dr.framework.core.process.service.ProcessContext;
+import com.dr.framework.core.process.service.ProcessTypeProvider;
+import com.dr.framework.core.process.service.TaskContext;
+import com.dr.framework.core.process.service.TaskInstanceService;
 import com.dr.process.camunda.command.comment.GetProcessCommentsCmd;
 import com.dr.process.camunda.command.comment.GetTaskCommentsCmd;
 import com.dr.process.camunda.command.process.instance.ConvertProcessInstanceCmd;
 import com.dr.process.camunda.command.task.definition.GetNextTaskDefinitionCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryListCmd;
 import com.dr.process.camunda.command.task.history.GetTaskHistoryPageCmd;
-import com.dr.process.camunda.command.task.instance.GetTaskInstanceCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstanceListCmd;
 import com.dr.process.camunda.command.task.instance.GetTaskInstancePageCmd;
 import com.dr.process.camunda.parselistener.FixTransitionBpmnParseListener;
@@ -20,7 +22,6 @@ import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessInstanceWithVariablesImpl;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 import org.camunda.bpm.engine.impl.pvm.process.ActivityImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -41,15 +42,8 @@ import static com.dr.framework.core.process.service.ProcessConstants.*;
  */
 @Service
 public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl implements TaskInstanceService {
-    @Autowired
-    private ProcessDefinitionService processDefinitionService;
+
     private Map<String, ProcessTypeProvider> processTypeProviderMap;
-
-
-    @Override
-    public TaskInstance taskInfo(String taskId) {
-        return getCommandExecutor().execute(new GetTaskInstanceCmd(taskId));
-    }
 
     @Override
     public List<TaskInstance> taskList(TaskInstanceQuery query) {
@@ -122,10 +116,10 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ProcessInstance start(String processDefinitionId, Map<String, Object> variMap, Person person) {
         ProcessDefinition processDefinition = getProcessDefinitionService().getProcessDefinitionById(processDefinitionId);
-        ProcessContext context = buildContext(processDefinition, person, variMap);
+        ProcessContext context = buildTaskContext(processDefinition, person, variMap);
         ProcessTypeProvider processTypeProvider = processTypeProviderMap.get(processDefinition.getType());
 
         Assert.isTrue(processTypeProvider != null, "不支持指定的流程类型：" + processDefinition.getType());
@@ -160,8 +154,10 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
         //设置流程任务类型变量
         context.addVar(PROCESS_TYPE_KEY, processTypeProvider.getType());
 
-        //设置启动环节任务人为传进来的登陆人信息
-        context.addVar(TASK_ASSIGNEE_KEY, person.getId());
+        if (!context.getProcessVarMap().containsKey(TASK_ASSIGNEE_KEY)) {
+            //设置启动环节任务人为传进来的登陆人信息
+            context.addVar(TASK_ASSIGNEE_KEY, person.getId());
+        }
         //调用流程引擎启动流程
         ProcessInstanceWithVariablesImpl instance = (ProcessInstanceWithVariablesImpl) getRuntimeService().startProcessInstanceById(processDefinition.getId(), context.getBusinessId(), context.getProcessVarMap());
         //转换流程实例对象
@@ -196,17 +192,13 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void complete(String taskId, Map<String, Object> variables, Person person) {
-        Assert.isTrue(!StringUtils.isEmpty(taskId), "环节Id不能为空！");
-        //查询环节实例
-        TaskInstance taskInstance = taskInfo(taskId);
-        //查询流程实例
-        ProcessDefinition processDefinition = getProcessDefinitionService().getProcessDefinitionById(taskInstance.getProcessDefineId());
         //构造上下文
-        TaskContext context = buildContext(processDefinition, taskInstance, person, variables);
+        TaskContext context = buildTaskContext(taskId, variables, person);
         //找到typeProvider
-        ProcessTypeProvider processTypeProvider = processTypeProviderMap.get(processDefinition.getType());
-        Assert.isTrue(processTypeProvider != null, "不支持指定的流程类型：" + processDefinition.getType());
+        ProcessTypeProvider processTypeProvider = processTypeProviderMap.get(context.getProcessDefinition().getType());
+        Assert.isTrue(processTypeProvider != null, "不支持指定的流程类型：" + context.getProcessDefinition().getType());
         processTypeProvider.onBeforeCompleteTask(context);
         getTaskService().complete(taskId, context.getProcessVarMap());
         processTypeProvider.onAfterCompleteTask(context);
@@ -226,21 +218,16 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
 
     @Override
     public void endProcess(String taskId, Map<String, Object> variables, Person person) {
-        Assert.isTrue(!StringUtils.isEmpty(taskId), "环节Id不能为空！");
-        //查询环节实例
-        TaskInstance taskInstance = taskInfo(taskId);
-        //查询流程实例
-        ProcessDefinition processDefinition = getProcessDefinitionService().getProcessDefinitionById(taskInstance.getProcessDefineId());
         //构造上下文
-        TaskContext context = buildContext(processDefinition, taskInstance, person, variables);
+        TaskContext context = buildTaskContext(taskId, variables, person);
         //找到typeProvider
-        ProcessTypeProvider processTypeProvider = processTypeProviderMap.get(processDefinition.getType());
-        Assert.isTrue(processTypeProvider != null, "不支持指定的流程类型：" + processDefinition.getType());
+        ProcessTypeProvider processTypeProvider = processTypeProviderMap.get(context.getProcessDefinition().getType());
+        Assert.isTrue(processTypeProvider != null, "不支持指定的流程类型：" + context.getProcessDefinition().getType());
         processTypeProvider.onBeforeEndProcess(context);
         String nextId = (String) variables.get(VAR_NEXT_TASK_ID);
         if (!StringUtils.hasText(nextId)) {
             //如果没有指定下一环节
-            ProcessDefinitionEntity pd = (ProcessDefinitionEntity) getProcessEngineConfiguration().getRepositoryService().getProcessDefinition(processDefinition.getId());
+            ProcessDefinitionEntity pd = (ProcessDefinitionEntity) getProcessEngineConfiguration().getRepositoryService().getProcessDefinition(context.getProcessDefinition().getId());
             List<ActivityImpl> activities = pd.getActivities().stream().filter(FixTransitionBpmnParseListener::isEndTask).collect(Collectors.toList());
             Assert.isTrue(activities.size() == 1, "流程定义多个办结节点，请指定节点");
             context.addVar(VAR_NEXT_TASK_ID, activities.get(0).getActivityId());
@@ -255,7 +242,5 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
         processTypeProviderMap = getApplicationContext().getBeansOfType(ProcessTypeProvider.class).values().stream().collect(Collectors.toMap(ProcessTypeProvider::getType, t -> t));
     }
 
-    public ProcessDefinitionService getProcessDefinitionService() {
-        return processDefinitionService;
-    }
+
 }

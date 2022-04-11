@@ -1,6 +1,6 @@
 <template>
   <el-dialog title="流转历史" width="80%" :visible.sync="visible">
-    <table-render :columns="columns" :data="tasks" v-loading="loading"/>
+    <table-render :columns="columns" :data="tasks" v-loading="loading" style="height: 300px;" :index="true"/>
     <div slot="footer">
       <el-button @click="()=>$emit('close')" type="primary">确 定</el-button>
     </div>

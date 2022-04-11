@@ -15,7 +15,7 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="person" label="接收人" required>
-          <el-select v-model="dialogForm.person" multiple placeholder="请选择接收人" filterable>
+          <el-select v-model="dialogForm.person" placeholder="请选择接收人" filterable>
             <el-option v-for="person in persons"
                        :value="person.id"
                        :label="person.userName"
@@ -70,7 +70,7 @@ export default {
         ...form,
         taskInstanceId: this.taskInstanceId,
         $nextId: form.taskDefinitionId,
-        assignee: form.person.join(','),
+        assignee: form.person,
         comment: form.comment
       })
       this.$emit('sendSaved', data)
@@ -94,7 +94,7 @@ export default {
         const {data} = await this.$post('/processDefinition/currentOrganisePersons/')
         this.persons = data.data
         if (this.persons.length > 0) {
-          this.$set(this.dialogForm, 'person', [this.persons[0].id])
+          this.$set(this.dialogForm, 'person', this.persons[0].id)
         }
       }
     }

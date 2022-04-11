@@ -1,18 +1,15 @@
-/**
- * 环节任务容器
- */
 import abstractTask from "./abstractTask";
 import './styles.scss'
 import sendBack from "./sendBack";
 import sendNext from "./sendNext";
 import endProcess from "./endProcess";
 
-/**
- * 默认slot
- * @type {{endProcess: {name: string}, sendNext: {name: string}, sendBack: {name: string}}}
- */
 const defaultSlots = {sendNext, sendBack, endProcess}
 
+export {sendNext, sendBack, endProcess}
+/**
+ * 环节任务容器
+ */
 export default {
     name: "taskContainer",
     extends: abstractTask,
@@ -24,8 +21,9 @@ export default {
         const listener = this.$listeners
         if (proPerties) {
             proPerties.forEach(({name, value}) => {
+                name = name.trim()
                 if (name.startsWith('$btn-')) {
-                    name = name.substring(5)
+                    name = name.substring(5).trim()
                 }
                 try {
                     //自定义参数

@@ -7,10 +7,10 @@ import com.dr.framework.core.organise.entity.Organise;
 import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.organise.service.OrganisePersonService;
 import com.dr.framework.core.process.bo.ProcessDefinition;
-import com.dr.framework.core.process.vo.ProcessTypeProviderWrapper;
 import com.dr.framework.core.process.query.ProcessDefinitionQuery;
 import com.dr.framework.core.process.service.ProcessTypeProvider;
 import com.dr.framework.core.process.service.impl.ProcessPermissionTypeProvider;
+import com.dr.framework.core.process.vo.ProcessTypeProviderWrapper;
 import com.dr.framework.core.security.bo.PermissionMatcher;
 import com.dr.framework.core.security.service.SecurityManager;
 import com.dr.framework.core.util.Constants;
@@ -63,13 +63,21 @@ public class AbstractProcessDefinitionController extends BaseProcessController i
      * @return
      */
     @PostMapping("userProcessDefinition")
-    public ResultListEntity<ProcessDefinition> userProcessDefinition(@Current Person person, String processType) {
+    public ResultListEntity<ProcessDefinition> userProcessDefinition(@Current Person person, String processType, boolean useLatestVersion) {
         Assert.isTrue(StringUtils.hasText(processType), "流程类型不能为空");
         List<PermissionMatcher> userPermissions = securityManager.userPermissions(person.getId(), processPermissionTypeProvider.getType(), Constants.DEFAULT);
         if (userPermissions.isEmpty()) {
             return ResultListEntity.success(Collections.emptyList());
         } else {
-            List<ProcessDefinition> processDefinitions = getProcessDefinitionService().processDefinitionList(new ProcessDefinitionQuery().typeLike(processType).useLatestVersion(false).withStartUser().withProperty()).stream().filter(p -> checkPermission(p, userPermissions)).collect(Collectors.toList());
+            List<ProcessDefinition> processDefinitions = getProcessDefinitionService().processDefinitionList(
+                            new ProcessDefinitionQuery()
+                                    .typeLike(processType)
+                                    .useLatestVersion(useLatestVersion)
+                                    .withStartUser()
+                                    .withProperty()
+                    ).stream()
+                    .filter(p -> checkPermission(p, userPermissions))
+                    .collect(Collectors.toList());
             return ResultListEntity.success(processDefinitions);
         }
     }

@@ -1,6 +1,4 @@
 <style lang="scss">
-@import "~element-ui/packages/theme-chalk/src/common/var.scss";
-
 .bpmnContainer {
   display: flex;
   flex: 1;
@@ -27,7 +25,7 @@
   </section>
 </template>
 <script>
-import lib from "../../lib";
+import {editorConfig, Modeler} from "../../lib";
 import Ids from 'ids'
 import replaceIds from '@bpmn-io/replace-ids'
 
@@ -46,18 +44,18 @@ export default {
     return {
       bpmnModeler: null,
       // 这部分具体的代码我放到了下面
-      initTemplate: lib.editorConfig.template
+      initTemplate: editorConfig.template
     };
   },
   methods: {
     async init() {
-      const Modeler = await lib.Modeler
+      const modelerConstruct = await Modeler
       // 创建Bpmn对象
-      this.bpmnModeler = await new Modeler.default({
+      this.bpmnModeler = await new modelerConstruct.default({
         container: this.$refs.canvas,
         propertiesPanel: {parent: this.$refs.properties},
-        additionalModules: lib.editorConfig.additionalModules,
-        moddleExtensions: lib.editorConfig.moddleExtensions
+        additionalModules: editorConfig.additionalModules,
+        moddleExtensions: editorConfig.moddleExtensions
       });
       // 初始化建模器内容
       await this.loadXml(this.initTemplate);

@@ -15,7 +15,6 @@ import java.util.Map;
  */
 public class ProcessContext {
 
-    static String[] varParams = new String[]{ProcessConstants.VAR_NEXT_TASK_ID, ProcessConstants.VAR_NEXT_TASK_PERSON, ProcessConstants.VAR_COMMENT_KEY};
     /**
      * 当前登录人
      */
@@ -81,11 +80,6 @@ public class ProcessContext {
     public void setBusinessParams(Map<String, Object> businessParams) {
         if (businessParams != null) {
             this.businessParams.putAll(businessParams);
-            for (String varParam : varParams) {
-                if (businessParams.containsKey(varParam) && !processVarMap.containsKey(varParam)) {
-                    processVarMap.put(varParam, businessParams.get(varParam));
-                }
-            }
         }
     }
 
