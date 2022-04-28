@@ -12,7 +12,7 @@ export default {
     data() {
         return {
             //加载状态
-            loading: true,
+            loading: false,
             //环节实例对象
             taskInstance: {}
         }
@@ -23,7 +23,7 @@ export default {
          * @returns {Promise<void>}
          */
         async loadTaskInstance() {
-            if (this.taskInstanceId) {
+            if (this.taskInstanceId && !this.loading) {
                 this.loading = true
                 const {data} = await this.$get('/processTaskInstance/detail?id=' + this.taskInstanceId)
                 if (data.success) {
@@ -38,7 +38,7 @@ export default {
     },
     watch: {
         async taskInstanceId() {
-            await this.loadTaskInstance()
+            //await this.loadTaskInstance()
         }
     }
 }

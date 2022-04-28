@@ -44,6 +44,7 @@ export default {
                 const result = await this.beforeOpen(this.dialogForm)
                 if (result === false) {
                     this.dialogLoading = false
+                    return
                 }
             }
             this.dialogVisible = true

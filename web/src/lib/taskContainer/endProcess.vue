@@ -35,6 +35,8 @@ export default {
         ...this.dialogForm
       })
       this.$emit('saveEnd', data)
+      this.dialogLoading = false
+      this.close()
     },
     $init() {
       this.defaultDialogTitle = '办结流程'

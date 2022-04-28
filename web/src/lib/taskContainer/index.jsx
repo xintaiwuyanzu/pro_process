@@ -41,8 +41,8 @@ export default {
                     }
                     child.push(scopedSlots[name](params))
                 } else if (defaultSlots[name]) {
-                    const component = defaultSlots[name]
-                    child.push((<component
+                    const cmp = defaultSlots[name]
+                    child.push((<cmp
                         id={name}
                         on={listener}
                         scopedSlots={scopedSlots}
