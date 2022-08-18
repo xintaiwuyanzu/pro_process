@@ -23,7 +23,7 @@ export default {
             //弹窗内数据是否正在加载
             dialogLoading: false,
             //弹窗内置表单对象
-            dialogForm: {},
+            dialogForm: {comment: ''},
             //默认弹窗标题
             defaultDialogTitle: ''
         }
@@ -60,7 +60,7 @@ export default {
         close() {
             this.dialogVisible = false
             this.$emit('close')
-        },
+        }
     },
     computed: {
         /**

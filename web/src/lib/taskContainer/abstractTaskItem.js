@@ -11,7 +11,11 @@ export default {
             return this.taskInstance.id || ''
         },
         taskInstance() {
-            return this.taskContainer?.taskInstance || {}
+            if (this.taskContainer && this.taskContainer.taskInstance) {
+                return this.taskContainer.taskInstance
+            } else {
+                return {}
+            }
         }
     },
     inject: {

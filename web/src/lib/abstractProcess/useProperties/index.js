@@ -1,7 +1,6 @@
-import {reactive, watchEffect} from 'vue-demi'
-import {useRouter} from '@u3u/vue-hooks'
+import {useRouter} from '@dr/auto/lib'
 import {http} from "@dr/framework/src/plugins/http";
-import vue from "vue";
+import vue, {reactive, watchEffect} from "vue";
 
 /**
  *用来加载环节或者流程扩展属性
@@ -12,13 +11,13 @@ export default () => {
      */
     const properties = reactive({})
 
-    const {route} = useRouter()
+    const {router} = useRouter()
     const loadProperties = async (taskId) => {
         const {data} = await http().get(`/processTaskInstance/detail?id=${taskId}`)
         return data
     }
     watchEffect(async () => {
-        const query = route.value.query
+        const query = router.currentRoute.query
         if (query.taskId) {
             const data = await loadProperties(query.taskId)
             if (data.success) {

@@ -1,11 +1,15 @@
-package com.dr.process.camunda.utils;
+package com.dr.framework.core.process.utils;
 
 /**
- * 工具类 存放常量和工具方法
+ * 流程相关常量
  *
- * @author dr
+ * @author
  */
 public class Constants {
+    /**
+     * 模块前缀
+     */
+    public static final String TABLE_PREFIX = "process_";
     /**
      * 流程定义扩展表名称后缀
      */

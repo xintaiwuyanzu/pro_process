@@ -13,15 +13,13 @@
   ],
   "dependencies": {
     "@bpmn-io/replace-ids": "^0.2.0",
-    "@dr/framework": "^0.0.4",
     "camunda-bpmn-js": "^0.12.2",
     "ids": "^1.0.0"
   },
   "optionalDependencies": {
-    "@u3u/vue-hooks": "^2.0.1",
-    "vue-demi": "^0.12.1"
+    "@dr/framework": "^0.0.4"
   },
   "devDependencies": {
-    "@dr/vue-cli-plugin-dr": "~2.0.1"
+    "@dr/vue-cli-plugin-dr": "^2.0.1"
   }
 }

@@ -3,7 +3,7 @@ package com.dr.process.camunda.command.process.definition.extend;
 import com.dr.framework.common.entity.BaseEntity;
 import com.dr.framework.core.orm.annotations.Column;
 import com.dr.framework.core.orm.annotations.Table;
-import com.dr.process.camunda.utils.Constants;
+import com.dr.framework.core.process.utils.Constants;
 import org.camunda.bpm.engine.impl.persistence.entity.ProcessDefinitionEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TableDataManager;
 

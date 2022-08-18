@@ -3,7 +3,7 @@
     <nac-info>
       <el-form :model="searchForm" inline ref="searchForm">
         <el-form-item label="流程类型" prop="type">
-          <el-select style="width: 120px" v-model="searchForm.type" placeholder="请选择流程类型">
+          <el-select style="width: 120px" v-model="searchForm.type" placeholder="请选择流程类型" filterable="true">
             <el-option v-for="type in processType" :label="type.name" :key="type.type" :value="type.type"/>
           </el-select>
         </el-form-item>
@@ -30,7 +30,8 @@
             </template>
           </el-table-column>
           <el-table-column prop="key" label="流程编码" align="center" header-align="center" show-overflow-tooltip/>
-          <el-table-column prop="description" label="流程描述" align="center" header-align="center" show-overflow-tooltip/>
+          <el-table-column prop="description" label="流程描述" align="center" header-align="center"
+                           show-overflow-tooltip/>
           <el-table-column label="流程类型" align="center" header-align="center" show-overflow-tooltip>
             <template slot-scope="scope">
               {{ getProcessType(scope.row.type) }}

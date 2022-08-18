@@ -2,7 +2,7 @@ package com.dr.process.camunda.config;
 
 import com.dr.framework.core.orm.support.mybatis.spring.DataSourceFactory;
 import com.dr.framework.core.orm.support.mybatis.spring.boot.autoconfigure.MultiDataSourceProperties;
-import com.dr.process.camunda.utils.Constants;
+import com.dr.framework.core.process.utils.Constants;
 import org.camunda.bpm.spring.boot.starter.configuration.impl.DefaultJobConfiguration;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.MutablePropertyValues;

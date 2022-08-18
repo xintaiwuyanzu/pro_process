@@ -1,5 +1,4 @@
-import vue from 'vue'
-import {getCurrentInstance, onBeforeUnmount} from 'vue-demi'
+import vue, {getCurrentInstance, onBeforeUnmount} from 'vue'
 
 export const useDialog = (vueOptions, callback, scopeName) => {
     let instance = null

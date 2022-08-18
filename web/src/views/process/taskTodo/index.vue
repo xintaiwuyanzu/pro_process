@@ -30,6 +30,9 @@ export default {
           labelKey: 'name',
           valueKey: 'type',
           width: 120,
+          search: true,
+          fieldType: 'select',
+          filterable: true,
           requestMethod: 'get'
         },
         title: {label: '任务标题', search: true},
@@ -51,6 +54,7 @@ export default {
         path = this.$route.path + "/detail"
         this.$message.warning('未配置详情页面，跳转默认页面')
       }
+      const processVariables = row.processVariables ? row.processVariables : {}
       this.$router.push({
         path: path,
         query: {
@@ -59,9 +63,9 @@ export default {
           //环节实例Id
           taskId: row.id,
           //批次Id
-          batchId: row.processVariables?.batchId,
+          batchId: processVariables.batchId,
           //业务外键
-          businessId: row.processVariables?.$businessId
+          businessId: processVariables.$businessId
         }
       })
     }

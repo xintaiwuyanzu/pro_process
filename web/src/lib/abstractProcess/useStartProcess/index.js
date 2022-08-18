@@ -22,7 +22,6 @@ export default () => {
             resolveBack()
         },
         async submit(form) {
-            console.log(form)
             this.loading = true
             const $autoComplete = !!params.send
 

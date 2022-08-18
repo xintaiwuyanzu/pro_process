@@ -8,7 +8,7 @@
       <el-form :model="dialogForm" label-width="100px" ref="form" v-loading="dialogLoading">
         <slot :form="dialogForm" name="sendForm"/>
         <el-form-item prop="comment" label="意见">
-          <el-input v-model="dialogForm.comment" placeholder="请填写意见" type="textarea"/>
+          <process-opinion v-model="dialogForm.comment"/>
         </el-form-item>
       </el-form>
       <div slot="footer">
