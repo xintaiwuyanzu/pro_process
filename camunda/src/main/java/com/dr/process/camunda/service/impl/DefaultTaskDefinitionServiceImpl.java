@@ -3,6 +3,7 @@ package com.dr.process.camunda.service.impl;
 import com.dr.framework.core.process.bo.TaskDefinition;
 import com.dr.framework.core.process.service.TaskDefinitionService;
 import com.dr.process.camunda.command.task.definition.GetNextTaskDefinitionCmd;
+import com.dr.process.camunda.command.task.definition.GetPreTaskDefinitionCmd;
 import com.dr.process.camunda.command.task.definition.GetProcessTaskDefinitionCmd;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,11 @@ public class DefaultTaskDefinitionServiceImpl extends BaseProcessServiceImpl imp
     @Override
     public List<TaskDefinition> nextTasks(String taskId, boolean all) {
         return getCommandExecutor().execute(new GetNextTaskDefinitionCmd(taskId, all));
+    }
+
+    @Override
+    public List<TaskDefinition> preTasks(String taskId, boolean all) {
+        return getCommandExecutor().execute(new GetPreTaskDefinitionCmd(taskId, all));
     }
 
     @Override

@@ -30,6 +30,25 @@ public interface TaskDefinitionService {
     }
 
     /**
+     * 根据环节实例Id查询该环节前面所有环节定义
+     *
+     * @param taskId
+     * @return
+     */
+    default List<TaskDefinition> preTasks(String taskId) {
+        return preTasks(taskId, false);
+    }
+
+    /**
+     * 根据环节实例Id查询所有前面的环节
+     *
+     * @param taskId
+     * @param all
+     * @return
+     */
+    List<TaskDefinition> preTasks(String taskId, boolean all);
+
+    /**
      * 根据流程实例查询该流程定义的所有的任务列表
      *
      * @param processInstanceId
