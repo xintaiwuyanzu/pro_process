@@ -3,7 +3,7 @@
     <nac-info>
       <el-form :model="searchForm" inline ref="searchForm">
         <el-form-item label="流程类型" prop="type">
-          <el-select style="width: 120px" v-model="searchForm.type" placeholder="请选择流程类型" filterable="true">
+          <el-select style="width: 120px" v-model="searchForm.type" placeholder="请选择流程类型" filterable>
             <el-option v-for="type in processType" :label="type.name" :key="type.type" :value="type.type"/>
           </el-select>
         </el-form-item>

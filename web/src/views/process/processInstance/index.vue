@@ -4,7 +4,7 @@
                :insert="false"
                :delete="false"
                :fields="fields">
-    <template slot="table-$btns" slot-scope="{row}">
+    <template v-slot:table-$btns="{row}">
       <el-button type="text" width="60" @click="()=>showHistory(row.id)">流转历史</el-button>
     </template>
   </table-index>
