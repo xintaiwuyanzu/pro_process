@@ -8,13 +8,17 @@ import com.dr.framework.core.security.SecurityHolder;
 import com.dr.framework.core.web.interceptor.PersonInterceptor;
 import com.dr.process.camunda.resolver.CurrentElResolver;
 import org.camunda.bpm.engine.IdentityService;
+import org.camunda.bpm.engine.impl.cfg.CompositeProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
+import org.camunda.bpm.engine.impl.cfg.ProcessEnginePlugin;
 import org.camunda.bpm.engine.impl.cfg.auth.ResourceAuthorizationProvider;
 import org.camunda.bpm.engine.impl.el.ExpressionManager;
 import org.camunda.bpm.engine.impl.interceptor.CommandContextFactory;
+import org.camunda.bpm.engine.spring.SpringProcessEngineConfiguration;
 import org.camunda.bpm.spring.boot.starter.CamundaBpmAutoConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaDatasourceConfiguration;
 import org.camunda.bpm.spring.boot.starter.configuration.CamundaProcessEngineConfiguration;
+import org.camunda.bpm.spring.boot.starter.util.CamundaSpringBootUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -28,6 +32,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 处理camunda自启动相关配置
@@ -39,6 +44,19 @@ import javax.servlet.http.HttpServletResponse;
 @AutoConfigureBefore(CamundaBpmAutoConfiguration.class)
 @ComponentScan("com.dr.process.camunda")
 public class CamundaAutoConfig {
+    @Bean
+    public ProcessEngineConfigurationImpl processEngineConfigurationImpl(List<ProcessEnginePlugin> processEnginePlugins) {
+        final SpringProcessEngineConfiguration configuration = CamundaSpringBootUtil.initCustomFields(new SpringProcessEngineConfiguration() {
+            @Override
+            protected void init() {
+                //添加达梦数据库兼容
+                databaseTypeMappings.setProperty("DM DBMS", "oracle");
+                super.init();
+            }
+        });
+        configuration.getProcessEnginePlugins().add(new CompositeProcessEnginePlugin(processEnginePlugins));
+        return configuration;
+    }
 
     @Bean
     CamundaProcessEngineConfiguration elEngineConfiguration(ApplicationContext applicationContext, @Autowired(required = false) CurrentElResolver elResolver) {
