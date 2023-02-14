@@ -42,18 +42,30 @@ export default {
                     child.push(scopedSlots[name](params))
                 } else if (defaultSlots[name]) {
                     const cmp = defaultSlots[name]
-                    child.push((<cmp
-                        id={name}
-                        on={listener}
-                        scopedSlots={scopedSlots}
-                        params={value}
-                        taskInstanceId={this.taskInstanceId}
-                        taskInstance={this.taskInstance}/>))
+                    child.push(
+                        (<cmp
+                                {...
+                                    {
+                                        id: name,
+                                        on: listener,
+                                        scopedSlots: scopedSlots,
+                                        params: value,
+                                        taskInstanceId: this.taskInstanceId,
+                                        taskInstance: this.taskInstance
+                                    }}
+                                id={name}
+                                on={listener}
+                                scopedSlots={scopedSlots}
+                                params={value}
+                                taskInstanceId={this.taskInstanceId}
+                                taskInstance={this.taskInstance}/>
+                        )
+                    )
                 }
             })
         }
         return (
-            <section class="taskContainer" directives={directives}>
+            <section class="taskContainer" {...{directives}}>
                 {child}
             </section>
         )

@@ -56,4 +56,12 @@ public interface TaskDefinitionService {
      */
     List<TaskDefinition> processTaskDefinitions(String processInstanceId);
 
+    /**
+     * 根据流程定义id查询所有环节定义
+     *
+     * @param processDefinitionId
+     * @return
+     */
+    List<TaskDefinition> processTaskDefinitionsByProcessDefinitionId(String processDefinitionId);
+
 }

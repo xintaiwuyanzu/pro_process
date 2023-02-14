@@ -47,5 +47,10 @@ public class AbstractTaskDefinitionController extends BaseProcessController {
         return ResultListEntity.success(getTaskDefinitionService().processTaskDefinitions(processInstanceId));
     }
 
+    @RequestMapping("processTasksByProDefinitionId")
+    public ResultListEntity<TaskDefinition> processTasksByProDefinitionId(String processDefinitionId) {
+        return ResultListEntity.success(getTaskDefinitionService().processTaskDefinitionsByProcessDefinitionId(processDefinitionId));
+    }
+
 
 }

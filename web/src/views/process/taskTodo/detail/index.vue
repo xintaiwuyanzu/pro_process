@@ -16,16 +16,25 @@
       <el-button type="primary" @click="showHistory($route.query.processInstanceId)">流转历史</el-button>
     </nac-info>
     <section class="index_main">
+      <task-container :task-instance-id="taskInstanceId"/>
     </section>
   </section>
 </template>
 <script>
 import abstractProcess from "../../../../lib/abstractProcess";
+import TaskContainer from "../../../../lib/taskContainer";
 
 /**
  * 任务详情页面
  */
 export default {
-  extends: abstractProcess
+  components: {TaskContainer},
+  extends: abstractProcess,
+  data() {
+    return {taskInstanceId: ''}
+  },
+  mounted() {
+    this.taskInstanceId = this.$route.query.taskId
+  }
 }
 </script>
