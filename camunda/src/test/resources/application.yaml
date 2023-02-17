@@ -8,9 +8,10 @@ spring:
   datasource:
     autoDDl: update
     includeModules: sys,common,process
-    password: 1234
-    url: jdbc:mysql://127.0.0.1:3307/testProcess1?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
-    username: root
+    password: 123123123
+    url: jdbc:dm://127.0.0.1:5237?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=utf-8&schema=testProcess
+    username: SYSDBA
+    driver-class-name: dm.jdbc.driver.DmDriver
   servlet:
     multipart:
       max-file-size: 50MB

@@ -46,14 +46,7 @@ import java.util.List;
 public class CamundaAutoConfig {
     @Bean
     public ProcessEngineConfigurationImpl processEngineConfigurationImpl(List<ProcessEnginePlugin> processEnginePlugins) {
-        final SpringProcessEngineConfiguration configuration = CamundaSpringBootUtil.initCustomFields(new SpringProcessEngineConfiguration() {
-            @Override
-            protected void init() {
-                //添加达梦数据库兼容
-                databaseTypeMappings.setProperty("DM DBMS", "oracle");
-                super.init();
-            }
-        });
+        final SpringProcessEngineConfiguration configuration = CamundaSpringBootUtil.initCustomFields(new CustomSpringProcessEngineConfiguration());
         configuration.getProcessEnginePlugins().add(new CompositeProcessEnginePlugin(processEnginePlugins));
         return configuration;
     }
