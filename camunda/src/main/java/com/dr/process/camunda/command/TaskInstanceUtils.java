@@ -161,7 +161,7 @@ public class TaskInstanceUtils {
                     commandContext));
         }
         if (withComments) {
-            GetTaskCommentsCmd taskCommentsCmd = new GetTaskCommentsCmd(his.getTaskId(), AbstractProcessDefinitionCmd.getBean(commandContext, OrganisePersonService.class));
+            GetTaskCommentsCmd taskCommentsCmd = new GetTaskCommentsCmd(his.getId(), AbstractProcessDefinitionCmd.getBean(commandContext, OrganisePersonService.class));
             List<Comment> comments = taskCommentsCmd.execute(commandContext);
             to.setComments(comments);
         }
