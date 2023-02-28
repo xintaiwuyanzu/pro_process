@@ -40,7 +40,8 @@ public class AbstractGetTaskHistoryCmd {
                 query.isWithVariables(),
                 query.isWithProcessVariables(),
                 query.isWithProperty(),
-                query.isWithProcessProperty()
+                query.isWithProcessProperty(),
+                query.isWithComments()
         );
     }
 

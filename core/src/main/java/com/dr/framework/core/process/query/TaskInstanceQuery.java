@@ -46,6 +46,10 @@ public class TaskInstanceQuery extends ProcessInstanceQuery {
      * 是否查询流程扩展属性
      */
     private boolean withProcessProperty;
+    /**
+     * 是否包含环节意见
+     */
+    private boolean withComments = true;
 
     public TaskInstanceQuery processInstanceIdEqual(String processInstanceId) {
         this.processInstanceId = processInstanceId;
@@ -87,6 +91,11 @@ public class TaskInstanceQuery extends ProcessInstanceQuery {
 
     public TaskInstanceQuery withProcessProperty(boolean withProcessProperty) {
         this.withProcessProperty = withProcessProperty;
+        return this;
+    }
+
+    public TaskInstanceQuery withComments(boolean withComments) {
+        this.withComments = withComments;
         return this;
     }
 
@@ -150,5 +159,13 @@ public class TaskInstanceQuery extends ProcessInstanceQuery {
 
     public void setWithProcessVariables(boolean withProcessVariables) {
         this.withProcessVariables = withProcessVariables;
+    }
+
+    public boolean isWithComments() {
+        return withComments;
+    }
+
+    public void setWithComments(boolean withComments) {
+        this.withComments = withComments;
     }
 }
