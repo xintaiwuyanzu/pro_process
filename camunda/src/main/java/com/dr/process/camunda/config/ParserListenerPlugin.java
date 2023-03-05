@@ -55,6 +55,6 @@ public class ParserListenerPlugin implements CamundaProcessEngineConfiguration {
             processEngineConfiguration.setCustomPostBPMNParseListeners(bpmnParseListeners);
         }
         bpmnParseListeners.add(new CustomerEventListenerParser(processEngineConfiguration.getExpressionManager()));
-        bpmnParseListeners.add(new FixTransitionBpmnParseListener(processEngineConfiguration.getExpressionManager()));
+        bpmnParseListeners.add(new FixTransitionBpmnParseListener(processEngineConfiguration.getExpressionManager(), processEngineConfiguration.getTaskService()));
     }
 }

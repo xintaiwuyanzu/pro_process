@@ -9,13 +9,11 @@ import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.query.ProcessDefinitionQuery;
 import com.dr.framework.core.process.query.ProcessInstanceQuery;
 import com.dr.framework.core.process.query.TaskInstanceQuery;
-import com.dr.framework.core.process.service.ProcessDefinitionService;
-import com.dr.framework.core.process.service.ProcessInstanceService;
-import com.dr.framework.core.process.service.TaskDefinitionService;
-import com.dr.framework.core.process.service.TaskInstanceService;
+import com.dr.framework.core.process.service.*;
 import org.camunda.bpm.engine.IdentityService;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.RuntimeService;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +47,7 @@ public class ProcessServiceTest {
     @Autowired
     RuntimeService runtimeService;
 
-    //@Before
+    @Before
     public void initDefine() {
         person = organisePersonService.getPersonById("admin");
         identityService.setAuthenticatedUserId(person.getId());
@@ -69,6 +67,7 @@ public class ProcessServiceTest {
         Map map = new HashMap();
         map.put("assignee", "admin1");
         map.put("title", "hahha");
+        map.put(ProcessConstants.VAR_COMMENT_KEY, "我是意见");
         map.put("formId", "aaaa");
         ProcessInstance processInstance = taskInstanceService.start(processDefinition.getId(), map, person);
 
