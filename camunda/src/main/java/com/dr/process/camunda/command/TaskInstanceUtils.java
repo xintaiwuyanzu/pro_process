@@ -1,17 +1,20 @@
 package com.dr.process.camunda.command;
 
+import com.dr.framework.core.organise.service.OrganisePersonService;
+import com.dr.framework.core.process.bo.Comment;
 import com.dr.framework.core.process.bo.ProcessInstance;
 import com.dr.framework.core.process.bo.TaskInstance;
 import com.dr.framework.core.process.service.ProcessConstants;
+import com.dr.process.camunda.command.comment.GetTaskCommentsCmd;
+import com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd;
 import org.camunda.bpm.engine.HistoryService;
-import org.camunda.bpm.engine.history.HistoricVariableInstance;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
 import org.camunda.bpm.engine.impl.persistence.entity.HistoricTaskInstanceEntity;
 import org.camunda.bpm.engine.impl.persistence.entity.TaskEntity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.dr.framework.core.process.service.ProcessConstants.*;
 import static com.dr.process.camunda.command.process.definition.AbstractProcessDefinitionCmd.filter;
@@ -23,6 +26,13 @@ import static com.dr.process.camunda.command.process.definition.AbstractProcessD
  * @author dr
  */
 public class TaskInstanceUtils {
+    public static TaskInstance newTaskInstance(TaskEntity task, CommandContext commandContext,
+                                               boolean withVariables,
+                                               boolean withProcessVariables,
+                                               boolean withProperties,
+                                               boolean withProcessProperty) {
+        return newTaskInstance(task, commandContext, withVariables, withProcessVariables, withProperties, withProcessProperty, false);
+    }
 
     /**
      * 根据camunda环节实例创建对外接口
@@ -39,7 +49,8 @@ public class TaskInstanceUtils {
                                                boolean withVariables,
                                                boolean withProcessVariables,
                                                boolean withProperties,
-                                               boolean withProcessProperty) {
+                                               boolean withProcessProperty,
+                                               boolean withComments) {
         if (task == null) {
             return null;
         }
@@ -83,7 +94,20 @@ public class TaskInstanceUtils {
                     task.getProcessDefinitionId().split(":")[0],
                     commandContext));
         }
+        if (withComments) {
+            GetTaskCommentsCmd taskCommentsCmd = new GetTaskCommentsCmd(task.getId(), AbstractProcessDefinitionCmd.getBean(commandContext, OrganisePersonService.class));
+            List<Comment> comments = taskCommentsCmd.execute(commandContext);
+            to.setComments(comments);
+        }
         return to;
+    }
+
+    public static TaskInstance newTaskInstance(HistoricTaskInstanceEntity his, CommandContext commandContext,
+                                               boolean withVariables,
+                                               boolean withProcessVariables,
+                                               boolean withProperties,
+                                               boolean withProcessProperty) {
+        return newTaskInstance(his, commandContext, withVariables, withProcessVariables, withProperties, withProcessProperty, false);
     }
 
 
@@ -91,7 +115,8 @@ public class TaskInstanceUtils {
                                                boolean withVariables,
                                                boolean withProcessVariables,
                                                boolean withProperties,
-                                               boolean withProcessProperty) {
+                                               boolean withProcessProperty,
+                                               boolean withComments) {
         if (his == null) {
             return null;
         }
@@ -134,6 +159,11 @@ public class TaskInstanceUtils {
             to.setProcessProPerties(getProperty(his.getProcessDefinitionId(),
                     his.getProcessDefinitionId().split(":")[0],
                     commandContext));
+        }
+        if (withComments) {
+            GetTaskCommentsCmd taskCommentsCmd = new GetTaskCommentsCmd(his.getId(), AbstractProcessDefinitionCmd.getBean(commandContext, OrganisePersonService.class));
+            List<Comment> comments = taskCommentsCmd.execute(commandContext);
+            to.setComments(comments);
         }
         return to;
     }

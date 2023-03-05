@@ -15,7 +15,7 @@ public class GetTaskInstanceCmd extends AbstractGetTaskInstanceCmd implements Co
     private String taskId;
 
     public GetTaskInstanceCmd(String taskId) {
-        super(true, true, true, true);
+        super(true, true, true, true, true);
         this.taskId = taskId;
     }
 

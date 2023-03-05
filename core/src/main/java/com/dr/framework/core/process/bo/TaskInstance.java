@@ -26,6 +26,14 @@ public class TaskInstance<T> extends ProcessInstance {
      */
     private List<Property> processProPerties;
     /**
+     * 审核意见
+     */
+    private List<Comment> comments;
+    /**
+     * 只有一个审核意见
+     */
+    private Comment comment;
+    /**
      * 环节定义id
      */
     private String taskDefineKey;
@@ -144,5 +152,24 @@ public class TaskInstance<T> extends ProcessInstance {
 
     public void setProcessVariables(Map<String, Object> processVariables) {
         this.processVariables = processVariables;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+        if (comments != null && !comments.isEmpty()) {
+            comment = comments.get(0);
+        }
+    }
+
+    public Comment getComment() {
+        return comment;
+    }
+
+    public void setComment(Comment comment) {
+        this.comment = comment;
     }
 }

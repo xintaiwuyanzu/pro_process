@@ -11,7 +11,7 @@ public class AbstractGetTaskQueryCmd extends AbstractGetTaskInstanceCmd {
     TaskInstanceQuery query;
 
     public AbstractGetTaskQueryCmd(TaskInstanceQuery query) {
-        super(query.isWithVariables(), query.isWithProcessVariables(), query.isWithProperty(), query.isWithProcessProperty());
+        super(query.isWithVariables(), query.isWithProcessVariables(), query.isWithProperty(), query.isWithProcessProperty(), query.isWithComments());
         this.query = query;
     }
 

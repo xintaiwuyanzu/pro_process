@@ -25,16 +25,22 @@ public class AbstractGetTaskInstanceCmd {
      * 包含流程扩展属性定义
      */
     private boolean withProcessProperty;
+    private boolean withComments;
 
     public AbstractGetTaskInstanceCmd(boolean withVariables, boolean withProcessVariables, boolean withProperties, boolean withProcessProperty) {
+        this(withVariables, withProcessVariables, withProperties, withProcessProperty, false);
+    }
+
+    public AbstractGetTaskInstanceCmd(boolean withVariables, boolean withProcessVariables, boolean withProperties, boolean withProcessProperty, boolean withComments) {
         this.withVariables = withVariables;
         this.withProcessVariables = withProcessVariables;
         this.withProperties = withProperties;
         this.withProcessProperty = withProcessProperty;
+        this.withComments = withComments;
     }
 
     protected TaskInstance convert(TaskEntity task, CommandContext commandContext) {
-        return TaskInstanceUtils.newTaskInstance(task, commandContext, withVariables, withProcessVariables, withProperties, withProcessProperty);
+        return TaskInstanceUtils.newTaskInstance(task, commandContext, withVariables, withProcessVariables, withProperties, withProcessProperty, withComments);
     }
 
     public void setWithProcessVariables(boolean withProcessVariables) {
