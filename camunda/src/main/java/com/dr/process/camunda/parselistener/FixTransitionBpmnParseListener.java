@@ -1,12 +1,8 @@
 package com.dr.process.camunda.parselistener;
 
 import com.dr.framework.core.process.service.ProcessConstants;
-import com.dr.process.camunda.listener.TaskCommentListener;
 import org.camunda.bpm.engine.ActivityTypes;
-import org.camunda.bpm.engine.TaskService;
-import org.camunda.bpm.engine.delegate.CaseExecutionListener;
 import org.camunda.bpm.engine.impl.Condition;
-import org.camunda.bpm.engine.impl.bpmn.behavior.UserTaskActivityBehavior;
 import org.camunda.bpm.engine.impl.bpmn.helper.BpmnProperties;
 import org.camunda.bpm.engine.impl.bpmn.parser.AbstractBpmnParseListener;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParse;
@@ -43,20 +39,13 @@ public class FixTransitionBpmnParseListener extends AbstractBpmnParseListener {
      */
     public static final String SELF_TRANSITION_FIX_CONDITION_KEY = ProcessConstants.VAR_NEXT_TASK_ID;
     protected ExpressionManager expressionManager;
-    protected TaskCommentListener taskCommentListener;
 
-    public FixTransitionBpmnParseListener(ExpressionManager expressionManager, TaskService taskService) {
+    public FixTransitionBpmnParseListener(ExpressionManager expressionManager) {
         this.expressionManager = expressionManager;
-        taskCommentListener = new TaskCommentListener(taskService);
     }
 
     @Override
     public void parseProcess(Element processElement, ProcessDefinitionEntity processDefinition) {
-        for (ActivityImpl activity : processDefinition.getActivities()) {
-            if (activity.getActivityBehavior() instanceof UserTaskActivityBehavior) {
-                activity.addBuiltInListener(CaseExecutionListener.START, taskCommentListener);
-            }
-        }
         //获取排除了开始节点的所有节点
         List<ActivityImpl> activitiesWithOutStart = filterStartActivities(processDefinition);
         for (ActivityImpl task : activitiesWithOutStart) {
