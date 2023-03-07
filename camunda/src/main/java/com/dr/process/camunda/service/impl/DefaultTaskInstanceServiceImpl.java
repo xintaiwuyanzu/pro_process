@@ -158,6 +158,11 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
             //设置启动环节任务人为传进来的登陆人信息
             context.addVar(TASK_ASSIGNEE_KEY, person.getId());
         }
+        //环节审核意见
+        if (StringUtils.hasText((String) context.getBusinessParams().get("comment"))) {
+            //业务自定义流程实例标题
+            context.addVar(VAR_COMMENT_KEY, context.getBusinessParams().get("comment"));
+        }
         //调用流程引擎启动流程
         ProcessInstanceWithVariablesImpl instance = (ProcessInstanceWithVariablesImpl) getRuntimeService().startProcessInstanceById(processDefinition.getId(), context.getBusinessId(), context.getProcessVarMap());
         //转换流程实例对象

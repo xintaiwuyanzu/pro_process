@@ -67,8 +67,8 @@ public abstract class BaseProcessServiceImpl implements InitializingBean, Applic
         if (params.containsKey(ProcessConstants.VAR_NEXT_TASK_PERSON)) {
             context.addVar(ProcessConstants.VAR_NEXT_TASK_PERSON, params.get(ProcessConstants.VAR_NEXT_TASK_PERSON));
         }
-        if (params.containsKey(ProcessConstants.VAR_COMMENT_KEY)) {
-            context.addVar(ProcessConstants.VAR_COMMENT_KEY, params.get(ProcessConstants.VAR_COMMENT_KEY));
+        if (params.containsKey("comment")) {
+            context.addVar(ProcessConstants.VAR_COMMENT_KEY, params.get("comment"));
         }
         if (params.containsKey(ProcessConstants.VAR_NEXT_TASK_ID)) {
             context.addVar(ProcessConstants.VAR_NEXT_TASK_ID, params.get(ProcessConstants.VAR_NEXT_TASK_ID));
