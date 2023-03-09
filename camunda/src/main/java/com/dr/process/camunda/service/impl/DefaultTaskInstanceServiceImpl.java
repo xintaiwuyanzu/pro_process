@@ -222,6 +222,7 @@ public class DefaultTaskInstanceServiceImpl extends BaseProcessServiceImpl imple
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void endProcess(String taskId, Map<String, Object> variables, Person person) {
         //构造上下文
         TaskContext context = buildTaskContext(taskId, variables, person);

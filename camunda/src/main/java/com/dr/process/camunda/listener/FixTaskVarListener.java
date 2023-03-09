@@ -56,7 +56,6 @@ public class FixTaskVarListener implements TaskListener {
                 bindAssignment(delegateTask);
                 break;
             case EVENTNAME_CREATE:
-            case EVENTNAME_COMPLETE:
                 fixComment(delegateTask);
                 break;
         }
