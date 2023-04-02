@@ -8,7 +8,7 @@
              :show-close="false">
     <el-form :model="form" label-width="100px" ref="form" v-loading="loading">
       <el-form-item prop="processId" label="流程" required>
-        <el-select v-model="form.processId" placeholder="请选择要发起的流程" filterable>
+        <el-select v-model="form.processId" placeholder="请选择要发起的流程" filterable @change="getCurrentProcessDefinition">
           <el-option v-for="define in processDefinition"
                      :value="define.id"
                      :label="`${define.name||define.key}-${define.version}`"
@@ -63,7 +63,8 @@ export default {
         comment: ''
       },
       //当前登录人所属机构的所有人员
-      currentPersons: []
+      currentPersons: [],
+      currentProcessDefinition: ''
     }
   },
   methods: {
@@ -84,7 +85,13 @@ export default {
       this.$emit('close')
     },
     async $init() {
-      const {data} = await this.$post('/processDefinition/currentOrganisePersons/')
+      // const {data} = await this.$post('/processDefinition/currentOrganisePersons/')
+    },
+    async getCurrentProcessDefinition(v) {
+      this.currentPersons = []
+      this.form.person = []
+      this.currentProcessDefinition = v
+      const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: this.currentProcessDefinition})
       if (data.success) {
         this.currentPersons = data.data
       }

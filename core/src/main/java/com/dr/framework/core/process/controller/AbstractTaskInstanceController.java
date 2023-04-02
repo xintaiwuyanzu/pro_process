@@ -87,5 +87,33 @@ public abstract class AbstractTaskInstanceController extends BaseProcessControll
         }
     }
 
+    /**
+     * 查询环节历史
+     *
+     * @param person
+     * @param query
+     * @param pageIndex
+     * @param pageSize
+     * @param page
+     * @return
+     */
+    @RequestMapping({"/TaskInstanceHistoryPage"})
+    public ResultEntity taskInstanceHistoryPage(@Current Person person, TaskInstanceQuery query, @RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = "15") int pageSize, @RequestParam(defaultValue = "true") boolean page) {
+        return page ? ResultEntity.success(this.getTaskInstanceService().taskHistoryPage(query, pageIndex, pageSize)) : ResultEntity.success(this.getTaskInstanceService().taskHistoryList(query));
+    }
 
+    /**
+     * 根据流程实例id查询当前环节实例
+     *
+     * @param person
+     * @param query
+     * @param pageIndex
+     * @param pageSize
+     * @param page
+     * @return
+     */
+    @RequestMapping({"/taskInstancePage"})
+    public ResultEntity taskInstancePage(@Current Person person, TaskInstanceQuery query, @RequestParam(defaultValue = "0") int pageIndex, @RequestParam(defaultValue = "15") int pageSize, @RequestParam(defaultValue = "true") boolean page) {
+        return page ? ResultEntity.success(this.getTaskInstanceService().taskPage(query, pageIndex, pageSize)) : ResultEntity.success(this.getTaskInstanceService().taskList(query));
+    }
 }

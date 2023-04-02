@@ -7,7 +7,8 @@
              :show-close="false">
     <el-form :model="form" label-width="100px" ref="form" v-loading="loading">
       <el-form-item prop="taskDefinitionId" label="环节" required>
-        <el-select v-model="form.taskDefinitionId" placeholder="请选择下一环节" filterable>
+        <el-select v-model="form.taskDefinitionId" placeholder="请选择下一环节" filterable
+                   @change="getCurrentProcessDefinition">
           <el-option v-for="define in taskDefinitions"
                      :value="define.id"
                      :label="`${define.name||define.id}`"
@@ -55,7 +56,8 @@ export default {
     /**
      * 弹窗标题
      */
-    title: {type: String, default: '发送确认'}
+    title: {type: String, default: '发送确认'},
+    taskInstanceId: {type: String}
   },
   data() {
     return {
@@ -67,7 +69,7 @@ export default {
         comment: ''
       },
       //当前登录人所属机构的所有人员
-      currentPersons: []
+      currentPersons: [],
     }
   },
   methods: {
@@ -78,10 +80,22 @@ export default {
       }
     },
     async $init() {
-      const {data} = await this.$post('/processDefinition/currentOrganisePersons/')
-      if (data.success) {
-        this.currentPersons = data.data
+      await this.getCurrentPersons()
+    },
+    async getCurrentPersons() {
+      if (this.taskInstanceId) {
+        //根据环节实例查询流程定义id
+        const processTaskInstance = await this.$get('/processTaskInstance/detail?id=' + this.taskInstanceId)
+        if (processTaskInstance.data.success) {
+          const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: processTaskInstance.data.data.processDefineId})
+          if (data.success) {
+            this.currentPersons = data.data
+          }
+        }
       }
+    },
+    getCurrentProcessDefinition() {
+      this.getCurrentPersons()
     }
   }
 }

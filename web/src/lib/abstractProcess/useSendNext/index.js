@@ -63,6 +63,7 @@ export default () => {
             const data = await loadTaskDefinition(taskId)
             instance.taskDefinitions = data.data
             instance.loading = false
+            instance.taskInstanceId = taskInstanceId
             return new Promise((r) => {
                 resolve = r
             })

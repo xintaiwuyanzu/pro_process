@@ -7,7 +7,7 @@
                :show-close="false">
       <el-form :model="dialogForm" label-width="100px" ref="form" v-loading="dialogLoading">
         <el-form-item prop="taskDefinitionId" label="环节" required>
-          <el-select v-model="dialogForm.taskDefinitionId" placeholder="请选择下一环节" filterable>
+          <el-select v-model="dialogForm.taskDefinitionId" placeholder="请选择下一环节" filterable @change="getCurrentPersons">
             <el-option v-for="define in taskDefinitions"
                        :value="define.id"
                        :label="`${define.name||define.id}`"
@@ -90,14 +90,26 @@ export default {
           this.$set(this.dialogForm, 'taskDefinitionId', this.taskDefinitions[0].id)
         }
       }
-      if (this.persons.length === 0) {
-        const {data} = await this.$post('/processDefinition/currentOrganisePersons/')
-        this.persons = data.data
-        if (this.persons.length > 0) {
-          this.$set(this.dialogForm, 'person', this.persons[0].id)
+      await this.resetDialogForm()
+      await this.getCurrentPersons()
+    },
+    async getCurrentPersons() {
+      await this.resetDialogForm()
+      if (this.taskInstanceId) {
+        //根据环节实例查询流程定义id
+        const processTaskInstance = await this.$get('/processTaskInstance/detail?id=' + this.taskInstanceId)
+        if (processTaskInstance.data.success && processTaskInstance.data.data) {
+          const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: processTaskInstance.data.data.processDefineId})
+          if (data.success) {
+            this.persons = data.data
+          }
         }
       }
-    }
+    },
+    async resetDialogForm() {
+      this.persons = []
+      this.$set(this.dialogForm, 'person', [])
+    },
   },
   mounted() {
     this.defaultDialogTitle = '发送确认'

@@ -1,12 +1,24 @@
+import TitleProps from "../../properties-panel-extension/provider/authority/parts/TitleProps";
+import ZeebePropertiesProvider
+    from "camunda-bpmn-js/lib/camunda-cloud/features/properties-provider/ZeebePropertiesProvider";
+
 const excludeArr = ['forms', 'process-variables']
 export default class CustomerPropertiesProvider {
     constructor(CamundaPropertiesProvider) {
         this._provider = CamundaPropertiesProvider
     }
 
+    newAuthorityTab(element) {
+        return {
+            id: 'authority', label: '权限', groups: createAuthorityTabGroups(element)
+        };
+    }
+
     getTabs(element) {
         //过滤掉无用的模块
         const tabs = this._provider.getTabs(element)
+        console.log('tabs=', tabs)
+        tabs.push(this.newAuthorityTab(element))
         tabs.forEach(({id, groups}) => {
             if (id === 'general') {
                 const generalIndex = groups.findIndex(v => v.id === 'general')
@@ -19,6 +31,19 @@ export default class CustomerPropertiesProvider {
         })
         return tabs.filter(c => excludeArr.indexOf(c.id) < 0)
     }
+}
+
+function createAuthorityTabGroups(element) {
+    const editAuthorityGroup = {
+        id: 'edit-authority', label: '编辑权限', entries: []
+    };
+
+    // 每个属性都有自己的props方法
+    TitleProps(editAuthorityGroup, element);
+    // OtherProps1(editAuthorityGroup, element);
+    // OtherProps2(editAuthorityGroup, element);
+
+    return [editAuthorityGroup];
 }
 
 CustomerPropertiesProvider.$inject = ['CamundaPropertiesProvider']

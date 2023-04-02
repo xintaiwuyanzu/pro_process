@@ -102,7 +102,7 @@ export default {
      */
     async $initDialogForm() {
       if (this.currentPersons) {
-        const {data} = await this.$post('/processDefinition/currentOrganisePersons/')
+        const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: this.form.processId})
         if (data.success) {
           this.currentPersons = data.data
         }

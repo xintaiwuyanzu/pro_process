@@ -8,18 +8,20 @@
     </el-table-column>
     <template slot="table-$btns" slot-scope="{row}">
       <el-button type="text" width="40" @click="showDetail(row)">审核</el-button>
-      <el-button type="text" width="60" @click="()=>showHistory(row.processInstanceId)">流转历史</el-button>
+      <el-button type="text" width="60" @click="()=>showHistory(row)">流转历史</el-button>
     </template>
+    <circulation-history ref="circulationHistory" v-loading="loading" @doLoading="doLoading"
+                         :processParams="processParams"/>
   </table-index>
 </template>
 <script>
-import abstractProcess from "../../../lib/abstractProcess";
+import circulationHistory from "../circulationHistory";
 
 /**
  * 待办任务首页
  */
 export default {
-  extends: abstractProcess,
+  components: {circulationHistory},
   data() {
     return {
       searchForm: {withProcessVariables: true},
@@ -40,7 +42,16 @@ export default {
         assigneeName: {label: '发送人', width: 100},
         createDate: {dateFormat: true, label: '发送时间', width: 100},
         name: {label: '当前环节名称', width: 140}
-      }
+      },
+      columns: {
+        ownerName: {label: '任务发起人', search: true, width: 100},
+        assigneeName: {label: '发送人', width: 100},
+        createDate: {dateFormat: true, label: '发送时间', width: 100},
+        name: {label: '环节定义名称', width: 160},
+        title: {label: '任务描述'}
+      },
+      processParams: {},
+      loading: false
     }
   },
   methods: {
@@ -68,6 +79,13 @@ export default {
           businessId: processVariables.$businessId
         }
       })
+    },
+    async showHistory(row) {
+      this.processParams = row
+      await this.$refs.circulationHistory.openHistory()
+    },
+    doLoading(v) {
+      this.loading = v
     }
   }
 }
