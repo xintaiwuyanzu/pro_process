@@ -58,7 +58,7 @@ public class QueryUtils {
         if (query != null) {
             if (StringUtils.hasText(query.getTitle())) {
                 //根据标题查询流程实例
-                taskQuery.processVariableValueLike(ProcessConstants.PROCESS_TITLE_KEY, "%" + query.getTitle() + "%S");
+                taskQuery.processVariableValueLike(ProcessConstants.PROCESS_TITLE_KEY, "%" + query.getTitle() + "%");
             }
             if (StringUtils.hasText(query.getDetail())) {
                 //根据描述查询流程实例

@@ -8,9 +8,9 @@
     <template slot-scole='form' slot='search-$btns'>
       <el-button type="primary" @click="addShow=true">添加</el-button>
     </template>
-    <el-dialog title="选择角色" :visible.sync="addShow" width="40%">
+    <el-dialog title="提示" :visible.sync="addShow" width="40%">
       <el-form :model="addForm" ref="form" label-width="100px">
-        <el-form-item prop="selectPerson" label="环节" required>
+        <el-form-item prop="selectPerson" label="选择角色" required>
           <el-select v-model="addForm.selectPerson" multiple filterable placeholder="请选择" style="width: 100%">
             <el-option
                 v-for="item in roles"
