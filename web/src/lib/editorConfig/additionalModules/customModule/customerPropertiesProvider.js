@@ -1,6 +1,4 @@
 import TitleProps from "../../properties-panel-extension/provider/authority/parts/TitleProps";
-import ZeebePropertiesProvider
-    from "camunda-bpmn-js/lib/camunda-cloud/features/properties-provider/ZeebePropertiesProvider";
 
 const excludeArr = ['forms', 'process-variables']
 export default class CustomerPropertiesProvider {
@@ -18,6 +16,7 @@ export default class CustomerPropertiesProvider {
         //过滤掉无用的模块
         const tabs = this._provider.getTabs(element)
         console.log('tabs=', tabs)
+        //todo 扩展 未实现
         tabs.push(this.newAuthorityTab(element))
         tabs.forEach(({id, groups}) => {
             if (id === 'general') {

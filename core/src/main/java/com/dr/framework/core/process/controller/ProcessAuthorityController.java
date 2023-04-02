@@ -26,6 +26,7 @@ public class ProcessAuthorityController extends BaseServiceController<ProcessAut
     protected SqlQuery<ProcessAuthority> buildPageQuery(HttpServletRequest httpServletRequest, ProcessAuthority processAuthority) {
         Assert.isTrue(StringUtils.hasText(processAuthority.getProcessDefinitionId()), "流程id不能为空！");
         return SqlQuery.from(ProcessAuthority.class)
+                .like(ProcessAuthorityInfo.ROLENAME, processAuthority.getRoleName())
                 .equal(ProcessAuthorityInfo.PROCESSDEFINITIONID, processAuthority.getProcessDefinitionId());
     }
 
@@ -39,4 +40,9 @@ public class ProcessAuthorityController extends BaseServiceController<ProcessAut
     public ResultEntity getPersonByRoleAndCurOrg(String processDefinitionId) {
         return ResultEntity.success(service.getPersonByRoleAndCurOrg(processDefinitionId));
     }
+
+//    @RequestMapping("/batchInsert")
+//    public ResultEntity batchInsert(HttpServletRequest request, ProcessAuthority entity) {
+//        return service.batchInsert();
+//    }
 }

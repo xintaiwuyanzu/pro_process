@@ -10,14 +10,16 @@
     </template>
     <el-dialog title="选择角色" :visible.sync="addShow" width="40%">
       <el-form :model="addForm" ref="form" label-width="100px">
-        <el-select v-model="addForm.roleId" filterable placeholder="请选择" style="width: 100%">
-          <el-option
-              v-for="item in roles"
-              :key="item.id"
-              :label="item.code+' '+item.name"
-              :value="item.id">
-          </el-option>
-        </el-select>
+        <el-form-item prop="selectPerson" label="环节" required>
+          <el-select v-model="addForm.selectPerson" multiple filterable placeholder="请选择" style="width: 100%">
+            <el-option
+                v-for="item in roles"
+                :key="item.id"
+                :label="item.code+' '+item.name"
+                :value="item.id">
+            </el-option>
+          </el-select>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
          <el-button type="info" @click="addShow = false">取 消</el-button>
@@ -35,11 +37,11 @@ export default {
       addShow: false,
       fields: {
         roleCode: {label: '角色编码', search: false, width: 100},
-        roleName: {label: '角色名称', search: false},
+        roleName: {label: '角色名称', search: true},
         createDate: {dateFormat: "YYYY-MM-DD HH:mm:ss", label: '添加时间', width: 140}
       },
-      addForm: {},
-      roles: []
+      addForm: {selectPerson: []},
+      roles: [],
     }
   },
   methods: {
@@ -60,6 +62,7 @@ export default {
       }
     },
     async onsubmit() {
+      this.addForm.roleId = this.addForm.selectPerson.join(',')
       const {data} = await this.$post('/processAuthority/insert', Object.assign(this.addForm, {processDefinitionId: this.processDefinitionId}))
       if (data.success) {
         this.$message.success('保存成功！')
