@@ -9,7 +9,8 @@
                :show-close="false">
       <el-form :model="dialogForm" label-width="100px" ref="form" v-loading="dialogLoading">
         <el-form-item prop="processId" label="流程" required>
-          <el-select v-model="dialogForm.processId" placeholder="请选择要发起的流程" filterable clearable>
+          <el-select v-model="dialogForm.processId" placeholder="请选择要发起的流程" @change="getCurrentPersons" filterable
+                     clearable>
             <el-option v-for="define in processDefinition"
                        :value="define.id"
                        :label="`${define.name||define.key}`"
@@ -101,12 +102,7 @@ export default {
      * @returns {Promise<void>}
      */
     async $initDialogForm() {
-      if (this.currentPersons) {
-        const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: this.form.processId})
-        if (data.success) {
-          this.currentPersons = data.data
-        }
-      }
+      this.currentPersons = []
       //设置默认数据
       if (this.currentPersons.length > 0) {
         this.$set(this.dialogForm, 'person', this.currentPersons[0].id)
@@ -128,13 +124,27 @@ export default {
       if (this.processDefinition.length > 0) {
         this.$set(this.dialogForm, 'processId', this.processDefinition[0].id)
       }
+      await this.getCurrentPersons()
       if (this.processDefinition.length === 0) {
         this.$message.error("未找到指定类型的流程，请联系系统管理员分配权限")
       }
     },
-    $init() {
+    async $init() {
       this.defaultDialogTitle = '启动流程确认'
-    }
+    },
+    async getCurrentPersons() {
+      await this.resetDialogForm()
+      if (this.dialogForm.processId) {
+        const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: this.dialogForm.processId})
+        if (data.success) {
+          this.currentPersons = data.data
+        }
+      }
+    },
+    async resetDialogForm() {
+      this.currentPersons = []
+      this.$set(this.dialogForm, 'person', [])
+    },
   }
 }
 </script>

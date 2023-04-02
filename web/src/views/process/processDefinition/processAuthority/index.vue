@@ -36,7 +36,7 @@ export default {
     return {
       addShow: false,
       fields: {
-        roleCode: {label: '角色编码', search: false, width: 100},
+        roleCode: {label: '角色编码', search: false, width: 200},
         roleName: {label: '角色名称', search: true},
         createDate: {dateFormat: "YYYY-MM-DD HH:mm:ss", label: '添加时间', width: 140}
       },
