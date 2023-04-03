@@ -15,7 +15,6 @@ public class ProcessAuthority extends BaseStatusEntity<String> {
     @Column(comment = "流程id")
     private String processDefinitionId;
 
-
     @Column(comment = "角色id")
     private String roleId;
 

@@ -47,15 +47,17 @@ public class ProcessAuthorityServiceImpl extends DefaultBaseService<ProcessAutho
         String[] roleIds = entity.getRoleId().split(",");
         for (String roleId : roleIds) {
             Role role = roleService.selectById(roleId);
-            entity.setRoleId(roleId);
-            entity.setRoleCode(role.getCode());
-            entity.setRoleName(role.getName());
+            ProcessAuthority processAuthority = new ProcessAuthority();
+            processAuthority.setProcessDefinitionId(entity.getProcessDefinitionId());
+            processAuthority.setRoleId(roleId);
+            processAuthority.setRoleCode(role.getCode());
+            processAuthority.setRoleName(role.getName());
             //判断存在
             boolean exists = commonMapper.existsByQuery(SqlQuery.from(ProcessAuthority.class)
                     .equal(ProcessAuthorityInfo.PROCESSDEFINITIONID, entity.getProcessDefinitionId())
-                    .equal(ProcessAuthorityInfo.ROLEID, entity.getRoleId()));
+                    .equal(ProcessAuthorityInfo.ROLEID, roleId));
             if (!exists) {
-                super.insert(entity);
+                super.insert(processAuthority);
             }
         }
         return roleIds.length;
