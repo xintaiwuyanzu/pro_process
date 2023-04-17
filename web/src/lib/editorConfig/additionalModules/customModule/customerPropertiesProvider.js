@@ -34,7 +34,7 @@ export default class CustomerPropertiesProvider {
 
 function createAuthorityTabGroups(element) {
     const editAuthorityGroup = {
-        id: 'edit-authority', label: '编辑权限', entries: []
+        id: 'edit-authority', label: '审批', entries: []
     };
 
     // 每个属性都有自己的props方法

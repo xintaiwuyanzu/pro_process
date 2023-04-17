@@ -36,7 +36,7 @@ export default {
     return {
       loading: false,
       //流程定义Id
-      id: '',
+      //id: '',
       type: 'default_process',
       //流程定义对象
       processDefinition: {}
@@ -97,13 +97,19 @@ export default {
     }
   },
   mounted() {
-    this.id = this.$route.query.id
+    //this.id = this.$route.query.id
     this.loadProcessType()
         .then(() => {
           if (this.id) {
             return this.loadDefinition()
           }
         })
+  },
+  computed:{
+    //流程定义Id
+    id(){
+      return this.$route.query.id
+    }
   }
 }
 </script>

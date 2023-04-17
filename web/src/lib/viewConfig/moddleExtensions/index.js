@@ -1,1 +1,5 @@
-export default {}
+import authorityModdleDescriptor from '../authority.json'
+
+export default {
+    authority: authorityModdleDescriptor
+}

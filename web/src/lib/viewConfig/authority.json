@@ -1,0 +1,24 @@
+{
+  "name": "Authority",
+  "prefix": "authority",
+  "uri": "http://authority",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [
+    {
+      "name": "myActivity",
+      "extends": [
+        "bpmn:Activity"
+      ],
+      "properties": [
+        {
+          "name": "authority",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    }
+  ]
+}

@@ -9,7 +9,7 @@ spring:
     autoDDl: update
     includeModules: sys,common,process
     password: 1234
-    url: jdbc:mysql://127.0.0.1:3306/testProcess4?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    url: jdbc:mysql://192.168.200.245:3307/testProcess4?useUnicode=true&characterEncoding=UTF-8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
     username: root
   servlet:
     multipart:
