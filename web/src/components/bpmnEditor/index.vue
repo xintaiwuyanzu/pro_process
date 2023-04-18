@@ -14,6 +14,15 @@
     flex: 1;
   }
 }
+.icon-custom-userTask::before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: url("./img.png");
+  background-size: 100%;
+  background-position: 0 3px;
+}
 </style>
 <template>
   <section class="bpmnContainer">
@@ -44,7 +53,7 @@ export default {
     return {
       bpmnModeler: null,
       // 这部分具体的代码我放到了下面
-      initTemplate: editorConfig.template
+      initTemplate: editorConfig.template,
     };
   },
   methods: {
@@ -55,10 +64,12 @@ export default {
         container: this.$refs.canvas,
         propertiesPanel: {parent: this.$refs.properties},
         additionalModules: editorConfig.additionalModules,
-        moddleExtensions: editorConfig.moddleExtensions
+        moddleExtensions: editorConfig.moddleExtensions,
       });
       // 初始化建模器内容
       await this.loadXml(this.initTemplate);
+      // 加载权限列表
+      await this.getAuthorityOptions();
     },
     async loadXml(bpmn) {
       //替换模板中的Id
@@ -78,6 +89,39 @@ export default {
     async saveXml() {
       const result = await this.bpmnModeler.saveXML()
       return result
+    },
+
+    async getAuthorityOptions() {
+      const eventBus = this.bpmnModeler.get('eventBus')
+      // 用于修改属性值
+      // const modeling = this.bpmnModeler.get('modeling')
+      const elementRegistry = this.bpmnModeler.get('elementRegistry')
+
+      await eventBus.on('element.click', async (e) => {
+        if (!e || !e.element) {
+          console.log('无效的e', e)
+          return
+        }
+        const shape = elementRegistry.get(e.element.id)
+        console.log(shape)
+        if (shape.type === 'bpmn:UserTask') {
+          const authoritySelect = document.getElementsByName('authority')[0]
+          if (authoritySelect) {
+            const {data} = await this.$http.post('/person/page', {"page": false})
+            if(data.success){
+              data.data.forEach(item => {
+                authoritySelect.options.add(new Option(`${item.userCode} ${item.userName}`, item.id))
+                authoritySelect.value = shape.businessObject.authority ? shape.businessObject.authority : '0'
+              })
+            }
+          }
+
+          // 直接修改属性值
+          // modeling.updateProperties(shape, {
+          //   name: 'shape修改后的名字'
+          // })
+        }
+      })
     }
   },
   mounted() {

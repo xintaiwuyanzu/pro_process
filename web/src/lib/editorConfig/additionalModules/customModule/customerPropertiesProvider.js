@@ -15,7 +15,7 @@ export default class CustomerPropertiesProvider {
     getTabs(element) {
         //过滤掉无用的模块
         const tabs = this._provider.getTabs(element)
-        console.log('tabs=', tabs)
+        // console.log('tabs=', tabs)
         //todo 扩展 未实现
         tabs.push(this.newAuthorityTab(element))
         tabs.forEach(({id, groups}) => {

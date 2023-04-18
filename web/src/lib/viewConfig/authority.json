@@ -10,7 +10,7 @@
     {
       "name": "myActivity",
       "extends": [
-        "bpmn:Activity"
+        "bpmn:UserTask"
       ],
       "properties": [
         {
