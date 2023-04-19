@@ -14,14 +14,16 @@
     flex: 1;
   }
 }
+.icon-custom-userTask {
+  vertical-align: top;
+}
 .icon-custom-userTask::before {
   content: '';
   display: block;
   width: 100%;
   height: 100%;
-  background-image: url("./img.png");
+  background-image: url("./user.svg");
   background-size: 100%;
-  background-position: 0 3px;
 }
 </style>
 <template>

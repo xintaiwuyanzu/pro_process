@@ -34,7 +34,7 @@ export default class CustomContextPad {
         }
 
         return {
-            'append.lindaidai-task': {
+            'append.userTask': {
                 group: 'model',
                 className: 'icon-custom-userTask',
                 title: translate('追加用户任务'),
