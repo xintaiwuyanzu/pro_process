@@ -18,7 +18,7 @@
         </el-form-item>
       </el-form>
     </nac-info>
-    <div class="index_main" v-loading="loading">
+    <div class="index_main">
       <div class="table-container">
         <el-table :data="data" border height="100%" @selection-change="handleTableSelect">
           <el-table-column label="排序" type="index" align="center"/>
