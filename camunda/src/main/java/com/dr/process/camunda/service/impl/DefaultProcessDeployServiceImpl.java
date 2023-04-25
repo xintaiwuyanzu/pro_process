@@ -1,8 +1,10 @@
 package com.dr.process.camunda.service.impl;
 
 import com.dr.framework.common.dao.CommonMapper;
+import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.process.bo.ProcessDefinition;
 import com.dr.framework.core.process.service.ProcessConstants;
+import com.dr.framework.core.security.service.SecurityManager;
 import com.dr.process.camunda.command.ProcessDefinitionUtils;
 import com.dr.process.camunda.command.process.definition.extend.ProcessDefinitionExtendEntity;
 import com.dr.process.camunda.service.ProcessDeployService;
@@ -40,6 +42,8 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
     private ProcessApplicationReference processApplicationReference;
     @Autowired
     private CommonMapper commonMapper;
+    @Autowired
+    protected SecurityManager securityManager;
 
     @Override
     @Transactional
@@ -125,7 +129,7 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
 
     @Override
     @Transactional(readOnly = true)
-    public String getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId) {
+    public List<Person> getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId) {
         Assert.isTrue(StringUtils.hasText(processDefinitionId), "流程定义Id不能为空");
         Assert.isTrue(StringUtils.hasText(taskDefinitionId), "环节定义Id不能为空");
         InputStream stream = getDeployResourceById(processDefinitionId);
@@ -145,7 +149,7 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
                 elements.putAll(getElement(element.elements(), elements, taskDefinitionId));
             }
         }
-        return null != elements.get(taskDefinitionId) ? elements.get(taskDefinitionId) : "";
+        return securityManager.roleUsers(elements.get(taskDefinitionId));
     }
 
     public static Map getElement(List<Element> elements, Map maps, String taskDefinitionId) {

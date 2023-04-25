@@ -1,5 +1,6 @@
 package com.dr.process.camunda.service;
 
+import com.dr.framework.core.organise.entity.Person;
 import com.dr.framework.core.process.bo.ProcessDefinition;
 import com.dr.framework.core.process.service.ProcessConstants;
 
@@ -71,10 +72,11 @@ public interface ProcessDeployService {
     void deleteProcessByDefinitionKey(String defKey);
 
     /**
-     * 根据环节定义Id查询authority角色id
+     * 根据流程定义id、环节定义id取对应环节角色下的人员列表
      *
-     * @param taskDefinitionId
+     * @param processDefinitionId 流程定义id
+     * @param taskDefinitionId    环节定义id
      * @return
      */
-    String getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId);
+    List<Person> getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId);
 }
