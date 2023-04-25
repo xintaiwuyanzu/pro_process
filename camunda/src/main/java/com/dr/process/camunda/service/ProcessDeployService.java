@@ -70,4 +70,11 @@ public interface ProcessDeployService {
      */
     void deleteProcessByDefinitionKey(String defKey);
 
+    /**
+     * 根据环节定义Id查询authority角色id
+     *
+     * @param taskDefinitionId
+     * @return
+     */
+    String getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId);
 }

@@ -4,6 +4,8 @@ import com.dr.framework.common.entity.ResultEntity;
 import com.dr.framework.core.process.bo.ProcessDefinition;
 import com.dr.framework.core.process.controller.AbstractProcessDefinitionController;
 import com.dr.process.camunda.service.ProcessDeployService;
+import org.camunda.bpm.engine.RepositoryService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +26,8 @@ import java.util.List;
 @RestController
 @RequestMapping("${common.api-path:/api}/processDefinition")
 public class ProcessDefinitionController extends AbstractProcessDefinitionController {
+    @Autowired
+    RepositoryService repositoryService;
 
     private ProcessDeployService processDeployService;
 
@@ -103,6 +107,17 @@ public class ProcessDefinitionController extends AbstractProcessDefinitionContro
     @PostMapping("/detail")
     public ResultEntity<ProcessDefinition> detail(String processDefinitionId) {
         return ResultEntity.success(getProcessDefinitionService().getProcessDefinitionById(processDefinitionId));
+    }
+
+    /**
+     * 根据环节定义id获取对应角色人员
+     *
+     * @param taskDefinitionId 环节定义id
+     * @return
+     */
+    @RequestMapping("/getPersonByTaskDefinitionId")
+    public ResultEntity getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId) {
+        return ResultEntity.success(getProcessDeployService().getPersonByTaskDefinitionId(processDefinitionId, taskDefinitionId));
     }
 
     public ProcessDeployService getProcessDeployService() {

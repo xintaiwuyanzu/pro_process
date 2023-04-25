@@ -11,6 +11,9 @@ import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.spring.SpringTransactionsProcessEngineConfiguration;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +24,9 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 流程定义service
@@ -116,6 +121,43 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
         } catch (Exception ignore) {
 
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public String getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId) {
+        Assert.isTrue(StringUtils.hasText(processDefinitionId), "流程定义Id不能为空");
+        Assert.isTrue(StringUtils.hasText(taskDefinitionId), "环节定义Id不能为空");
+        InputStream stream = getDeployResourceById(processDefinitionId);
+        SAXReader saxReader = new SAXReader();
+        org.dom4j.Document xmlDocument = null;
+        try {
+            xmlDocument = saxReader.read(stream);
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        }
+        Element rootElement = xmlDocument.getRootElement();
+        //获取文件子节点
+        List<Element> list = rootElement.elements();
+        Map<String, String> elements = new HashMap<>();
+        for (Element element : list) {
+            if (element.elements().size() > 0) {
+                elements.putAll(getElement(element.elements(), elements, taskDefinitionId));
+            }
+        }
+        return null != elements.get(taskDefinitionId) ? elements.get(taskDefinitionId) : "";
+    }
+
+    public static Map getElement(List<Element> elements, Map maps, String taskDefinitionId) {
+        for (Element element : elements) {
+            if (taskDefinitionId.equals(element.attributeValue("id")) && StringUtils.hasText(element.attributeValue("authority"))) {
+                maps.put(taskDefinitionId, element.attributeValue("authority"));
+            }
+            if (element.elements().size() > 0) {
+                getElement(element.elements(), maps, taskDefinitionId);
+            }
+        }
+        return maps;
     }
 
     public CommonMapper getCommonMapper() {
