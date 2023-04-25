@@ -95,30 +95,28 @@ export default {
 
     async getAuthorityOptions() {
       const eventBus = this.bpmnModeler.get('eventBus')
-      // 用于修改属性值
-      // const modeling = this.bpmnModeler.get('modeling')
+      // const modeling = this.bpmnModeler.get('modeling')   // 用于修改节点属性值
       const elementRegistry = this.bpmnModeler.get('elementRegistry')
-
       await eventBus.on('element.click', async (e) => {
         if (!e || !e.element) {
           console.log('无效的e', e)
           return
         }
         const shape = elementRegistry.get(e.element.id)
-        console.log(shape)
+        // console.log(shape)
         if (shape.type === 'bpmn:UserTask') {
           const authoritySelect = document.getElementsByName('authority')[0]
           if (authoritySelect) {
-            const {data} = await this.$http.post('/person/page', {"page": false})
+            const {data} = await this.$http.post('/sysrole/page', {"page": false})
             if(data.success){
               data.data.forEach(item => {
-                authoritySelect.options.add(new Option(`${item.userCode} ${item.userName}`, item.id))
+                authoritySelect.options.add(new Option(`${item.code} ${item.name}`, item.id))
                 authoritySelect.value = shape.businessObject.authority ? shape.businessObject.authority : '0'
               })
             }
           }
 
-          // 直接修改属性值
+          // 直接修改节点属性值
           // modeling.updateProperties(shape, {
           //   name: 'shape修改后的名字'
           // })

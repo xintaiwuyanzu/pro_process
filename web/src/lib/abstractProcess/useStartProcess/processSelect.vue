@@ -6,7 +6,7 @@
              :close-on-click-modal="false"
              :close-on-press-escape="false"
              :show-close="false">
-    <el-form :model="form" label-width="100px" ref="form" v-loading="loading">
+    <el-form :model="form" label-width="120px" ref="form" v-loading="loading">
       <el-form-item prop="processId" label="流程" required>
         <el-select v-model="form.processId" placeholder="请选择要发起的流程" filterable @change="getCurrentProcessDefinition">
           <el-option v-for="define in processDefinition"
@@ -35,6 +35,8 @@
   </el-dialog>
 </template>
 <script>
+import {Message} from "element-ui";
+
 /**
  * 流程相关选择器
  */
@@ -91,9 +93,23 @@ export default {
       this.currentPersons = []
       this.form.person = []
       this.currentProcessDefinition = v
-      const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: this.currentProcessDefinition})
+      const {data} = await this.$post('/processDefinition/xml', {processDefinitionId: this.currentProcessDefinition})
       if (data.success) {
-        this.currentPersons = data.data
+        const res = data.data.split('bpmn:userTask id=')[1].split('authority:authority="')[1]
+        if (!res) {
+          Message.error('该流程定义审批节点未设置角色，请先配置节点权限')
+          return
+        }
+        const role = res.slice(0, res.indexOf('>')-1)
+        const personData = await this.$post('/organise/getPersonsByRoleId', {roleId: role})
+        if (personData.data.success) {
+          this.currentPersons = personData.data.data
+          if (this.currentPersons.length === 0) {
+            Message.error('该流程定义无可用接收人，请检查节点权限')
+          }
+        }
+      } else {
+        Message.error(data.message)
       }
     }
   }

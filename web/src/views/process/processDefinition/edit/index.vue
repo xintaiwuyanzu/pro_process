@@ -36,7 +36,7 @@ export default {
     return {
       loading: false,
       //流程定义Id
-      //id: '',
+      id: '',
       type: 'default_process',
       //流程定义对象
       processDefinition: {}
@@ -94,21 +94,23 @@ export default {
           this.$message.error(data.message)
         }
       }
+    },
+    init() {
+      this.id = this.$route.query.id
+      this.loadProcessType()
+          .then(() => {
+            if (this.id) {
+              return this.loadDefinition()
+            }
+          })
     }
   },
   mounted() {
-    //this.id = this.$route.query.id
-    this.loadProcessType()
-        .then(() => {
-          if (this.id) {
-            return this.loadDefinition()
-          }
-        })
+    this.init()
   },
-  computed:{
-    //流程定义Id
-    id(){
-      return this.$route.query.id
+  watch: {
+    '$route.query' () {
+      this.$destroy()
     }
   }
 }
