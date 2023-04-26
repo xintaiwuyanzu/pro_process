@@ -13,6 +13,12 @@ import org.camunda.bpm.application.ProcessApplicationReference;
 import org.camunda.bpm.engine.RepositoryService;
 import org.camunda.bpm.engine.repository.DeploymentBuilder;
 import org.camunda.bpm.engine.spring.SpringTransactionsProcessEngineConfiguration;
+import org.camunda.bpm.model.bpmn.BpmnModelInstance;
+import org.camunda.bpm.model.bpmn.instance.FlowNode;
+import org.camunda.bpm.model.bpmn.instance.SequenceFlow;
+import org.camunda.bpm.model.bpmn.instance.StartEvent;
+import org.camunda.bpm.model.bpmn.instance.UserTask;
+import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
@@ -26,9 +32,7 @@ import org.springframework.util.StringUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 流程定义service
@@ -134,7 +138,7 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
         Assert.isTrue(StringUtils.hasText(taskDefinitionId), "环节定义Id不能为空");
         InputStream stream = getDeployResourceById(processDefinitionId);
         SAXReader saxReader = new SAXReader();
-        org.dom4j.Document xmlDocument = null;
+        Document xmlDocument = null;
         try {
             xmlDocument = saxReader.read(stream);
         } catch (DocumentException e) {
@@ -150,6 +154,21 @@ public class DefaultProcessDeployServiceImpl extends BaseProcessServiceImpl impl
             }
         }
         return securityManager.roleUsers(elements.get(taskDefinitionId));
+    }
+
+    @Override
+    public List<Person> getPersonByProcessDefinitionId(String processDefinitionId) {
+        BpmnModelInstance bpmnModelInstance = getRepositoryService().getBpmnModelInstance(processDefinitionId);
+        StartEvent startEvent = bpmnModelInstance.getModelElementById("StartEvent_1");
+        Collection<SequenceFlow> outgoings = startEvent.getOutgoing();
+        //todo 这里只处理开始之后只有一个环节的情况
+        Assert.isTrue(outgoings.size() > 0, "流程配置有问题，请联系管理员！");
+        Iterator it = outgoings.iterator();
+        SequenceFlow sequenceFlow = (SequenceFlow) it.next();
+        FlowNode flowNode = sequenceFlow.getTarget();
+        //todo 这里强转，如果配置的不是用户任务可能就废了
+        UserTask userTask = (UserTask) flowNode;
+        return null == userTask ? null : getPersonByTaskDefinitionId(processDefinitionId, userTask.getId());
     }
 
     public static Map getElement(List<Element> elements, Map maps, String taskDefinitionId) {

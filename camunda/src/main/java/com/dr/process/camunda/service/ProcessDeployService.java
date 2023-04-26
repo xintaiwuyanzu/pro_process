@@ -79,4 +79,12 @@ public interface ProcessDeployService {
      * @return
      */
     List<Person> getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId);
+
+    /**
+     * 根据流程定义id取启动环节角色下的人员列表
+     *
+     * @param processDefinitionId 流程定义id
+     * @return
+     */
+    List<Person> getPersonByProcessDefinitionId(String processDefinitionId);
 }

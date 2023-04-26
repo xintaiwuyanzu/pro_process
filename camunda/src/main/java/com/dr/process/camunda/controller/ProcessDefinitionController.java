@@ -112,12 +112,24 @@ public class ProcessDefinitionController extends AbstractProcessDefinitionContro
     /**
      * 根据环节定义id获取对应角色人员
      *
-     * @param taskDefinitionId 环节定义id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefinitionId    环节定义id
      * @return
      */
     @RequestMapping("/getPersonByTaskDefinitionId")
     public ResultEntity getPersonByTaskDefinitionId(String processDefinitionId, String taskDefinitionId) {
         return ResultEntity.success(getProcessDeployService().getPersonByTaskDefinitionId(processDefinitionId, taskDefinitionId));
+    }
+
+    /**
+     * 根据流程定义id取启动环节角色下的人员列表
+     *
+     * @param processDefinitionId 流程定义id
+     * @return
+     */
+    @RequestMapping("/getPersonByProcessDefinitionId")
+    public ResultEntity getPersonByProcessDefinitionId(String processDefinitionId) {
+        return ResultEntity.success(getProcessDeployService().getPersonByProcessDefinitionId(processDefinitionId));
     }
 
     public ProcessDeployService getProcessDeployService() {
