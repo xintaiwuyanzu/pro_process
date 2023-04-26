@@ -86,9 +86,9 @@ export default {
       if (this.taskInstanceId && this.taskDefinitions.length === 0) {
         const {data} = await this.$post('taskDefinition/nextTasks', {taskInstanceId: this.taskInstanceId})
         this.taskDefinitions = data.data
-        if (this.taskDefinitions.length > 0) {
-          this.$set(this.dialogForm, 'taskDefinitionId', this.taskDefinitions[0].id)
-        }
+      }
+      if (this.taskDefinitions.length > 0) {
+        this.$set(this.dialogForm, 'taskDefinitionId', this.taskDefinitions[0].id)
       }
       await this.resetDialogForm()
       await this.getCurrentPersons()
@@ -99,10 +99,15 @@ export default {
         //根据环节实例查询流程定义id
         const processTaskInstance = await this.$get('/processTaskInstance/detail?id=' + this.taskInstanceId)
         if (processTaskInstance.data.success && processTaskInstance.data.data) {
-          const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: processTaskInstance.data.data.processDefineId})
-          if (data.success) {
-            this.persons = data.data
-          }
+            const processDefineId = processTaskInstance.data.data.processDefineId
+            //根据流程定义id、环节定义id获取对应角色下的人员
+            const {data} = await this.$post('/processDefinition/getPersonByTaskDefinitionId', {
+                processDefinitionId: processDefineId,
+                taskDefinitionId: this.dialogForm.taskDefinitionId
+            })
+            if (data.success) {
+                this.persons = data.data
+            }
         }
       }
     },

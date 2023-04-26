@@ -95,7 +95,6 @@ export default {
 
     async getAuthorityOptions() {
       const eventBus = this.bpmnModeler.get('eventBus')
-      // const modeling = this.bpmnModeler.get('modeling')   // 用于修改节点属性值
       const elementRegistry = this.bpmnModeler.get('elementRegistry')
       await eventBus.on('element.click', async (e) => {
         if (!e || !e.element) {
@@ -116,7 +115,8 @@ export default {
             }
           }
 
-          // 直接修改节点属性值
+          // 修改节点属性值
+          // const modeling = this.bpmnModeler.get('modeling')
           // modeling.updateProperties(shape, {
           //   name: 'shape修改后的名字'
           // })

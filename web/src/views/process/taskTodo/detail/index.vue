@@ -35,6 +35,11 @@ export default {
   },
   mounted() {
     this.taskInstanceId = this.$route.query.taskId
+  },
+  watch: {
+    '$route.query' () {
+      this.$destroy()
+    }
   }
 }
 </script>
