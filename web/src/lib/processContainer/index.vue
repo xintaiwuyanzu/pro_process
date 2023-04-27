@@ -135,7 +135,9 @@ export default {
     async getCurrentPersons() {
       await this.resetDialogForm()
       if (this.dialogForm.processId) {
-        const {data} = await this.$post('/processAuthority/getPersonByRoleAndCurOrg', {processDefinitionId: this.dialogForm.processId})
+        const {data} = await this.$post('/processDefinition/getPersonByProcessDefinitionId', {
+            processDefinitionId: this.dialogForm.processId
+        })
         if (data.success) {
           this.currentPersons = data.data
         }
