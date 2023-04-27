@@ -38,15 +38,12 @@
             </template>
           </el-table-column>
           <el-table-column prop="version" label="最新版本" width="80px" align="center" header-align="center"/>
-          <el-table-column label="操作" width="200" header-align="center" align="center">
+          <el-table-column label="操作" width="120" header-align="center" align="center">
             <template slot-scope="scope">
               <el-button type="text" @click="showDelete( scope.row.id)">删 除
               </el-button>
               <el-button type="text" @click="edit(scope.row.id)">
                 编 辑
-              </el-button>
-              <el-button type="text" @click="showEditPerson(scope.row.id)">
-                权限配置
               </el-button>
             </template>
           </el-table-column>
@@ -123,9 +120,6 @@ export default {
       await this.loadProcessType()
       await this.loadData()
     },
-    showEditPerson(id) {
-      this.$router.push({path: this.$route.path + '/processAuthority', query: {id}})
-    }
   }
 }
 </script>
