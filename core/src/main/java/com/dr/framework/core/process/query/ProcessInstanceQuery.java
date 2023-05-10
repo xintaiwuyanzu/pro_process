@@ -2,7 +2,7 @@ package com.dr.framework.core.process.query;
 
 /**
  * 流程实例查询工具类
- *  TODO 起止时间
+ * TODO 起止时间
  *
  * @author dr
  */
@@ -19,6 +19,14 @@ public class ProcessInstanceQuery extends AbsProcessQuery<ProcessInstanceQuery> 
      * 流程实例创建人
      */
     private String createPerson;
+    /**
+     * 任务发起人
+     */
+    private String createPersonName;
+    /**
+     * 任务名称
+     */
+    private String name;
     /**
      * TODO
      * 环节实例接收人
@@ -75,5 +83,21 @@ public class ProcessInstanceQuery extends AbsProcessQuery<ProcessInstanceQuery> 
 
     public void setTaskPerson(String taskPerson) {
         this.taskPerson = taskPerson;
+    }
+
+    public String getCreatePersonName() {
+        return createPersonName;
+    }
+
+    public void setCreatePersonName(String createPersonName) {
+        this.createPersonName = createPersonName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

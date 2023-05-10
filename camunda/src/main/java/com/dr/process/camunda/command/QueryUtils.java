@@ -42,6 +42,14 @@ public class QueryUtils {
                 //流程启动人
                 hq.startedBy(query.getCreatePerson());
             }
+            if (StringUtils.hasText(query.getCreatePersonName())) {
+                //任务发起人
+                hq.variableValueLike(ProcessConstants.PROCESS_CREATE_NAME_KEY, "%" + query.getCreatePersonName() + "%");
+            }
+            if (StringUtils.hasText(query.getName())) {
+                //任务名称
+                hq.variableValueLike(ProcessConstants.PROCESS_TITLE_KEY,"%" + query.getName() + "%");
+            }
         }
         return hq;
     }
